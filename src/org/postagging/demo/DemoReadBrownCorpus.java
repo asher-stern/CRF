@@ -39,18 +39,23 @@ public class DemoReadBrownCorpus
 		tags = new LinkedHashSet<String>();
 		BrownCorpusReader reader = new BrownCorpusReader(directoryName);
 		int index=0;
-		while (index<NUMBER_OF_SENTENCES && reader.hasNext())
+		//while (index<NUMBER_OF_SENTENCES && reader.hasNext())
+		while (reader.hasNext())
 		{
 			List<TaggedToken> taggedSentence = reader.next();
 			++index;
 			for (TaggedToken token : taggedSentence)
 			{
-				System.out.print(token);
-				System.out.print(" ");
+//				System.out.print(token);
+//				System.out.print(" ");
 				
 				tags.add(token.getTag());
 			}
-			System.out.println();
+//			System.out.println();
+			if (0==index%10000)
+			{
+				System.out.println(index);
+			}
 		}
 		
 		System.out.println("Tags:");
@@ -59,6 +64,7 @@ public class DemoReadBrownCorpus
 			System.out.println(tag);
 		}
 		System.out.println("Number of detected tags = "+tags.size());
+		System.out.println("Number of sentences = "+index);
 		
 	}
 	
