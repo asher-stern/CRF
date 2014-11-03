@@ -89,7 +89,12 @@ public class BrownCorpusReader implements PosTagCorpusReader
 	
 	private void initFiles()
 	{
-		try(BufferedReader catalogReader = new BufferedReader(new FileReader(CATALOG_FILE_NAME)))
+		File directory = new File(directoryName);
+		if (!directory.exists()) {throw new PosTaggerException("Directory "+directory.getAbsolutePath()+" does not exist.");}
+		if (!directory.isDirectory()) {throw new PosTaggerException("Directory "+directory.getAbsolutePath()+" is not a directory.");}
+
+		File catalogFile = new File(directory,CATALOG_FILE_NAME);
+		try(BufferedReader catalogReader = new BufferedReader(new FileReader(catalogFile)))
 		{
 			Set<String> fileNames = new LinkedHashSet<String>();
 			String line = catalogReader.readLine();
@@ -108,9 +113,6 @@ public class BrownCorpusReader implements PosTagCorpusReader
 				}
 				line = catalogReader.readLine();
 			}
-			File directory = new File(directoryName);
-			if (!directory.exists()) {throw new PosTaggerException("Directory "+directory.getAbsolutePath()+" does not exist.");}
-			if (!directory.isDirectory()) {throw new PosTaggerException("Directory "+directory.getAbsolutePath()+" is not a directory.");}
 			
 			files = directory.listFiles(new FileFilter()
 			{

@@ -17,6 +17,8 @@ public class BrownTaggedSentenceReader extends TaggedSentenceReader
 {
 	public static final String SEPARATOR = "/";
 	public static final String PUNC_TAG = "PUNC";
+	public static final char SUBTYPE_INDICATOR = '-';
+	public static final char SUBTYPE_INDICATOR2 = '+';
 
 	public BrownTaggedSentenceReader(String annotatedSentence)
 	{
@@ -50,6 +52,17 @@ public class BrownTaggedSentenceReader extends TaggedSentenceReader
 	
 	private String normalizeTag(String tag)
 	{
+		int subtypeIndex = tag.indexOf(SUBTYPE_INDICATOR);
+		if (subtypeIndex>0)
+		{
+			tag = tag.substring(0, subtypeIndex);
+		}
+		int subtype2Index = tag.indexOf(SUBTYPE_INDICATOR2);
+		if (subtype2Index>0)
+		{
+			tag = tag.substring(0, subtype2Index);
+		}
+		
 		boolean letterDetected = false;
 		for (char c : tag.toCharArray())
 		{

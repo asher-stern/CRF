@@ -69,6 +69,20 @@ public class TaggedToken
 	}
 
 
+	
+
+
+
+
+	@Override
+	public String toString()
+	{
+		return "TaggedToken [getToken()=" + getToken() + ", getTag()="
+				+ getTag() + "]";
+	}
+
+
+
 
 
 
