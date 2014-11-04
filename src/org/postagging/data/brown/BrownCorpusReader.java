@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.postagging.data.PosTagCorpusReader;
 import org.postagging.data.TaggedToken;
+import org.postagging.utilities.FileUtilities;
 import org.postagging.utilities.PosTaggerException;
 
 /**
@@ -122,6 +123,7 @@ public class BrownCorpusReader implements PosTagCorpusReader
 					return pathname.isFile() && fileNames.contains(pathname.getName());
 				}
 			});
+			files = FileUtilities.getSortedByName(files);
 			nextFileIndex = 0;
 		}
 		catch (IOException e)

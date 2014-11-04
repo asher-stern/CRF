@@ -4,9 +4,17 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.postagging.data.TaggedToken;
 import org.postagging.data.brown.BrownCorpusReader;
+import org.postagging.utilities.log4j.Log4jInit;
 
+/**
+ * 
+ * @author Asher Stern
+ * Date: Nov 3, 2014
+ *
+ */
 public class DemoReadBrownCorpus
 {
 	public static final int NUMBER_OF_SENTENCES = 10000;
@@ -15,6 +23,7 @@ public class DemoReadBrownCorpus
 	{
 		try
 		{
+			Log4jInit.init();
 			new DemoReadBrownCorpus(args[0]).go();
 		}
 		catch(Throwable t)
@@ -44,32 +53,33 @@ public class DemoReadBrownCorpus
 		{
 			List<TaggedToken> taggedSentence = reader.next();
 			++index;
+//			StringBuilder sb = new StringBuilder();
 			for (TaggedToken token : taggedSentence)
 			{
-//				System.out.print(token);
-//				System.out.print(" ");
-				
+//				sb.append(token).append(" ");
 				tags.add(token.getTag());
 			}
-//			System.out.println();
+//			logger.info(sb.toString());
 			if (0==index%10000)
 			{
-				System.out.println(index);
+				logger.info(index);
 			}
 		}
 		
-		System.out.println("Tags:");
+		logger.info("Tags:");
 		for (String tag : tags)
 		{
-			System.out.println(tag);
+			logger.info(tag);
 		}
-		System.out.println("Number of detected tags = "+tags.size());
-		System.out.println("Number of sentences = "+index);
+		logger.info("Number of detected tags = "+tags.size());
+		logger.info("Number of sentences = "+index);
 		
 	}
 	
 	private final String directoryName;
 	
 	private Set<String> tags = null;
+	
+	private static final Logger logger = Logger.getLogger(DemoReadBrownCorpus.class);
 
 }
