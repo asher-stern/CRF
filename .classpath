@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="var" path="LIB/apache-log4j-1.2.17/log4j-1.2.17.jar" sourcepath="/LIB/apache-log4j-1.2.17/src/main/java"/>
+	<classpathentry kind="var" path="LIB/lingpipe-4.1.0/lingpipe-4.1.0.jar" sourcepath="/LIB/lingpipe-4.1.0/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
