@@ -6,9 +6,9 @@ import org.postagging.data.PosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
 import org.postagging.data.TrainTestPosTagCorpus;
 import org.postagging.data.brown.BrownCorpusReader;
+import org.postagging.lingpipe.LingPipeWrapperPosTaggerTrainer;
 import org.postagging.postaggers.PosTagger;
 import org.postagging.postaggers.PosTaggerTrainer;
-import org.postagging.postaggers.majority.MajorityPosTaggerTrainer;
 import org.postagging.utilities.ExceptionUtil;
 import org.postagging.utilities.log4j.Log4jInit;
 
@@ -32,7 +32,9 @@ public class TrainAndEvaluate
 		Log4jInit.init(Level.DEBUG);
 		try
 		{
-			new TrainAndEvaluate(args[0],Integer.parseInt(args[1])).go();
+			int testSize = 0;
+			if (args.length>=3) {testSize = Integer.parseInt(args[2]);}
+			new TrainAndEvaluate(args[0],Integer.parseInt(args[1]),testSize).go();
 		}
 		catch(Throwable t)
 		{
@@ -44,11 +46,12 @@ public class TrainAndEvaluate
 	
 	
 	
-	public TrainAndEvaluate(String brownDirectory, int trainSize)
+	public TrainAndEvaluate(String brownDirectory, int trainSize, int testSize)
 	{
 		super();
 		this.brownDirectory = brownDirectory;
 		this.trainSize = trainSize;
+		this.testSize = testSize;
 	}
 
 
@@ -75,7 +78,7 @@ public class TrainAndEvaluate
 
 	private TrainTestPosTagCorpus createCorpus()
 	{
-		return new TrainTestPosTagCorpus(trainSize,
+		return new TrainTestPosTagCorpus(trainSize, testSize,
 				new PosTagCorpus()
 				{
 					@Override
@@ -89,12 +92,14 @@ public class TrainAndEvaluate
 
 	private PosTaggerTrainer createTrainer()
 	{
-		return new MajorityPosTaggerTrainer();
+		return new LingPipeWrapperPosTaggerTrainer();
+//		return new MajorityPosTaggerTrainer();
 	}
 	
 
 	private final String brownDirectory;
 	private final int trainSize;
+	private final int testSize;
 	
 	private static final Logger logger = Logger.getLogger(TrainAndEvaluate.class);
 }

@@ -17,6 +17,12 @@ import org.postagging.utilities.FileUtilities;
 import org.postagging.utilities.PosTaggerException;
 
 /**
+ * A reader for the Brown-corpus.
+ * 
+ * Reads from text files, where each files contains many (tagged) sentences.
+ * "cats.txt" is a text file which holds all the names of the text files with the tagged sentences.
+ * 
+ * Size of corpus = 57340. Half size = 28670
  * 
  * @author Asher Stern
  * Date: Nov 3, 2014

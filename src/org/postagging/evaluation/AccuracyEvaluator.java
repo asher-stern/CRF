@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.postagging.data.PosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
 import org.postagging.data.TaggedToken;
@@ -32,12 +33,16 @@ public class AccuracyEvaluator
 		accuracy = 0.0;
 		PosTagCorpusReader reader = corpus.createReader();
 		
+		int debug_index=0;
 		while (reader.hasNext())
 		{
 			List<TaggedToken> taggedSentence = reader.next();
+			++debug_index;
 			List<String> sentence = taggedSentenceToSentence(taggedSentence);
 			List<TaggedToken> taggedByPosTagger = posTagger.tagSentence(sentence);
 			evaluateSentence(taggedSentence,taggedByPosTagger);
+			
+			if (logger.isDebugEnabled()) {if ((debug_index%100)==0){logger.debug("Evaluated: "+debug_index);}}
 		}
 		
 		accuracy = ((double)correct)/((double)(correct+incorrect));
@@ -109,4 +114,6 @@ public class AccuracyEvaluator
 	private long correct = 0;
 	private long incorrect = 0;
 	private double accuracy = 0.0;
+	
+	private static final Logger logger = Logger.getLogger(AccuracyEvaluator.class);
 }

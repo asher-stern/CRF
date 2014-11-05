@@ -10,10 +10,17 @@ public class TrainTestPosTagCorpus
 {
 	public TrainTestPosTagCorpus(int trainSize, PosTagCorpus realCorpus)
 	{
+		this(trainSize,0,realCorpus);
+	}
+
+	public TrainTestPosTagCorpus(int trainSize, int testSize, PosTagCorpus realCorpus)
+	{
 		super();
 		this.trainSize = trainSize;
+		this.testSize = testSize;
 		this.realCorpus = realCorpus;
 	}
+
 
 
 	public PosTagCorpus createTrainCorpus()
@@ -38,28 +45,37 @@ public class TrainTestPosTagCorpus
 	
 	public PosTagCorpus createTestCorpus()
 	{
+		if ( (trainSize<=0) && (testSize<=0) ) return realCorpus;
+		
+		PosTagCorpusReader reader = realCorpus.createReader();
 		if (trainSize>0)
 		{
-			return new PosTagCorpus()
+			for (int i=0;(i<trainSize)&&(reader.hasNext());++i)
 			{
-				@Override
-				public PosTagCorpusReader createReader()
-				{
-					PosTagCorpusReader reader = realCorpus.createReader();
-					for (int i=0;(i<trainSize)&&(reader.hasNext());++i)
-					{
-						reader.next();
-					}
-					return reader;
-				}
-			};
+				reader.next();
+			}
 		}
-		else
+		
+		if (testSize>0)
 		{
-			return realCorpus;
+			reader = new LimitedSizePosTagCorpusReader(reader, testSize);
 		}
+		
+		final PosTagCorpusReader finalReader = reader;
+		
+		return new PosTagCorpus()
+		{
+			@Override
+			public PosTagCorpusReader createReader()
+			{
+				return finalReader;
+			}
+		};
+		
 	}
 
 	private final int trainSize;
+	private final int testSize;
 	private final PosTagCorpus realCorpus;
+	
 }
