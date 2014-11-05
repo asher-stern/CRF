@@ -46,10 +46,12 @@ public class LingPipeWrapperPosTaggerTrainer implements PosTaggerTrainer
         int priorBlockSize = 20;
         
         //double initialLearningRate = 0.05;
-        double initialLearningRate = 0.2;
+        double initialLearningRate = 0.8;
         //double learningRateDecay = 0.995;
+        //double learningRateDecay = 0.9;
         //AnnealingSchedule annealingSchedule = AnnealingSchedule.exponential(initialLearningRate, learningRateDecay);
-        AnnealingSchedule annealingSchedule = AnnealingSchedule.constant(initialLearningRate);
+        AnnealingSchedule annealingSchedule = AnnealingSchedule.inverse(initialLearningRate, 20.0);
+        //AnnealingSchedule annealingSchedule = AnnealingSchedule.constant(initialLearningRate);
         
         // double minImprovement = 0.00001; // if improvement is less than X, then stop (but run at list minEpochs epochs). I guess high value might save time.
         double minImprovement = 0.001;
