@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.postagging.data.PosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
 import org.postagging.data.TaggedToken;
 import org.postagging.postaggers.PosTagger;
@@ -22,7 +23,7 @@ public class MajorityPosTaggerTrainer implements PosTaggerTrainer
 {
 
 	@Override
-	public void train(PosTagCorpusReader corpus)
+	public void train(PosTagCorpus corpus)
 	{
 		processCorpus(corpus);
 		
@@ -82,16 +83,17 @@ public class MajorityPosTaggerTrainer implements PosTaggerTrainer
 		}
 	}
 	
-	private void processCorpus(PosTagCorpusReader corpus)
+	private void processCorpus(PosTagCorpus corpus)
 	{
 		majorityMapPerToken = new LinkedHashMap<String, Map<String,Integer>>();
 		majorityMapGeneralTag = new LinkedHashMap<String, Integer>();
+		PosTagCorpusReader reader = corpus.createReader();
 		
 		int index = 0;
-		while(corpus.hasNext())
+		while(reader.hasNext())
 		{
 			++index;
-			List<TaggedToken> sentence = corpus.next();
+			List<TaggedToken> sentence = reader.next();
 			processSentence(sentence);
 			if (logger.isDebugEnabled()) {if (0==(index%10000)){logger.debug("Already processed: "+index+" sentences.");} }
 		}

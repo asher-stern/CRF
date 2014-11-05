@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.postagging.data.PosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
 import org.postagging.data.TaggedToken;
 import org.postagging.postaggers.PosTagger;
@@ -17,7 +18,7 @@ import org.postagging.utilities.PosTaggerException;
  */
 public class AccuracyEvaluator
 {
-	public AccuracyEvaluator(PosTagCorpusReader corpus, PosTagger posTagger)
+	public AccuracyEvaluator(PosTagCorpus corpus, PosTagger posTagger)
 	{
 		super();
 		this.corpus = corpus;
@@ -29,10 +30,11 @@ public class AccuracyEvaluator
 		correct = 0;
 		incorrect = 0;
 		accuracy = 0.0;
+		PosTagCorpusReader reader = corpus.createReader();
 		
-		while (corpus.hasNext())
+		while (reader.hasNext())
 		{
-			List<TaggedToken> taggedSentence = corpus.next();
+			List<TaggedToken> taggedSentence = reader.next();
 			List<String> sentence = taggedSentenceToSentence(taggedSentence);
 			List<TaggedToken> taggedByPosTagger = posTagger.tagSentence(sentence);
 			evaluateSentence(taggedSentence,taggedByPosTagger);
@@ -101,7 +103,7 @@ public class AccuracyEvaluator
 	}
 
 	
-	private final PosTagCorpusReader corpus;
+	private final PosTagCorpus corpus;
 	private final PosTagger posTagger;
 	
 	private long correct = 0;

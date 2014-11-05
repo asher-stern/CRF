@@ -2,7 +2,7 @@ package org.postagging.postaggers;
 
 import java.io.File;
 
-import org.postagging.data.PosTagCorpusReader;
+import org.postagging.data.PosTagCorpus;
 
 /**
  * 
@@ -12,7 +12,7 @@ import org.postagging.data.PosTagCorpusReader;
  */
 public interface PosTaggerTrainer
 {
-	public void train(PosTagCorpusReader corpus);
+	public void train(PosTagCorpus corpus);
 	
 	public PosTagger getTrainedPosTagger();
 	

@@ -2,8 +2,9 @@ package org.postagging.evaluation;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.postagging.data.LimitedSizePosTagCorpusReader;
+import org.postagging.data.PosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
+import org.postagging.data.TrainTestPosTagCorpus;
 import org.postagging.data.brown.BrownCorpusReader;
 import org.postagging.postaggers.PosTagger;
 import org.postagging.postaggers.PosTaggerTrainer;
@@ -56,28 +57,15 @@ public class TrainAndEvaluate
 
 	public void go()
 	{
-		PosTagCorpusReader corpus = createCorpus();
-		PosTagCorpusReader trainCorpus = null;
-		if (trainSize>0)
-		{
-			trainCorpus = new LimitedSizePosTagCorpusReader(corpus, trainSize);
-		}
-		else
-		{
-			trainCorpus = corpus;
-		}
+		TrainTestPosTagCorpus corpus = createCorpus();
 		logger.info("Training...");
 		PosTaggerTrainer trainer = createTrainer();
-		trainer.train(trainCorpus);
+		trainer.train(corpus.createTrainCorpus());
 		PosTagger posTagger = trainer.getTrainedPosTagger();
 		logger.info("Training - done.");
 		
 		logger.info("Evaluating...");
-		if (trainSize<=0)
-		{
-			corpus = createCorpus();
-		}
-		AccuracyEvaluator evaluator = new AccuracyEvaluator(corpus, posTagger);
+		AccuracyEvaluator evaluator = new AccuracyEvaluator(corpus.createTestCorpus(), posTagger);
 		evaluator.evaluate();
 		logger.info("Accuracy = " + String.format("%-3.3f", evaluator.getAccuracy()));
 		logger.info("Correct = "+evaluator.getCorrect());
@@ -85,9 +73,18 @@ public class TrainAndEvaluate
 	}
 	
 
-	private PosTagCorpusReader createCorpus()
+	private TrainTestPosTagCorpus createCorpus()
 	{
-		return new BrownCorpusReader(brownDirectory);
+		return new TrainTestPosTagCorpus(trainSize,
+				new PosTagCorpus()
+				{
+					@Override
+					public PosTagCorpusReader createReader()
+					{
+						return new BrownCorpusReader(brownDirectory);
+					}
+				}
+		);
 	}
 
 	private PosTaggerTrainer createTrainer()
