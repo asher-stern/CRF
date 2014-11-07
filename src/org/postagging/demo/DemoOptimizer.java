@@ -2,7 +2,7 @@ package org.postagging.demo;
 
 import org.apache.log4j.Level;
 import org.postagging.function.DerivableFunction;
-import org.postagging.function.optimization.GradientDescentOptimizer;
+import org.postagging.function.optimization.LbfgsMinimizer;
 import org.postagging.function.optimization.Optimizer;
 import org.postagging.utilities.StringUtilities;
 import org.postagging.utilities.log4j.Log4jInit;
@@ -34,7 +34,8 @@ public class DemoOptimizer
 	public void go()
 	{
 		DerivableFunction function = createFunction();
-		Optimizer<?> optimizer = new GradientDescentOptimizer(function);
+		//Optimizer<?> optimizer = new GradientDescentOptimizer(function);
+		Optimizer<?> optimizer = new LbfgsMinimizer(function);
 		optimizer.find();
 		
 		System.out.println("point = "+StringUtilities.arrayToString(optimizer.getPoint()));

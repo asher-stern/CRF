@@ -18,7 +18,7 @@ import org.postagging.utilities.VectorUtilities;
 public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 {
 	public static final int DEFAULT_NUMBER_OF_PREVIOUS_ITERATIONS_TO_MEMORIZE = 20;
-	public static final double DEFAULT_CONVERGENCE = 0.01;
+	public static final double DEFAULT_CONVERGENCE = 0.001;
 
 	public LbfgsMinimizer(DerivableFunction function)
 	{
@@ -43,6 +43,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		value = function.value(point);
 		double[] gradient = function.gradient(point);
 		double previousValue = value;
+		int debug_iterationIndex=0;
 		do
 		{
 			previousValue = value;
@@ -62,7 +63,9 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			}
 			if (previousItrations.size()>numberOfPreviousIterationsToMemorize) {throw new PosTaggerException("BUG");}
 			
-			if (previousValue>value) {logger.warn("LBFGS: previous value > value");}
+			if (value>previousValue) {logger.warn("LBFGS: value > previous value");}
+			++debug_iterationIndex;
+			if (logger.isDebugEnabled()) {logger.debug("LBFGS iteration: "+debug_iterationIndex);}
 		}
 		while(Math.abs(previousValue-value)>convergence);
 		
