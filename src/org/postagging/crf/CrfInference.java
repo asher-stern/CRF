@@ -10,7 +10,19 @@ import java.util.List;
  * @param <K>
  * @param <G>
  */
-public interface CrfInference<K,G>
+public abstract class CrfInference<K,G>
 {
-	public List<G> inferBestTagSequence(CrfModel<K, G> model, List<CrfTaggedToken<K, G>> sentence);
+	public CrfInference(CrfModel<K, G> model, K[] sentence)
+	{
+		this.model = model;
+		this.sentence = sentence;
+		
+	}
+	
+	public abstract G[] inferBestTagSequence();
+	
+	
+	
+	protected final CrfModel<K, G> model;
+	protected final K[] sentence;
 }

@@ -13,8 +13,7 @@ import java.util.Set;
  */
 public class CrfModel<K,G> // K = token, G = tag
 {
-	public CrfModel(Set<G> tags, ArrayList<CrfFeature<K, G>> features,
-			ArrayList<Double> parameters)
+	public CrfModel(Set<G> tags, ArrayList<CrfFeature<K, G>> features, ArrayList<Double> parameters)
 	{
 		super();
 		this.tags = tags;
