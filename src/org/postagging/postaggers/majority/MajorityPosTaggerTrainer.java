@@ -19,7 +19,7 @@ import org.postagging.utilities.PosTaggerException;
  * Date: Nov 4, 2014
  *
  */
-public class MajorityPosTaggerTrainer implements PosTaggerTrainer
+public class MajorityPosTaggerTrainer implements PosTaggerTrainer<PosTagCorpus>
 {
 
 	@Override

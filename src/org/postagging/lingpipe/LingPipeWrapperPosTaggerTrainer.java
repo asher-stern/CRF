@@ -3,7 +3,7 @@ package org.postagging.lingpipe;
 import java.io.File;
 import java.io.IOException;
 
-import org.postagging.data.PosTagCorpus;
+import org.postagging.data.InMemoryPosTagCorpus;
 import org.postagging.postaggers.PosTagger;
 import org.postagging.postaggers.PosTaggerTrainer;
 import org.postagging.utilities.PosTaggerException;
@@ -25,11 +25,11 @@ import com.aliasi.tag.Tagging;
  * Date: Nov 5, 2014
  *
  */
-public class LingPipeWrapperPosTaggerTrainer implements PosTaggerTrainer
+public class LingPipeWrapperPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpus>
 {
 
 	@Override
-	public void train(PosTagCorpus corpus)
+	public void train(InMemoryPosTagCorpus corpus)
 	{
 		LingPipeCorpusCreator corpusCreator = new LingPipeCorpusCreator();
 		Corpus<ObjectHandler<Tagging<String>>> lingPipeCorpus = corpusCreator.createTrainCorpus(corpus);

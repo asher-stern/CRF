@@ -2,14 +2,16 @@ package org.postagging.evaluation;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.postagging.data.InMemoryPosTagCorpus;
+import org.postagging.data.InMemoryPosTagCorpusImplementation;
 import org.postagging.data.PosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
 import org.postagging.data.TrainTestPosTagCorpus;
 import org.postagging.data.brown.BrownCorpusReader;
 import org.postagging.lingpipe.LingPipeWrapperPosTaggerTrainer;
 import org.postagging.postaggers.PosTagger;
-import org.postagging.postaggers.PosTaggerTrainer;
 import org.postagging.utilities.ExceptionUtil;
+import org.postagging.utilities.RuntimeUtilities;
 import org.postagging.utilities.log4j.Log4jInit;
 
 /**
@@ -62,10 +64,9 @@ public class TrainAndEvaluate
 	{
 		TrainTestPosTagCorpus corpus = createCorpus();
 		logger.info("Training...");
-		PosTaggerTrainer trainer = createTrainer();
-		trainer.train(corpus.createTrainCorpus());
-		PosTagger posTagger = trainer.getTrainedPosTagger();
+		PosTagger posTagger = train(corpus.createTrainCorpus());
 		logger.info("Training - done.");
+		logger.info(RuntimeUtilities.getUsedMemory());
 		
 		logger.info("Evaluating...");
 		AccuracyEvaluator evaluator = new AccuracyEvaluator(corpus.createTestCorpus(), posTagger);
@@ -90,10 +91,14 @@ public class TrainAndEvaluate
 		);
 	}
 
-	private PosTaggerTrainer createTrainer()
+	
+	private PosTagger train(PosTagCorpus corpus)
 	{
-		return new LingPipeWrapperPosTaggerTrainer();
-//		return new MajorityPosTaggerTrainer();
+		LingPipeWrapperPosTaggerTrainer trainer = new LingPipeWrapperPosTaggerTrainer();
+		InMemoryPosTagCorpus inMemoryCorpus = new InMemoryPosTagCorpusImplementation(corpus);
+		trainer.train(inMemoryCorpus);
+		PosTagger posTagger = trainer.getTrainedPosTagger();
+		return posTagger;
 	}
 	
 
