@@ -51,7 +51,7 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 				G tagOfPreviousWithMaxValue = null;
 				for (G tagOfPrevious : tagsOfPrevious)
 				{
-					double crfFormulaValue = CrfFormula.oneTokenFormula(model,sentence,index,tag,tagOfPrevious);
+					double crfFormulaValue = CrfUtilities.oneTokenFormula(model,sentence,index,tag,tagOfPrevious);
 					double valueByPrevious = crfFormulaValue;
 					if (index>0)
 					{

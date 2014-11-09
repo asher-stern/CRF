@@ -76,7 +76,7 @@ public class CrfForwardBackward<K,G>
 				double sumOverPreviousTags = 0.0;
 				for (G previousTag : previousTags)
 				{
-					double valueForPreviousTag = CrfFormula.oneTokenFormula(model,sentence,index,tag,previousTag);
+					double valueForPreviousTag = CrfUtilities.oneTokenFormula(model,sentence,index,tag,previousTag);
 					if (index>0)
 					{
 						double previousAlphaValue = alpha_forward[index-1].get(previousTag);
@@ -120,7 +120,7 @@ public class CrfForwardBackward<K,G>
 				double sum = 0.0;
 				for (G nextTag : beta_backward.get(index+1).keySet())
 				{
-					double valueCurrentTokenCrfFormula = CrfFormula.oneTokenFormula(model,sentence,index+1,nextTag,tag);
+					double valueCurrentTokenCrfFormula = CrfUtilities.oneTokenFormula(model,sentence,index+1,nextTag,tag);
 					double valueForNextTag = valueCurrentTokenCrfFormula*beta_backward.get(index+1).get(nextTag);
 					sum += valueForNextTag;
 				}

@@ -1,6 +1,5 @@
 package org.postagging.crf;
 
-import java.util.List;
 
 /**
  * 

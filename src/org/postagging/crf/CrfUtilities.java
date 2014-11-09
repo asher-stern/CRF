@@ -1,10 +1,18 @@
 package org.postagging.crf;
 
+import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.List;
 
 import org.postagging.utilities.PosTaggerException;
 
-public class CrfFormula
+/**
+ * 
+ * @author Asher Stern
+ * Date: Nov 8, 2014
+ *
+ */
+public class CrfUtilities
 {
 	public static <K,G> double oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
 	{
@@ -25,6 +33,15 @@ public class CrfFormula
 		
 		if (!debug_activeFeatureDetected) {throw new PosTaggerException("Bug: no active feature detected for the given token. Token-index = "+tokenIndex);}
 		return Math.exp(sum);
+	}
+	
+	public static <K> K[] extractSentence(List<? extends CrfTaggedToken<K, ?>> sentence)
+	{
+		if (sentence==null) throw new PosTaggerException("The input is an empty sentence.");
+		if (sentence.size()<1) throw new PosTaggerException("The input is an empty sentence.");
+		@SuppressWarnings("unchecked")
+		K[] ret = (K[]) Array.newInstance(sentence.iterator().next().getToken().getClass(), sentence.size());
+		return ret;
 	}
 
 }
