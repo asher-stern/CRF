@@ -9,7 +9,10 @@ import org.postagging.function.DerivableFunction;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
 
+import static org.postagging.crf.CrfUtilities.safeAdd;
+
 /**
+ * This function is CONCAVE, not convex!!!
  * 
  * @author Asher Stern
  * Date: Nov 9, 2014
@@ -24,9 +27,26 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	{
 		CrfModel<K, G> model = createModel(point);
 		
-
-		
+		return calculateSumWeightedFeatures(model) - calculateSumOfLogNormalizations(model) - calculateRegularizationFactor(point);
 	}
+	
+
+	@Override
+	public double[] gradient(double[] point)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public int size()
+	{
+		return features.size();
+	}
+
+	
+	
 	
 	private double calculateSumWeightedFeatures(CrfModel<K, G> model)
 	{
@@ -47,9 +67,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 					double featureValue = feature.value(sentenceAsArray,tokenIndex,taggedToken.getTag(),previousTag);
 					double weightedFeature = parameter*featureValue;
 					
-					double debug_old = sumWeightedFeatures;
-					sumWeightedFeatures += weightedFeature;
-					if ( ( (debug_old>sumWeightedFeatures)&&(weightedFeature>0.0) ) || ( (debug_old<sumWeightedFeatures)&&(weightedFeature<0.0) ) ) {throw new PosTaggerException("Error: seems like a limitation of the \"double\" type.");}
+					sumWeightedFeatures = safeAdd(sumWeightedFeatures, weightedFeature);
 				}
 				if (parameterIterator.hasNext()||featureIterator.hasNext()) {throw new PosTaggerException("BUG");}
 				
@@ -61,20 +79,28 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		
 		return sumWeightedFeatures;
 	}
-
-	@Override
-	public double[] gradient(double[] point)
+	
+	private double calculateSumOfLogNormalizations(CrfModel<K, G> model)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		double sum = 0.0;
+		for (List<? extends TaggedToken<K, G> > sentence : corpus)
+		{
+			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
+			CrfForwardBackward<K, G> forwardBackward = new CrfForwardBackward<K, G>(model,sentenceAsArray);
+			forwardBackward.calculateForwardAndBackward();
+			
+			double normalizationFactor = forwardBackward.getCalculatedNormalizationFactor();
+			double logNormalizationFactor = Math.log(normalizationFactor);
+			sum = safeAdd(sum, logNormalizationFactor);
+		}
+		return sum;
+	}
+	
+	private double calculateRegularizationFactor(double[] parameters)
+	{
+		return normSquare(parameters)/(2*sigmaSquare_inverseRegularizationFactor);
 	}
 
-
-	@Override
-	public int size()
-	{
-		return features.size();
-	}
 	
 	private CrfModel<K, G> createModel(double[] point)
 	{
@@ -92,9 +118,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		double ret = 0.0;
 		for (double component : vector)
 		{
-			double debug_old = ret;
-			ret += component*component;
-			if (debug_old>ret) {throw new PosTaggerException("Cannot calculate norm square due to a limitation of the \"double\" type.");}
+			ret = safeAdd(ret, component*component);
 		}
 		return ret;
 	}

@@ -44,5 +44,18 @@ public class CrfUtilities
 		K[] ret = (K[]) Array.newInstance(sentence.iterator().next().getToken().getClass(), sentence.size());
 		return ret;
 	}
+	
+	
+	public static double safeAdd(double variable, final double valueToAdd)
+	{
+		final double oldValue = variable;
+		variable += valueToAdd;
+		if ( ( (valueToAdd<0.0) && (oldValue<variable) ) || ( (valueToAdd>0.0) && (oldValue>variable) ) )
+		{
+			throw new PosTaggerException("Error: adding value to \"double\" variable yielded unexpected results. This seems like a limitation of double."
+					+ "variable was: "+String.format("%-3.3", oldValue)+", value to add was: "+String.format("%-3.3f", valueToAdd));
+		}
+		return variable;
+	}
 
 }
