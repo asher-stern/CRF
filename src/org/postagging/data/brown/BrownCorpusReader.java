@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.postagging.data.PosTagCorpusReader;
-import org.postagging.data.TaggedToken;
+import org.postagging.data.StringTaggedToken;
 import org.postagging.utilities.FileUtilities;
 import org.postagging.utilities.PosTaggerException;
 
@@ -28,7 +28,7 @@ import org.postagging.utilities.PosTaggerException;
  * Date: Nov 3, 2014
  *
  */
-public class BrownCorpusReader implements PosTagCorpusReader
+public class BrownCorpusReader implements PosTagCorpusReader<String,String>
 {
 	public static final String CATALOG_FILE_NAME = "cats.txt";
 
@@ -47,9 +47,9 @@ public class BrownCorpusReader implements PosTagCorpusReader
 	}
 
 	@Override
-	public List<TaggedToken> next()
+	public List<StringTaggedToken> next()
 	{
-		List<TaggedToken> ret = null;
+		List<StringTaggedToken> ret = null;
 		if (thereIsNext)
 		{
 			String sentence = sentencesIterator.next();

@@ -1,4 +1,4 @@
-package org.postagging.crf;
+package org.postagging.utilities;
 
 /**
  * 
@@ -8,9 +8,9 @@ package org.postagging.crf;
  * @param <K>
  * @param <G>
  */
-public class CrfTaggedToken<K,G>
+public class TaggedToken<K,G>
 {
-	public CrfTaggedToken(K token, G tag)
+	public TaggedToken(K token, G tag)
 	{
 		super();
 		this.token = token;
@@ -64,7 +64,7 @@ public class CrfTaggedToken<K,G>
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CrfTaggedToken<?,?> other = (CrfTaggedToken<?,?>) obj;
+		TaggedToken<?,?> other = (TaggedToken<?,?>) obj;
 		if (tag == null)
 		{
 			if (other.tag != null)

@@ -3,15 +3,17 @@ package org.postagging.data;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.postagging.utilities.TaggedToken;
+
 /**
  * 
  * @author Asher Stern
  * Date: Nov 4, 2014
  *
  */
-public class LimitedSizePosTagCorpusReader implements PosTagCorpusReader
+public class LimitedSizePosTagCorpusReader<K,G> implements PosTagCorpusReader<K,G>
 {
-	public LimitedSizePosTagCorpusReader(PosTagCorpusReader realCorpus, int size)
+	public LimitedSizePosTagCorpusReader(PosTagCorpusReader<K,G> realCorpus, int size)
 	{
 		super();
 		this.realCorpus = realCorpus;
@@ -25,7 +27,7 @@ public class LimitedSizePosTagCorpusReader implements PosTagCorpusReader
 	}
 
 	@Override
-	public List<TaggedToken> next()
+	public List<? extends TaggedToken<K, G> > next()
 	{
 		if (index<size)
 		{
@@ -36,7 +38,7 @@ public class LimitedSizePosTagCorpusReader implements PosTagCorpusReader
 	}
 
 	
-	private final PosTagCorpusReader realCorpus;
+	private final PosTagCorpusReader<K,G> realCorpus;
 	private final int size;
 	
 	private int index=0;

@@ -17,7 +17,7 @@ public abstract class TaggedSentenceReader
 		this.annotatedSentence = annotatedSentence;
 	}
 
-	public abstract List<TaggedToken> read();
+	public abstract List<StringTaggedToken> read();
 	
 	protected final String annotatedSentence;
 }

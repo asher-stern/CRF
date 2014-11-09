@@ -25,11 +25,11 @@ import com.aliasi.tag.Tagging;
  * Date: Nov 5, 2014
  *
  */
-public class LingPipeWrapperPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpus>
+public class LingPipeWrapperPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpus<String,String>>
 {
 
 	@Override
-	public void train(InMemoryPosTagCorpus corpus)
+	public void train(InMemoryPosTagCorpus<String,String> corpus)
 	{
 		LingPipeCorpusCreator corpusCreator = new LingPipeCorpusCreator();
 		Corpus<ObjectHandler<Tagging<String>>> lingPipeCorpus = corpusCreator.createTrainCorpus(corpus);

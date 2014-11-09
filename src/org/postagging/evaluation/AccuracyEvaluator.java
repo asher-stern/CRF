@@ -7,8 +7,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.postagging.data.PosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
-import org.postagging.data.TaggedToken;
+import org.postagging.data.StringTaggedToken;
 import org.postagging.postaggers.PosTagger;
+import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
 /**
@@ -19,7 +20,7 @@ import org.postagging.utilities.PosTaggerException;
  */
 public class AccuracyEvaluator
 {
-	public AccuracyEvaluator(PosTagCorpus corpus, PosTagger posTagger)
+	public AccuracyEvaluator(PosTagCorpus<String,String> corpus, PosTagger posTagger)
 	{
 		super();
 		this.corpus = corpus;
@@ -31,15 +32,15 @@ public class AccuracyEvaluator
 		correct = 0;
 		incorrect = 0;
 		accuracy = 0.0;
-		PosTagCorpusReader reader = corpus.createReader();
+		PosTagCorpusReader<String,String> reader = corpus.iterator();
 		
 		int debug_index=0;
 		while (reader.hasNext())
 		{
-			List<TaggedToken> taggedSentence = reader.next();
+			List<? extends TaggedToken<String, String>> taggedSentence = reader.next();
 			++debug_index;
 			List<String> sentence = taggedSentenceToSentence(taggedSentence);
-			List<TaggedToken> taggedByPosTagger = posTagger.tagSentence(sentence);
+			List<StringTaggedToken> taggedByPosTagger = posTagger.tagSentence(sentence);
 			evaluateSentence(taggedSentence,taggedByPosTagger);
 			
 			if (logger.isDebugEnabled()) {if ((debug_index%100)==0){logger.debug("Evaluated: "+debug_index);}}
@@ -66,14 +67,14 @@ public class AccuracyEvaluator
 	
 	
 	
-	private void evaluateSentence(List<TaggedToken> taggedSentence, List<TaggedToken> taggedByPosTagger)
+	private void evaluateSentence(List<? extends TaggedToken<String,String>> taggedSentence, List<StringTaggedToken> taggedByPosTagger)
 	{
-		Iterator<TaggedToken> iteratorTaggedOriginal = taggedSentence.iterator();
-		Iterator<TaggedToken> iteratorTaggedByPosTagger = taggedByPosTagger.iterator();
+		Iterator<? extends TaggedToken<String,String>> iteratorTaggedOriginal = taggedSentence.iterator();
+		Iterator<? extends TaggedToken<String,String>> iteratorTaggedByPosTagger = taggedByPosTagger.iterator();
 		while (iteratorTaggedOriginal.hasNext() && iteratorTaggedByPosTagger.hasNext())
 		{
-			TaggedToken original = iteratorTaggedOriginal.next();
-			TaggedToken byPosTagger = iteratorTaggedByPosTagger.next();
+			TaggedToken<String,String> original = iteratorTaggedOriginal.next();
+			TaggedToken<String,String> byPosTagger = iteratorTaggedByPosTagger.next();
 			if (!(equals(original.getToken(),byPosTagger.getToken()))) {throw new PosTaggerException("Tokens not equal in evaluation.");}
 			if (equals(original.getTag(),byPosTagger.getTag()))
 			{
@@ -90,10 +91,10 @@ public class AccuracyEvaluator
 		}
 	}
 	
-	private List<String> taggedSentenceToSentence(List<TaggedToken> taggedSentence)
+	private List<String> taggedSentenceToSentence(List<? extends TaggedToken<String, String>> taggedSentence)
 	{
 		List<String> ret = new ArrayList<String>(taggedSentence.size());
-		for (TaggedToken token : taggedSentence)
+		for (TaggedToken<String, String> token : taggedSentence)
 		{
 			ret.add(token.getToken());
 		}
@@ -108,7 +109,7 @@ public class AccuracyEvaluator
 	}
 
 	
-	private final PosTagCorpus corpus;
+	private final PosTagCorpus<String,String> corpus;
 	private final PosTagger posTagger;
 	
 	private long correct = 0;

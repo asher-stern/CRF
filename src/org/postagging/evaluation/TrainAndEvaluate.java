@@ -62,7 +62,7 @@ public class TrainAndEvaluate
 
 	public void go()
 	{
-		TrainTestPosTagCorpus corpus = createCorpus();
+		TrainTestPosTagCorpus<String,String> corpus = createCorpus();
 		logger.info("Training...");
 		PosTagger posTagger = train(corpus.createTrainCorpus());
 		logger.info("Training - done.");
@@ -77,13 +77,13 @@ public class TrainAndEvaluate
 	}
 	
 
-	private TrainTestPosTagCorpus createCorpus()
+	private TrainTestPosTagCorpus<String,String> createCorpus()
 	{
-		return new TrainTestPosTagCorpus(trainSize, testSize,
-				new PosTagCorpus()
+		return new TrainTestPosTagCorpus<String,String>(trainSize, testSize,
+				new PosTagCorpus<String,String>()
 				{
 					@Override
-					public PosTagCorpusReader createReader()
+					public PosTagCorpusReader<String,String> iterator()
 					{
 						return new BrownCorpusReader(brownDirectory);
 					}
@@ -92,10 +92,10 @@ public class TrainAndEvaluate
 	}
 
 	
-	private PosTagger train(PosTagCorpus corpus)
+	private PosTagger train(PosTagCorpus<String,String> corpus)
 	{
 		LingPipeWrapperPosTaggerTrainer trainer = new LingPipeWrapperPosTaggerTrainer();
-		InMemoryPosTagCorpus inMemoryCorpus = new InMemoryPosTagCorpusImplementation(corpus);
+		InMemoryPosTagCorpus<String,String> inMemoryCorpus = new InMemoryPosTagCorpusImplementation<String,String>(corpus);
 		trainer.train(inMemoryCorpus);
 		PosTagger posTagger = trainer.getTrainedPosTagger();
 		return posTagger;

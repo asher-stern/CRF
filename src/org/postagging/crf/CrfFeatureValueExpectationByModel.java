@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
 /**
@@ -18,7 +19,7 @@ import org.postagging.utilities.PosTaggerException;
 public class CrfFeatureValueExpectationByModel<K, G>
 {
 	public CrfFeatureValueExpectationByModel(
-			Iterator<? extends List<? extends CrfTaggedToken<K, G>>> corpusIterator,
+			Iterator<? extends List<? extends TaggedToken<K, G>>> corpusIterator,
 			CrfModel<K, G> model)
 	{
 		super();
@@ -34,7 +35,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 		for (int i=0;i<featureValueExpectation.length;++i) {featureValueExpectation[i]=0.0;}
 		while (corpusIterator.hasNext())
 		{
-			List<? extends CrfTaggedToken<K, G>> sentence = corpusIterator.next();
+			List<? extends TaggedToken<K, G>> sentence = corpusIterator.next();
 			addValueForSentence(sentence);
 		}
 	}
@@ -47,7 +48,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 
 
 
-	private void addValueForSentence(List<? extends CrfTaggedToken<K, G>> sentence)
+	private void addValueForSentence(List<? extends TaggedToken<K, G>> sentence)
 	{
 		K[] sentenceTokens = CrfUtilities.extractSentence(sentence);
 		CrfForwardBackward<K,G> forwardBackward = new CrfForwardBackward<K,G>(model,sentenceTokens);
@@ -90,7 +91,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	
 	
 
-	private final Iterator<? extends List<? extends CrfTaggedToken<K, G>>> corpusIterator;
+	private final Iterator<? extends List<? extends TaggedToken<K, G>>> corpusIterator;
 	private final CrfModel<K, G> model;
 	
 	private double[] featureValueExpectation;

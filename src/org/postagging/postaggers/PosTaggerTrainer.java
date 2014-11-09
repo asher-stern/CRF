@@ -10,7 +10,7 @@ import org.postagging.data.PosTagCorpus;
  * Date: Nov 4, 2014
  *
  */
-public interface PosTaggerTrainer<C extends PosTagCorpus>
+public interface PosTaggerTrainer<C extends PosTagCorpus<String,String>>
 {
 	public void train(C corpus);
 	

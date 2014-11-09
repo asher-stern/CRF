@@ -2,7 +2,7 @@ package org.postagging.postaggers;
 
 import java.util.List;
 
-import org.postagging.data.TaggedToken;
+import org.postagging.data.StringTaggedToken;
 
 /**
  * 
@@ -12,5 +12,5 @@ import org.postagging.data.TaggedToken;
  */
 public interface PosTagger
 {
-	public List<TaggedToken> tagSentence(List<String> sentence);
+	public List<StringTaggedToken> tagSentence(List<String> sentence);
 }

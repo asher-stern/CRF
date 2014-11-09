@@ -8,9 +8,9 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.postagging.data.PosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
-import org.postagging.data.TaggedToken;
 import org.postagging.postaggers.PosTagger;
 import org.postagging.postaggers.PosTaggerTrainer;
+import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
 /**
@@ -19,11 +19,11 @@ import org.postagging.utilities.PosTaggerException;
  * Date: Nov 4, 2014
  *
  */
-public class MajorityPosTaggerTrainer implements PosTaggerTrainer<PosTagCorpus>
+public class MajorityPosTaggerTrainer implements PosTaggerTrainer<PosTagCorpus<String,String>>
 {
 
 	@Override
-	public void train(PosTagCorpus corpus)
+	public void train(PosTagCorpus<String,String> corpus)
 	{
 		processCorpus(corpus);
 		
@@ -75,25 +75,25 @@ public class MajorityPosTaggerTrainer implements PosTaggerTrainer<PosTagCorpus>
 	}
 	
 	
-	private void processSentence(List<TaggedToken> sentence)
+	private void processSentence(List<? extends TaggedToken<String, String>> sentence)
 	{
-		for (TaggedToken token : sentence)
+		for (TaggedToken<String, String> token : sentence)
 		{
 			addToMaps(token.getToken(),token.getTag());
 		}
 	}
 	
-	private void processCorpus(PosTagCorpus corpus)
+	private void processCorpus(PosTagCorpus<String,String> corpus)
 	{
 		majorityMapPerToken = new LinkedHashMap<String, Map<String,Integer>>();
 		majorityMapGeneralTag = new LinkedHashMap<String, Integer>();
-		PosTagCorpusReader reader = corpus.createReader();
+		PosTagCorpusReader<String,String> reader = corpus.iterator();
 		
 		int index = 0;
 		while(reader.hasNext())
 		{
 			++index;
-			List<TaggedToken> sentence = reader.next();
+			List<? extends TaggedToken<String, String>> sentence = reader.next();
 			processSentence(sentence);
 			if (logger.isDebugEnabled()) {if (0==(index%10000)){logger.debug("Already processed: "+index+" sentences.");} }
 		}

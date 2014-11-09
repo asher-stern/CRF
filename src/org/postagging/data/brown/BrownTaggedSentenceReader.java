@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.postagging.data.TaggedSentenceReader;
-import org.postagging.data.TaggedToken;
+import org.postagging.data.StringTaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
 /**
@@ -126,10 +126,10 @@ public class BrownTaggedSentenceReader extends TaggedSentenceReader
 	}
 
 	@Override
-	public List<TaggedToken> read()
+	public List<StringTaggedToken> read()
 	{
 		String[] tokens = annotatedSentence.split("\\s+");
-		List<TaggedToken> ret = new ArrayList<TaggedToken>(tokens.length);
+		List<StringTaggedToken> ret = new ArrayList<StringTaggedToken>(tokens.length);
 		
 		for (String token : tokens)
 		{
@@ -143,7 +143,7 @@ public class BrownTaggedSentenceReader extends TaggedSentenceReader
 					tag = normalizeTag(tag);
 					if (tag!=null)
 					{
-						ret.add(new TaggedToken(tokenWord, tag));
+						ret.add(new StringTaggedToken(tokenWord, tag));
 					}
 				}
 			}

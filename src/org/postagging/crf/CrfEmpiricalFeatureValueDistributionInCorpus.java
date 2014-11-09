@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
 
@@ -18,7 +19,7 @@ import org.postagging.utilities.PosTaggerException;
 public class CrfEmpiricalFeatureValueDistributionInCorpus<K,G>
 {
 	public CrfEmpiricalFeatureValueDistributionInCorpus(
-			Iterator<? extends List<? extends CrfTaggedToken<K, G>>> corpusIterator,
+			Iterator<? extends List<? extends TaggedToken<K, G>>> corpusIterator,
 			ArrayList<CrfFeature<K, G>> features)
 	{
 		super();
@@ -35,11 +36,11 @@ public class CrfEmpiricalFeatureValueDistributionInCorpus<K,G>
 		
 		while (corpusIterator.hasNext())
 		{
-			List<? extends CrfTaggedToken<K, G>> sentence = corpusIterator.next();
+			List<? extends TaggedToken<K, G>> sentence = corpusIterator.next();
 			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
 			int tokenIndex=0;
 			G previousTag = null;
-			for (CrfTaggedToken<K, G> token : sentence)
+			for (TaggedToken<K, G> token : sentence)
 			{
 				Iterator<CrfFeature<K, G>> featureIterator = features.iterator();
 				for (int featureIndex=0;featureIndex<empiricalFeatureValue.length;++featureIndex)
@@ -69,7 +70,7 @@ public class CrfEmpiricalFeatureValueDistributionInCorpus<K,G>
 
 
 
-	private final Iterator<? extends List<? extends CrfTaggedToken<K, G>>> corpusIterator;
+	private final Iterator<? extends List<? extends TaggedToken<K, G>>> corpusIterator;
 	private final ArrayList<CrfFeature<K, G>> features;
 
 	private double[] empiricalFeatureValue = null;

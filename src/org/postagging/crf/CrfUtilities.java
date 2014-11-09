@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.List;
 
+import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
 /**
@@ -35,7 +36,7 @@ public class CrfUtilities
 		return Math.exp(sum);
 	}
 	
-	public static <K> K[] extractSentence(List<? extends CrfTaggedToken<K, ?>> sentence)
+	public static <K> K[] extractSentence(List<? extends TaggedToken<K, ?>> sentence)
 	{
 		if (sentence==null) throw new PosTaggerException("The input is an empty sentence.");
 		if (sentence.size()<1) throw new PosTaggerException("The input is an empty sentence.");

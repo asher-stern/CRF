@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.postagging.data.TaggedToken;
+import org.postagging.data.StringTaggedToken;
 import org.postagging.postaggers.PosTagger;
 import org.postagging.utilities.PosTaggerException;
 
@@ -26,7 +26,7 @@ public class LingPipeWrapperPosTagger implements PosTagger
 	}
 
 	@Override
-	public List<TaggedToken> tagSentence(List<String> sentence)
+	public List<StringTaggedToken> tagSentence(List<String> sentence)
 	{
 		// Call LingPipe tagger
 		Tagging<String> tagging = lingPipeCrf.tag(sentence);
@@ -38,7 +38,7 @@ public class LingPipeWrapperPosTagger implements PosTagger
 		if (tags.size()!=sentence.size()) {throw new PosTaggerException("LingPipe tags list differs in size from sentence size.");}
 		
 		// Build the output of this method
-		List<TaggedToken> ret = new ArrayList<TaggedToken>(tokens.size());
+		List<StringTaggedToken> ret = new ArrayList<StringTaggedToken>(tokens.size());
 		Iterator<String> tokensIterator = tokens.iterator();
 		Iterator<String> tagsIterator = tags.iterator();
 		while (tokensIterator.hasNext()&&tagsIterator.hasNext())
@@ -46,7 +46,7 @@ public class LingPipeWrapperPosTagger implements PosTagger
 			String token = tokensIterator.next();
 			String tag = tagsIterator.next();
 			
-			ret.add(new TaggedToken(token, tag));
+			ret.add(new StringTaggedToken(token, tag));
 		}
 		if (tokensIterator.hasNext()||tagsIterator.hasNext()) {throw new PosTaggerException("LingPipe Crf tagging lists are not of the same size.");}
 		

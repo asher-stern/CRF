@@ -6,6 +6,6 @@ package org.postagging.data;
  * Date: Nov 8, 2014
  *
  */
-public interface InMemoryPosTagCorpus extends PosTagCorpus
+public interface InMemoryPosTagCorpus<K,G> extends PosTagCorpus<K,G>
 {
 }

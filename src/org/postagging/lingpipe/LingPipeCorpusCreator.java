@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.postagging.data.InMemoryPosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
-import org.postagging.data.TaggedToken;
+import org.postagging.utilities.TaggedToken;
 
 import com.aliasi.corpus.Corpus;
 import com.aliasi.corpus.ObjectHandler;
@@ -20,7 +20,7 @@ import com.aliasi.tag.Tagging;
  */
 public class LingPipeCorpusCreator
 {
-	public Corpus<ObjectHandler<Tagging<String>>> createTrainCorpus(final InMemoryPosTagCorpus corpus)
+	public Corpus<ObjectHandler<Tagging<String>>> createTrainCorpus(final InMemoryPosTagCorpus<String,String> corpus)
 	{
 		return new Corpus<ObjectHandler<Tagging<String>>>()
 		{
@@ -37,7 +37,7 @@ public class LingPipeCorpusCreator
 	}
 	
 
-	public Corpus<ObjectHandler<Tagging<String>>> createTestCorpus(final InMemoryPosTagCorpus corpus)
+	public Corpus<ObjectHandler<Tagging<String>>> createTestCorpus(final InMemoryPosTagCorpus<String,String> corpus)
 	{
 		return new Corpus<ObjectHandler<Tagging<String>>>()
 		{
@@ -55,15 +55,15 @@ public class LingPipeCorpusCreator
 
 	
 	
-	private static void visit(final ObjectHandler<Tagging<String>> handler, final InMemoryPosTagCorpus corpus)
+	private static void visit(final ObjectHandler<Tagging<String>> handler, final InMemoryPosTagCorpus<String,String> corpus)
 	{
-		PosTagCorpusReader reader = corpus.createReader();
+		PosTagCorpusReader<String,String> reader = corpus.iterator();
 		while (reader.hasNext())
 		{
-			List<TaggedToken> sentence = reader.next();
+			List<? extends TaggedToken<String, String>> sentence = reader.next();
 			List<String> tokens = new ArrayList<String>(sentence.size());
 			List<String> tags = new ArrayList<String>(sentence.size());
-			for (TaggedToken taggedToken : sentence)
+			for (TaggedToken<String, String> taggedToken : sentence)
 			{
 				tokens.add(taggedToken.getToken());
 				tags.add(taggedToken.getTag());

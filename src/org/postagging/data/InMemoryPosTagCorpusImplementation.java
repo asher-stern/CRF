@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.RuntimeUtilities;
 
 /**
@@ -13,22 +14,22 @@ import org.postagging.utilities.RuntimeUtilities;
  * Date: Nov 8, 2014
  *
  */
-public class InMemoryPosTagCorpusImplementation implements InMemoryPosTagCorpus
+public class InMemoryPosTagCorpusImplementation<K,G> implements InMemoryPosTagCorpus<K,G>
 {
 	
-	public InMemoryPosTagCorpusImplementation(PosTagCorpus fromCorpus)
+	public InMemoryPosTagCorpusImplementation(PosTagCorpus<K,G> fromCorpus)
 	{
 		init(fromCorpus);
 	}
 
 	@Override
-	public PosTagCorpusReader createReader()
+	public PosTagCorpusReader<K,G> iterator()
 	{
-		final Iterator<List<TaggedToken>> iterator = listSentences.iterator();
-		return new PosTagCorpusReader()
+		final Iterator<List<? extends TaggedToken<K, G>>> iterator = listSentences.iterator();
+		return new PosTagCorpusReader<K,G>()
 		{
 			@Override
-			public List<TaggedToken> next()
+			public List<? extends TaggedToken<K, G>> next()
 			{
 				return iterator.next();
 			}
@@ -41,14 +42,14 @@ public class InMemoryPosTagCorpusImplementation implements InMemoryPosTagCorpus
 		};
 	}
 	
-	private void init(PosTagCorpus fromCorpus)
+	private void init(PosTagCorpus<K,G> fromCorpus)
 	{
 		logger.debug("Reading corpus to memory...");
-		listSentences = new LinkedList<List<TaggedToken>>();
-		PosTagCorpusReader reader = fromCorpus.createReader();
+		listSentences = new LinkedList<List<? extends TaggedToken<K, G>>>();
+		PosTagCorpusReader<K,G> reader = fromCorpus.iterator();
 		while (reader.hasNext())
 		{
-			List<TaggedToken> sentence = reader.next();
+			List<? extends TaggedToken<K, G>> sentence = reader.next();
 			listSentences.add(sentence);
 		}
 		logger.debug("Reading corpus to memory - done.");
@@ -58,7 +59,7 @@ public class InMemoryPosTagCorpusImplementation implements InMemoryPosTagCorpus
 		}
 	}
 	
-	private List<List<TaggedToken>> listSentences;
+	private List<List<? extends TaggedToken<K, G>>> listSentences;
 	
 	private static final Logger logger = Logger.getLogger(InMemoryPosTagCorpusImplementation.class);
 }

@@ -6,14 +6,14 @@ package org.postagging.data;
  * Date: Nov 5, 2014
  *
  */
-public class TrainTestPosTagCorpus
+public class TrainTestPosTagCorpus<K,G>
 {
-	public TrainTestPosTagCorpus(int trainSize, PosTagCorpus realCorpus)
+	public TrainTestPosTagCorpus(int trainSize, PosTagCorpus<K,G> realCorpus)
 	{
 		this(trainSize,0,realCorpus);
 	}
 
-	public TrainTestPosTagCorpus(int trainSize, int testSize, PosTagCorpus realCorpus)
+	public TrainTestPosTagCorpus(int trainSize, int testSize, PosTagCorpus<K,G> realCorpus)
 	{
 		super();
 		this.trainSize = trainSize;
@@ -23,16 +23,16 @@ public class TrainTestPosTagCorpus
 
 
 
-	public PosTagCorpus createTrainCorpus()
+	public PosTagCorpus<K,G> createTrainCorpus()
 	{
 		if (trainSize>0)
 		{
-			return new PosTagCorpus()
+			return new PosTagCorpus<K,G>()
 			{
 				@Override
-				public PosTagCorpusReader createReader()
+				public PosTagCorpusReader<K,G> iterator()
 				{
-					return new LimitedSizePosTagCorpusReader(realCorpus.createReader(), trainSize);
+					return new LimitedSizePosTagCorpusReader<K,G>(realCorpus.iterator(), trainSize);
 				}
 			};
 		}
@@ -43,11 +43,11 @@ public class TrainTestPosTagCorpus
 	}
 
 	
-	public PosTagCorpus createTestCorpus()
+	public PosTagCorpus<K,G> createTestCorpus()
 	{
 		if ( (trainSize<=0) && (testSize<=0) ) return realCorpus;
 		
-		PosTagCorpusReader reader = realCorpus.createReader();
+		PosTagCorpusReader<K,G> reader = realCorpus.iterator();
 		if (trainSize>0)
 		{
 			for (int i=0;(i<trainSize)&&(reader.hasNext());++i)
@@ -58,15 +58,15 @@ public class TrainTestPosTagCorpus
 		
 		if (testSize>0)
 		{
-			reader = new LimitedSizePosTagCorpusReader(reader, testSize);
+			reader = new LimitedSizePosTagCorpusReader<K,G>(reader, testSize);
 		}
 		
-		final PosTagCorpusReader finalReader = reader;
+		final PosTagCorpusReader<K,G> finalReader = reader;
 		
-		return new PosTagCorpus()
+		return new PosTagCorpus<K,G>()
 		{
 			@Override
-			public PosTagCorpusReader createReader()
+			public PosTagCorpusReader<K,G> iterator()
 			{
 				return finalReader;
 			}
@@ -76,6 +76,6 @@ public class TrainTestPosTagCorpus
 
 	private final int trainSize;
 	private final int testSize;
-	private final PosTagCorpus realCorpus;
+	private final PosTagCorpus<K,G> realCorpus;
 	
 }

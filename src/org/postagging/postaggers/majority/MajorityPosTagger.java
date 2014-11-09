@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.postagging.data.TaggedToken;
+import org.postagging.data.StringTaggedToken;
 import org.postagging.postaggers.PosTagger;
 
 /**
@@ -25,9 +25,9 @@ public class MajorityPosTagger implements PosTagger
 	
 	
 	@Override
-	public List<TaggedToken> tagSentence(List<String> sentence)
+	public List<StringTaggedToken> tagSentence(List<String> sentence)
 	{
-		List<TaggedToken> ret = new ArrayList<TaggedToken>(sentence.size());
+		List<StringTaggedToken> ret = new ArrayList<StringTaggedToken>(sentence.size());
 		for (String token : sentence)
 		{
 			String tag = majorityMap.get(token);
@@ -36,7 +36,7 @@ public class MajorityPosTagger implements PosTagger
 				tag = generalMajorTag;
 			}
 			
-			ret.add(new TaggedToken(token, tag));
+			ret.add(new StringTaggedToken(token, tag));
 		}
 		
 		return ret;
