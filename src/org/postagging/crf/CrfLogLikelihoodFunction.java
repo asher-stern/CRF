@@ -22,20 +22,46 @@ import static org.postagging.crf.CrfUtilities.safeAdd;
  */
 public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 {
+	public CrfLogLikelihoodFunction(Iterable<List<? extends TaggedToken<K, G>>> corpus, Set<G> tags,
+			ArrayList<CrfFeature<K, G>> features, boolean useRegularization,
+			double sigmaSquare_inverseRegularizationFactor)
+	{
+		super();
+		this.corpus = corpus;
+		this.tags = tags;
+		this.features = features;
+		this.useRegularization = useRegularization;
+		this.sigmaSquare_inverseRegularizationFactor = sigmaSquare_inverseRegularizationFactor;
+	}
+
+
 	@Override
 	public double value(double[] point)
 	{
 		CrfModel<K, G> model = createModel(point);
-		
-		return calculateSumWeightedFeatures(model) - calculateSumOfLogNormalizations(model) - calculateRegularizationFactor(point);
+		double regularization = useRegularization?calculateRegularizationFactor(point):0.0;
+		return calculateSumWeightedFeatures(model) - calculateSumOfLogNormalizations(model) - regularization;
 	}
 	
 
 	@Override
 	public double[] gradient(double[] point)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		CrfModel<K, G> model = createModel(point);
+		
+		CrfEmpiricalFeatureValueDistributionInCorpus<K,G> empiricalFeatureValue = new CrfEmpiricalFeatureValueDistributionInCorpus<K,G>(corpus.iterator(),model.getFeatures());
+		empiricalFeatureValue.calculate();
+		
+		CrfFeatureValueExpectationByModel<K, G> featureValueExpectationsByModel = new CrfFeatureValueExpectationByModel<K, G>(corpus.iterator(),model);
+		featureValueExpectationsByModel.calculate();
+		
+		double[] ret = new double[point.length];
+		for (int parameterIndex=0;parameterIndex<ret.length;++parameterIndex)
+		{
+			double regularizationDerivative = useRegularization?calculateRegularizationDerivative(point[parameterIndex]):0.0;
+			ret[parameterIndex] = empiricalFeatureValue.getEmpiricalFeatureValue()[parameterIndex] - featureValueExpectationsByModel.getFeatureValueExpectation()[parameterIndex] - regularizationDerivative;
+		}
+		return ret;
 	}
 
 
@@ -100,6 +126,11 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	{
 		return normSquare(parameters)/(2*sigmaSquare_inverseRegularizationFactor);
 	}
+	
+	private double calculateRegularizationDerivative(double parameter)
+	{
+		return parameter/sigmaSquare_inverseRegularizationFactor;
+	}
 
 	
 	private CrfModel<K, G> createModel(double[] point)
@@ -126,5 +157,6 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	private final Iterable<List<? extends TaggedToken<K, G> >> corpus;
 	private final Set<G> tags;
 	private final ArrayList<CrfFeature<K, G>> features;
+	private final boolean useRegularization;
 	private final double sigmaSquare_inverseRegularizationFactor;
 }

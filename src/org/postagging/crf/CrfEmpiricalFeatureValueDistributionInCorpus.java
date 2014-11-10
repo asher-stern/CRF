@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
+import static org.postagging.crf.CrfUtilities.safeAdd;
 
 
 /**
@@ -46,10 +47,8 @@ public class CrfEmpiricalFeatureValueDistributionInCorpus<K,G>
 				for (int featureIndex=0;featureIndex<empiricalFeatureValue.length;++featureIndex)
 				{
 					CrfFeature<K, G> feature = featureIterator.next();
-					double debug_olderValue = empiricalFeatureValue[featureIndex];
 					double featureValue = feature.value(sentenceAsArray,tokenIndex,token.getTag(),previousTag);
-					empiricalFeatureValue[featureIndex] += featureValue;
-					if (debug_olderValue>empiricalFeatureValue[featureIndex]) {throw new PosTaggerException("Error: empirical feature value decreased. Might be limitation of \"double\" type. Feature value = "+String.format("%-3.3f", featureValue));}
+					empiricalFeatureValue[featureIndex] = safeAdd(empiricalFeatureValue[featureIndex], featureValue);
 				}
 				if (featureIterator.hasNext()) {throw new PosTaggerException("BUG");}
 				
