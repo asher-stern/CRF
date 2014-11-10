@@ -8,8 +8,9 @@ import org.postagging.data.PosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
 import org.postagging.data.TrainTestPosTagCorpus;
 import org.postagging.data.brown.BrownCorpusReader;
-import org.postagging.lingpipe.LingPipeWrapperPosTaggerTrainer;
 import org.postagging.postaggers.PosTagger;
+import org.postagging.postaggers.crf.CrfPosTaggerTrainer;
+import org.postagging.postaggers.crf.CrfPosTaggerTrainerFactory;
 import org.postagging.utilities.ExceptionUtil;
 import org.postagging.utilities.RuntimeUtilities;
 import org.postagging.utilities.log4j.Log4jInit;
@@ -25,9 +26,11 @@ public class TrainAndEvaluate
 
 	/**
 	 * 
-	 * @param args 1. corpus. 2. train-size (how many train sentences, where the rest are test sentences).
+	 * @param args 1. corpus. 2. train-size (how many train sentences, where the rest are test sentences). 3. (optional) test-size
 	 * <BR>
-	 * If train-size <=0, then the whole corpus is train, and the text is on the training data.
+	 * If train-size <=0, then the whole corpus is train, and the test is on the training data.
+	 * <BR>
+	 * If test-size is omitted or <=0, then the whole (remaining sentences in the) corpus is the test data.
 	 */
 	public static void main(String[] args)
 	{
@@ -94,8 +97,10 @@ public class TrainAndEvaluate
 	
 	private PosTagger train(PosTagCorpus<String,String> corpus)
 	{
-		LingPipeWrapperPosTaggerTrainer trainer = new LingPipeWrapperPosTaggerTrainer();
 		InMemoryPosTagCorpus<String,String> inMemoryCorpus = new InMemoryPosTagCorpusImplementation<String,String>(corpus);
+		//LingPipeWrapperPosTaggerTrainer trainer = new LingPipeWrapperPosTaggerTrainer();
+		CrfPosTaggerTrainerFactory factory = new CrfPosTaggerTrainerFactory();
+		CrfPosTaggerTrainer trainer = factory.createPosTaggerTrainer(inMemoryCorpus);
 		trainer.train(inMemoryCorpus);
 		PosTagger posTagger = trainer.getTrainedPosTagger();
 		return posTagger;

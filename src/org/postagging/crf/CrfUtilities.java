@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.List;
 
+import org.postagging.utilities.StringUtilities;
 import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
@@ -32,7 +33,9 @@ public class CrfUtilities
 		}
 		if (featureIterator.hasNext()||parameterIterator.hasNext()) {throw new PosTaggerException("Number of parameters differs from number of features.");}
 		
-		if (!debug_activeFeatureDetected) {throw new PosTaggerException("Bug: no active feature detected for the given token. Token-index = "+tokenIndex);}
+		if (!debug_activeFeatureDetected) {throw new PosTaggerException("Bug: no active feature detected for the given token.\n"
+				+ "Token = "+sentence[tokenIndex]+". Current tag = "+currentTag+". Previous tag = "+previousTag+". Token-index = "+tokenIndex
+				+"\nSentence = "+StringUtilities.arrayToString(sentence));}
 		return Math.exp(sum);
 	}
 	
@@ -42,6 +45,13 @@ public class CrfUtilities
 		if (sentence.size()<1) throw new PosTaggerException("The input is an empty sentence.");
 		@SuppressWarnings("unchecked")
 		K[] ret = (K[]) Array.newInstance(sentence.iterator().next().getToken().getClass(), sentence.size());
+		int index=0;
+		for (TaggedToken<K, ?> taggedToken : sentence)
+		{
+			ret[index] = taggedToken.getToken();
+			++index;
+		}
+		if (index!=ret.length) {throw new PosTaggerException("BUG");}
 		return ret;
 	}
 	
@@ -56,6 +66,23 @@ public class CrfUtilities
 					+ "variable was: "+String.format("%-3.3", oldValue)+", value to add was: "+String.format("%-3.3f", valueToAdd));
 		}
 		return variable;
+	}
+	
+	public static double relativeDifference(double value1, double value2)
+	{
+		double smaller;
+		double larger;
+		if (value1<value2)
+		{
+			smaller = Math.abs(value1);
+			larger = Math.abs(value2);
+		}
+		else
+		{
+			smaller = Math.abs(value2);
+			larger = Math.abs(value1);
+		}
+		return larger/smaller;
 	}
 
 }

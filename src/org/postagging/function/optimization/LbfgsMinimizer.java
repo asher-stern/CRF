@@ -65,7 +65,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			
 			if (value>previousValue) {logger.warn("LBFGS: value > previous value");}
 			++debug_iterationIndex;
-			if (logger.isDebugEnabled()) {logger.debug("LBFGS iteration: "+debug_iterationIndex);}
+			if (logger.isDebugEnabled()) {logger.debug("LBFGS iteration "+debug_iterationIndex+": value = "+String.format("%-3.3f", value));}
 		}
 		while(Math.abs(previousValue-value)>convergence);
 		

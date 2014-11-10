@@ -55,7 +55,7 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 			value = function.value(point);
 			if (logger.isDebugEnabled())
 			{
-				logger.debug(StringUtilities.arrayToString(point)+" = "+String.format("%-3.3f",value));
+				logger.debug(StringUtilities.arrayOfDoubleToString(point)+" = "+String.format("%-3.3f",value));
 			}
 			++debug_iterationIndex;
 		}

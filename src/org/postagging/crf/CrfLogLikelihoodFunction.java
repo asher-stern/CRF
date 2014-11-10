@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.postagging.function.DerivableFunction;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
@@ -38,15 +39,22 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	@Override
 	public double value(double[] point)
 	{
+		logger.debug("Calculating value.");
+		
 		CrfModel<K, G> model = createModel(point);
 		double regularization = useRegularization?calculateRegularizationFactor(point):0.0;
-		return calculateSumWeightedFeatures(model) - calculateSumOfLogNormalizations(model) - regularization;
+		double sumWeightedFeatures = calculateSumWeightedFeatures(model);
+		double sumOfLogNormalizations = calculateSumOfLogNormalizations(model);
+		double ret = sumWeightedFeatures - sumOfLogNormalizations - regularization;
+		return ret;
 	}
 	
 
 	@Override
 	public double[] gradient(double[] point)
 	{
+		logger.debug("Calculating gradient");
+		
 		CrfModel<K, G> model = createModel(point);
 		
 		CrfEmpiricalFeatureValueDistributionInCorpus<K,G> empiricalFeatureValue = new CrfEmpiricalFeatureValueDistributionInCorpus<K,G>(corpus.iterator(),model.getFeatures());
@@ -109,8 +117,10 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	private double calculateSumOfLogNormalizations(CrfModel<K, G> model)
 	{
 		double sum = 0.0;
+		//int debug_sentenceIndex = 0;
 		for (List<? extends TaggedToken<K, G> > sentence : corpus)
 		{
+			//if (logger.isDebugEnabled()) {logger.debug("sum of log normalization: calculating sentence: "+debug_sentenceIndex);}
 			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
 			CrfForwardBackward<K, G> forwardBackward = new CrfForwardBackward<K, G>(model,sentenceAsArray);
 			forwardBackward.calculateForwardAndBackward();
@@ -118,6 +128,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 			double normalizationFactor = forwardBackward.getCalculatedNormalizationFactor();
 			double logNormalizationFactor = Math.log(normalizationFactor);
 			sum = safeAdd(sum, logNormalizationFactor);
+			//++debug_sentenceIndex;
 		}
 		return sum;
 	}
@@ -159,4 +170,6 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	private final ArrayList<CrfFeature<K, G>> features;
 	private final boolean useRegularization;
 	private final double sigmaSquare_inverseRegularizationFactor;
+	
+	private static final Logger logger = Logger.getLogger(CrfLogLikelihoodFunction.class);
 }

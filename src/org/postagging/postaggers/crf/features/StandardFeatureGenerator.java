@@ -32,6 +32,15 @@ public class StandardFeatureGenerator extends CrfPosTaggerFeatureGenerator
 		features = new LinkedHashSet<CrfFeature<String,String>>();
 		addTokenAndTagFeatures();
 		addTagTransitionFeatures();
+		
+//		// For debugging. Should be deleted.
+//		features.add(new CrfFeature<String, String>()
+//		{
+//			public double value(String[] sequence, int indexInSequence, String currentTag, String previousTag)
+//			{
+//				return 1.0;
+//			}
+//		});
 	}
 	
 	

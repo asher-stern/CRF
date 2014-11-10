@@ -75,8 +75,6 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 				delta_viterbiForwardCurrentToken.put(tag,maxValueByPrevious);
 			} // end for-each current-tag
 			delta_viterbiForward[index]=delta_viterbiForwardCurrentToken;
-			
-			++index;
 		} // end for-each token-in-sentence
 
 		// Set the tag for the last token

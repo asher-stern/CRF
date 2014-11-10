@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.postagging.crf.CrfFeature;
 import org.postagging.crf.CrfLogLikelihoodFunction;
 import org.postagging.crf.CrfModel;
@@ -47,7 +48,10 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 	@Override
 	public void train(InMemoryPosTagCorpus<String, String> corpus)
 	{
+		logger.info("CRF pos tagger training: Number of tags = "+tags.size()+". Number of features = "+features.size()+".");
+		logger.info("Creating log likelihood function.");
 		DerivableFunction convexNegatedCrfFunction = NegatedFunction.fromDerivableFunction(createLogLikelihoodFunctionConcave(corpus));
+		logger.info("Optimizing log likelihood function.");
 		LbfgsMinimizer lbfgsOptimizer = new LbfgsMinimizer(convexNegatedCrfFunction);
 		lbfgsOptimizer.find();
 		double[] parameters = lbfgsOptimizer.getPoint();
@@ -61,6 +65,7 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 		
 		learnedModel = new CrfModel<String, String>(tags,features,parametersAsList);
 		posTagger = new CrfPosTagger(learnedModel);
+		logger.info("Training of CRF pos tagger - done.");
 	}
 
 	
@@ -93,4 +98,6 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 	
 	private CrfModel<String, String> learnedModel = null;
 	private CrfPosTagger posTagger = null;
+	
+	private static final Logger logger = Logger.getLogger(CrfPosTaggerTrainer.class);
 }

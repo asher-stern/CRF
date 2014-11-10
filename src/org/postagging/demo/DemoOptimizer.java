@@ -38,7 +38,7 @@ public class DemoOptimizer
 		Optimizer<?> optimizer = new LbfgsMinimizer(function);
 		optimizer.find();
 		
-		System.out.println("point = "+StringUtilities.arrayToString(optimizer.getPoint()));
+		System.out.println("point = "+StringUtilities.arrayOfDoubleToString(optimizer.getPoint()));
 		System.out.println("value = "+String.format("%-3.3f",optimizer.getValue()));
 	}
 	
