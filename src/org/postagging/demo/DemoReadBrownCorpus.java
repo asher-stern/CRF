@@ -46,6 +46,7 @@ public class DemoReadBrownCorpus
 	public void go()
 	{
 		tags = new LinkedHashSet<String>();
+		Set<TwoTagsDataStructureForDemo> twoTagsSet = new LinkedHashSet<TwoTagsDataStructureForDemo>();
 		BrownCorpusReader reader = new BrownCorpusReader(directoryName);
 		int index=0;
 		//while (index<NUMBER_OF_SENTENCES && reader.hasNext())
@@ -54,10 +55,13 @@ public class DemoReadBrownCorpus
 			List<StringTaggedToken> taggedSentence = reader.next();
 			++index;
 //			StringBuilder sb = new StringBuilder();
+			String previousTag = null;
 			for (StringTaggedToken token : taggedSentence)
 			{
 //				sb.append(token).append(" ");
 				tags.add(token.getTag());
+				twoTagsSet.add(new TwoTagsDataStructureForDemo(previousTag, token.getTag()));
+				previousTag = token.getTag();
 			}
 //			logger.info(sb.toString());
 			if (0==index%10000)
@@ -71,10 +75,16 @@ public class DemoReadBrownCorpus
 		{
 			logger.info(tag);
 		}
+		
 		logger.info("Number of detected tags = "+tags.size());
 		logger.info("Number of sentences = "+index);
 		
+		logger.info("Number of detected two tags sequences = "+twoTagsSet.size());
+		
 	}
+	
+	
+	
 	
 	private final String directoryName;
 	

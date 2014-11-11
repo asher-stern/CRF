@@ -53,11 +53,14 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	private void addValueForSentence(List<? extends TaggedToken<K, G>> sentence)
 	{
 		K[] sentenceTokens = CrfUtilities.extractSentence(sentence);
+//		logger.debug("Run forward backward...");
 		CrfForwardBackward<K,G> forwardBackward = new CrfForwardBackward<K,G>(model,sentenceTokens);
 		forwardBackward.calculateForwardAndBackward();
+//		logger.debug("Run forward backward - done.");
 
 		final double normalizationFactor = forwardBackward.getCalculatedNormalizationFactor();
 		
+//		logger.debug("Run over sentence tokens...");
 		for (int tokenIndex=0;tokenIndex<sentenceTokens.length;++tokenIndex)
 		{
 			Set<G> possiblePreviousTags = null;
@@ -103,6 +106,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 				}
 			}
 		}
+//		logger.debug("Run over sentence tokens - done.");
 		
 		
 //		logger.debug("Running loop for each feature...");

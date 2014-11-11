@@ -41,9 +41,10 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		point = new double[function.size()];
 		for (int i=0;i<point.length;++i) {point[i]=0.0;}
 		value = function.value(point);
+		if (logger.isInfoEnabled()) {logger.info("LBFGS: initial value = "+String.format("%-3.3f", value));}
 		double[] gradient = function.gradient(point);
 		double previousValue = value;
-		int debug_iterationIndex=0;
+		int forLogger_iterationIndex=0;
 		do
 		{
 			previousValue = value;
@@ -63,9 +64,9 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			}
 			if (previousItrations.size()>numberOfPreviousIterationsToMemorize) {throw new PosTaggerException("BUG");}
 			
-			if (value>previousValue) {logger.warn("LBFGS: value > previous value");}
-			++debug_iterationIndex;
-			if (logger.isDebugEnabled()) {logger.debug("LBFGS iteration "+debug_iterationIndex+": value = "+String.format("%-3.3f", value));}
+			if (value>previousValue) {logger.error("LBFGS: value > previous value");}
+			++forLogger_iterationIndex;
+			if (logger.isInfoEnabled()) {logger.info("LBFGS iteration "+forLogger_iterationIndex+": value = "+String.format("%-3.3f", value));}
 		}
 		while(Math.abs(previousValue-value)>convergence);
 		

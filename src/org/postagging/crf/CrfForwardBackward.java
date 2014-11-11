@@ -1,6 +1,5 @@
 package org.postagging.crf;
 
-import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -42,7 +41,6 @@ public class CrfForwardBackward<K,G>
 					+ "Z(x) by alpha (forward) = "+String.format("%-3.3f", finalAlpha)+". Z(x) by beta (backward) = "+String.format("%-3.3f", finalBeta);
 			throw new PosTaggerException(errorMessage);
 			//logger.error(errorMessage);
-
 		}
 		calculated=true;
 	}
@@ -72,7 +70,7 @@ public class CrfForwardBackward<K,G>
 	@SuppressWarnings("unchecked")
 	private void calculateAlphaForward()
 	{
-		alpha_forward = (LinkedHashMap<G, Double>[]) Array.newInstance(LinkedHashMap.class, sentence.length);
+		alpha_forward = (LinkedHashMap<G, Double>[]) new LinkedHashMap[sentence.length];
 		for (int index=0;index<sentence.length;++index)
 		{
 			Map<G, Double> alpha_forwardThisToken = new LinkedHashMap<G, Double>();
@@ -104,15 +102,13 @@ public class CrfForwardBackward<K,G>
 		{
 			finalAlpha += alphaLast.get(tag);
 		}
-		
-		
 	}
 	
 	
 	
 	private void calculateBetaBackward()
 	{
-		beta_backward = new ArbitraryRangeArray<LinkedHashMap<G, Double>>(sentence.length+1, -1); // (LinkedHashMap<G, Double>[]) Array.newInstance(LinkedHashMap.class, sentence.length);
+		beta_backward = new ArbitraryRangeArray<LinkedHashMap<G, Double>>(sentence.length+1, -1); // i.e. [-1,0,1,2,...,sentence.length-1]
 		beta_backward.set(sentence.length-1,new LinkedHashMap<G, Double>());
 		for (G tag : model.getTags())
 		{

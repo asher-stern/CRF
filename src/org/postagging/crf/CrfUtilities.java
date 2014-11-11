@@ -1,6 +1,7 @@
 package org.postagging.crf;
 
 import java.lang.reflect.Array;
+
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -11,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.postagging.crf.features.CrfFeaturesAndFilters;
 import org.postagging.crf.features.CrfFilteredFeature;
 import org.postagging.crf.features.Filter;
-import org.postagging.utilities.StringUtilities;
 import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
@@ -63,7 +63,7 @@ public class CrfUtilities
 		Set<Integer> activeFeatureIndexes = getActiveFeatureIndexes(model.getFeatures(),sentence,tokenIndex,currentTag,previousTag);
 		//if (logger.isDebugEnabled()) {logger.debug("Number of active featurens = "+activeFeatureIndexes.size());}
 
-		boolean debug_activeFeatureDetected = false;
+		//boolean debug_activeFeatureDetected = false;
 		double sum = 0.0;
 		
 		for (int index : activeFeatureIndexes)
@@ -78,15 +78,15 @@ public class CrfUtilities
 			{
 				featureValue = feature.getFeature().value(sentence,tokenIndex,currentTag,previousTag);
 			}
-			if (featureValue!=0.0) {debug_activeFeatureDetected=true;}
+			//if (featureValue!=0.0) {debug_activeFeatureDetected=true;}
 			
 			double weightedValue = model.getParameters().get(index)*featureValue;
 			sum = safeAdd(sum, weightedValue);
 		}
 
-		if (!debug_activeFeatureDetected) {throw new PosTaggerException("Bug: no active feature detected for the given token.\n"
-				+ "Token = "+sentence[tokenIndex]+". Current tag = "+currentTag+". Previous tag = "+previousTag+". Token-index = "+tokenIndex
-				+"\nSentence = "+StringUtilities.arrayToString(sentence));}
+//		if (!debug_activeFeatureDetected) {throw new PosTaggerException("Bug: no active feature detected for the given token.\n"
+//				+ "Token = "+sentence[tokenIndex]+". Current tag = "+currentTag+". Previous tag = "+previousTag+". Token-index = "+tokenIndex
+//				+"\nSentence = "+StringUtilities.arrayToString(sentence));}
 		
 		return sum;
 	}

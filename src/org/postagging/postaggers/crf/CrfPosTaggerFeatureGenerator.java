@@ -3,7 +3,7 @@ package org.postagging.postaggers.crf;
 
 import java.util.Set;
 
-import org.postagging.crf.features.CrfFeaturesAndFilters;
+import org.postagging.crf.features.CrfFilteredFeature;
 import org.postagging.data.InMemoryPosTagCorpus;
 
 /**
@@ -24,7 +24,7 @@ public abstract class CrfPosTaggerFeatureGenerator
 	public abstract void generateFeatures();
 	
 	
-	public abstract CrfFeaturesAndFilters<String, String> getFeatures();
+	public abstract Set<CrfFilteredFeature<String, String>> getFeatures();
 
 	
 	

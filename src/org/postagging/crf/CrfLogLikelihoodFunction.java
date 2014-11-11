@@ -43,9 +43,12 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		
 		CrfModel<K, G> model = createModel(point);
 		double regularization = useRegularization?calculateRegularizationFactor(point):0.0;
+		logger.debug("Calculating sum weighted features");
 		double sumWeightedFeatures = calculateSumWeightedFeatures(model);
+		logger.debug("Calculating sum log normalizations");
 		double sumOfLogNormalizations = calculateSumOfLogNormalizations(model);
 		double ret = sumWeightedFeatures - sumOfLogNormalizations - regularization;
+		logger.debug("Calculating value - done.");
 		return ret;
 	}
 	
@@ -57,12 +60,15 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		
 		CrfModel<K, G> model = createModel(point);
 		
+		logger.debug("Calculating empirical feature values");
 		CrfEmpiricalFeatureValueDistributionInCorpus<K,G> empiricalFeatureValue = new CrfEmpiricalFeatureValueDistributionInCorpus<K,G>(corpus.iterator(),model.getFeatures());
 		empiricalFeatureValue.calculate();
 		
+		logger.debug("Calculating expected feature values by models");
 		CrfFeatureValueExpectationByModel<K, G> featureValueExpectationsByModel = new CrfFeatureValueExpectationByModel<K, G>(corpus.iterator(),model);
 		featureValueExpectationsByModel.calculate();
 		
+		logger.debug("Creating gradient array.");
 		double[] ret = new double[point.length];
 		for (int parameterIndex=0;parameterIndex<ret.length;++parameterIndex)
 		{

@@ -89,6 +89,9 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 		return new CrfLogLikelihoodFunction<String, String>(corpus,tags,features,useRegularization,sigmaSquare_inverseRegularizationFactor);
 	}
 	
+	
+
+	
 
 	
 	private final CrfFeaturesAndFilters<String, String> features;

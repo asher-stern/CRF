@@ -16,7 +16,7 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 {
 	public static final double DEFAULT_BETA_RATE_OF_ALPHA = 0.2;
 	public static final double DEFAULT_SIGMA_CONVERGENCE_COEFFICIENT = 0.3;
-	public static final double DEFAULT_INITIAL_ALPHA = 0.01;
+	public static final double DEFAULT_INITIAL_ALPHA = 1.0; // = 0.01;
 	
 	public static final double MINIMUM_ALLOWED_ALPHA_VALUE_SO_SHOULD_BE_ZERO = 0.000001;
 
