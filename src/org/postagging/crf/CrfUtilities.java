@@ -1,12 +1,15 @@
 package org.postagging.crf;
 
 import java.lang.reflect.Array;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.postagging.crf.features.CrfFeaturesAndFilters;
+import org.postagging.crf.features.CrfFilteredFeature;
+import org.postagging.crf.features.Filter;
 import org.postagging.utilities.StringUtilities;
 import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
@@ -19,27 +22,72 @@ import org.postagging.utilities.PosTaggerException;
  */
 public class CrfUtilities
 {
-	public static <K,G> double oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
+	/**
+	 * Adds all the items in "fromCollection" into "intoCollection".
+	 * <BR>
+	 * There was a bug in some implementations of Collection.addAll() method in some versions of J2SE, so to be on the
+	 * safe side, I implement it here.
+	 * @param intoCollection
+	 * @param fromCollection
+	 */
+	public static <T> void addAll(Collection<T> intoCollection, Collection<? extends T> fromCollection)
 	{
+		for (T t : fromCollection)
+		{
+			intoCollection.add(t);
+		}
+	}
+	
+	public static <K,G> Set<Integer> getActiveFeatureIndexes(CrfFeaturesAndFilters<K,G> features, K[] sentence, int tokenIndex, G currentTag, G previousTag)
+	{
+		Set<Integer> activeFeatureIndexes = new LinkedHashSet<Integer>();
+		addAll(activeFeatureIndexes, features.getIndexesOfFeaturesWithNoFilter());
+		
+		K token = sentence[tokenIndex];
+		Set<Filter<K, G>> filters = features.getFilterFactory().createFilters(token, currentTag, previousTag);
+		for (Filter<K, G> filter : filters)
+		{
+			addAll(activeFeatureIndexes, features.getMapActiveFeatures().get(filter));
+		}
+		
+		return activeFeatureIndexes;
+	}
+	
+	public static <K,G> double oneTokenSumWeightedFeatures(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
+	{
+		Set<Integer> activeFeatureIndexes = getActiveFeatureIndexes(model.getFeatures(),sentence,tokenIndex,currentTag,previousTag);
+
 		boolean debug_activeFeatureDetected = false;
 		double sum = 0.0;
-		Iterator<CrfFeature<K, G>> featureIterator = model.getFeatures().iterator();
-		Iterator<Double> parameterIterator = model.getParameters().iterator();
-		while (featureIterator.hasNext()&&parameterIterator.hasNext())
-		{
-			CrfFeature<K, G> feature = featureIterator.next();
-			double parameter = parameterIterator.next();
-			
-			double featureValue = feature.value(sentence, tokenIndex, currentTag, previousTag);
-			if (featureValue!=0.0){debug_activeFeatureDetected=true;}
-			sum += parameter*featureValue;
-		}
-		if (featureIterator.hasNext()||parameterIterator.hasNext()) {throw new PosTaggerException("Number of parameters differs from number of features.");}
 		
+		for (int index : activeFeatureIndexes)
+		{
+			CrfFilteredFeature<K, G> feature = model.getFeatures().getFilteredFeatures()[index];
+			double featureValue = 0.0;
+			if (feature.isWhenNotFilteredIsAlwaysOne())
+			{
+				featureValue = 1.0;
+			}
+			else
+			{
+				featureValue = feature.getFeature().value(sentence,tokenIndex,currentTag,previousTag);
+			}
+			if (featureValue!=0.0) {debug_activeFeatureDetected=true;}
+			
+			double weightedValue = model.getParameters().get(index)*featureValue;
+			sum = safeAdd(sum, weightedValue);
+		}
+
 		if (!debug_activeFeatureDetected) {throw new PosTaggerException("Bug: no active feature detected for the given token.\n"
 				+ "Token = "+sentence[tokenIndex]+". Current tag = "+currentTag+". Previous tag = "+previousTag+". Token-index = "+tokenIndex
 				+"\nSentence = "+StringUtilities.arrayToString(sentence));}
-		return Math.exp(sum);
+		
+		return sum;
+	}
+	
+	public static <K,G> double oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
+	{
+		return Math.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag));
 	}
 	
 	public static <K> K[] extractSentence(List<? extends TaggedToken<K, ?>> sentence)

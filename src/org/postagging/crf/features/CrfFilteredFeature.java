@@ -79,7 +79,7 @@ public class CrfFilteredFeature<K, G>
 
 
 
-	private final CrfFeature<K, G> feature;
-	private final Filter<K, G> filter;
-	private final boolean whenNotFilteredIsAlwaysOne;
+	protected final CrfFeature<K, G> feature;
+	protected final Filter<K, G> filter;
+	protected final boolean whenNotFilteredIsAlwaysOne;
 }

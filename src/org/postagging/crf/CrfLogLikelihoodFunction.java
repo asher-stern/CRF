@@ -1,11 +1,11 @@
 package org.postagging.crf;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.postagging.crf.features.CrfFeaturesAndFilters;
 import org.postagging.function.DerivableFunction;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
@@ -24,7 +24,7 @@ import static org.postagging.crf.CrfUtilities.safeAdd;
 public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 {
 	public CrfLogLikelihoodFunction(Iterable<List<? extends TaggedToken<K, G>>> corpus, Set<G> tags,
-			ArrayList<CrfFeature<K, G>> features, boolean useRegularization,
+			CrfFeaturesAndFilters<K, G> features, boolean useRegularization,
 			double sigmaSquare_inverseRegularizationFactor)
 	{
 		super();
@@ -76,7 +76,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	@Override
 	public int size()
 	{
-		return features.size();
+		return features.getFilteredFeatures().length;
 	}
 
 	
@@ -92,18 +92,8 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 			int tokenIndex=0;
 			for (TaggedToken<K, G> taggedToken : sentence)
 			{
-				Iterator<Double> parameterIterator = model.getParameters().iterator();
-				Iterator<CrfFeature<K, G>> featureIterator = model.getFeatures().iterator();
-				while (parameterIterator.hasNext()&&featureIterator.hasNext())
-				{
-					double parameter = parameterIterator.next();
-					CrfFeature<K, G> feature = featureIterator.next();
-					double featureValue = feature.value(sentenceAsArray,tokenIndex,taggedToken.getTag(),previousTag);
-					double weightedFeature = parameter*featureValue;
-					
-					sumWeightedFeatures = safeAdd(sumWeightedFeatures, weightedFeature);
-				}
-				if (parameterIterator.hasNext()||featureIterator.hasNext()) {throw new PosTaggerException("BUG");}
+				double sumForThisToken = CrfUtilities.oneTokenSumWeightedFeatures(model,sentenceAsArray,tokenIndex,taggedToken.getTag(),previousTag);
+				sumWeightedFeatures = safeAdd(sumWeightedFeatures, sumForThisToken);
 				
 				previousTag = taggedToken.getTag();
 				++tokenIndex;
@@ -146,7 +136,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	
 	private CrfModel<K, G> createModel(double[] point)
 	{
-		if (point.length!=features.size()) {throw new PosTaggerException("Number of parameters differs from number of features.");}
+		if (point.length!=features.getFilteredFeatures().length) {throw new PosTaggerException("Number of parameters differs from number of features.");}
 		ArrayList<Double> parameters = new ArrayList<Double>(point.length);
 		for (double parameter : point)
 		{
@@ -167,7 +157,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 
 	private final Iterable<List<? extends TaggedToken<K, G> >> corpus;
 	private final Set<G> tags;
-	private final ArrayList<CrfFeature<K, G>> features;
+	private final CrfFeaturesAndFilters<K, G> features;
 	private final boolean useRegularization;
 	private final double sigmaSquare_inverseRegularizationFactor;
 	

@@ -15,12 +15,14 @@ public class CrfFeaturesAndFilters<K, G>
 {
 	public CrfFeaturesAndFilters(FilterFactory<K, G> filterFactory,
 			CrfFilteredFeature<K, G>[] filteredFeatures,
-			Map<Filter<K, G>, Set<Integer>> mapActiveFeatures)
+			Map<Filter<K, G>, Set<Integer>> mapActiveFeatures,
+			Set<Integer> indexesOfFeaturesWithNoFilter)
 	{
 		super();
 		this.filterFactory = filterFactory;
 		this.filteredFeatures = filteredFeatures;
 		this.mapActiveFeatures = mapActiveFeatures;
+		this.indexesOfFeaturesWithNoFilter = indexesOfFeaturesWithNoFilter;
 	}
 	
 	
@@ -37,10 +39,16 @@ public class CrfFeaturesAndFilters<K, G>
 	{
 		return mapActiveFeatures;
 	}
+	public Set<Integer> getIndexesOfFeaturesWithNoFilter()
+	{
+		return indexesOfFeaturesWithNoFilter;
+	}
+
 
 
 
 	private final FilterFactory<K, G> filterFactory;
 	private final CrfFilteredFeature<K, G>[] filteredFeatures;
 	private final Map<Filter<K, G>, Set<Integer>> mapActiveFeatures;
+	private final Set<Integer> indexesOfFeaturesWithNoFilter;
 }

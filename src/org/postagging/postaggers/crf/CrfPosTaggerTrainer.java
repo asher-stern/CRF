@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.postagging.crf.CrfFeature;
 import org.postagging.crf.CrfLogLikelihoodFunction;
 import org.postagging.crf.CrfModel;
+import org.postagging.crf.features.CrfFeaturesAndFilters;
 import org.postagging.data.InMemoryPosTagCorpus;
 import org.postagging.function.DerivableFunction;
 import org.postagging.function.optimization.LbfgsMinimizer;
@@ -29,12 +29,12 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 	public static final boolean DEFAULT_USE_REGULARIZATION = true;
 	
 	
-	public CrfPosTaggerTrainer(ArrayList<CrfFeature<String, String>> features, Set<String> tags)
+	public CrfPosTaggerTrainer(CrfFeaturesAndFilters<String, String> features, Set<String> tags)
 	{
 		this(features,tags,DEFAULT_USE_REGULARIZATION,DEFAULT_SIGMA_SQUARED_INVERSE_REGULARIZATION_FACTOR);
 	}
 
-	public CrfPosTaggerTrainer(ArrayList<CrfFeature<String, String>> features, Set<String> tags,
+	public CrfPosTaggerTrainer(CrfFeaturesAndFilters<String, String> features, Set<String> tags,
 			boolean useRegularization, double sigmaSquare_inverseRegularizationFactor)
 	{
 		super();
@@ -48,14 +48,14 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 	@Override
 	public void train(InMemoryPosTagCorpus<String, String> corpus)
 	{
-		logger.info("CRF pos tagger training: Number of tags = "+tags.size()+". Number of features = "+features.size()+".");
+		logger.info("CRF pos tagger training: Number of tags = "+tags.size()+". Number of features = "+features.getFilteredFeatures().length +".");
 		logger.info("Creating log likelihood function.");
 		DerivableFunction convexNegatedCrfFunction = NegatedFunction.fromDerivableFunction(createLogLikelihoodFunctionConcave(corpus));
 		logger.info("Optimizing log likelihood function.");
 		LbfgsMinimizer lbfgsOptimizer = new LbfgsMinimizer(convexNegatedCrfFunction);
 		lbfgsOptimizer.find();
 		double[] parameters = lbfgsOptimizer.getPoint();
-		if (parameters.length!=features.size()) {throw new PosTaggerException("Number of parameters, returned by LBFGS optimizer, differs from number of features.");}
+		if (parameters.length!=features.getFilteredFeatures().length) {throw new PosTaggerException("Number of parameters, returned by LBFGS optimizer, differs from number of features.");}
 		
 		ArrayList<Double> parametersAsList = new ArrayList<Double>(parameters.length);
 		for (double parameter : parameters)
@@ -91,7 +91,7 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 	
 
 	
-	private final ArrayList<CrfFeature<String, String>> features;
+	private final CrfFeaturesAndFilters<String, String> features;
 	private final Set<String> tags;
 	private final boolean useRegularization;
 	private final double sigmaSquare_inverseRegularizationFactor;

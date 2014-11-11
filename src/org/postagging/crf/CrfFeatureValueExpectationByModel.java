@@ -5,8 +5,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.postagging.crf.features.CrfFilteredFeature;
 import org.postagging.utilities.TaggedToken;
-import org.postagging.utilities.PosTaggerException;
+
+import static org.postagging.crf.CrfUtilities.safeAdd;
 
 /**
  * 
@@ -31,7 +33,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 
 	public void calculate()
 	{
-		featureValueExpectation = new double[model.getFeatures().size()];
+		featureValueExpectation = new double[model.getFeatures().getFilteredFeatures().length];
 		for (int i=0;i<featureValueExpectation.length;++i) {featureValueExpectation[i]=0.0;}
 		while (corpusIterator.hasNext())
 		{
@@ -54,11 +56,10 @@ public class CrfFeatureValueExpectationByModel<K, G>
 		CrfForwardBackward<K,G> forwardBackward = new CrfForwardBackward<K,G>(model,sentenceTokens);
 		forwardBackward.calculateForwardAndBackward();
 
-		Iterator<CrfFeature<K, G>> featureIterator = model.getFeatures().iterator();
-		for (int featureIndex=0;featureIndex<model.getFeatures().size();++featureIndex)
+		CrfFilteredFeature<K, G>[] filteredFeatures = model.getFeatures().getFilteredFeatures();
+		for (int featureIndex=0;featureIndex<filteredFeatures.length;++featureIndex)
 		{
-			if (!(featureIterator.hasNext())) {throw new PosTaggerException("BUG");}
-			CrfFeature<K, G> feature = featureIterator.next();
+			CrfFeature<K, G> feature = filteredFeatures[featureIndex].getFeature();
 			
 			double sum = 0.0;
 			for (int sentenceIndex=0;sentenceIndex<sentenceTokens.length;++sentenceIndex)
@@ -79,13 +80,12 @@ public class CrfFeatureValueExpectationByModel<K, G>
 						double beta_backward_value = forwardBackward.getBeta_backward().get(sentenceIndex).get(currentTokenTag);
 						
 						double probabilityUnderModel = alpha_forward_previousValue*featureValue*beta_backward_value;
-						sum += probabilityUnderModel;
+						sum = safeAdd(sum, probabilityUnderModel);
 					}
 				}
 			}
-			featureValueExpectation[featureIndex] += sum/forwardBackward.getCalculatedNormalizationFactor();
+			featureValueExpectation[featureIndex] = safeAdd(featureValueExpectation[featureIndex], sum/forwardBackward.getCalculatedNormalizationFactor());
 		}
-		if (featureIterator.hasNext()) {throw new PosTaggerException("BUG");}
 	}
 	
 	

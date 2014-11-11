@@ -1,10 +1,9 @@
 package org.postagging.postaggers.crf;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.postagging.crf.CrfFeature;
+import org.postagging.crf.features.CrfFeaturesAndFilters;
 import org.postagging.data.InMemoryPosTagCorpus;
 import org.postagging.postaggers.crf.features.StandardFeatureGenerator;
 import org.postagging.utilities.PosTaggerUtilities;
@@ -38,7 +37,7 @@ public class CrfPosTaggerTrainerFactory
 		logger.info("Generating features.");
 		CrfPosTaggerFeatureGenerator featureGenerator = featureGeneratorFactory.create(corpus, tags);
 		featureGenerator.generateFeatures();
-		ArrayList<CrfFeature<String, String>> features = featureGenerator.getFeatures();
+		CrfFeaturesAndFilters<String, String> features = featureGenerator.getFeatures();
 		
 		logger.info("CrfPosTaggerTrainer has been created.");
 		return new CrfPosTaggerTrainer(features,tags);
