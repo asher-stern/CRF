@@ -2,7 +2,10 @@ package org.postagging.crf;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.postagging.utilities.StringUtilities;
 import org.postagging.utilities.TaggedToken;
@@ -83,6 +86,17 @@ public class CrfUtilities
 			larger = Math.abs(value1);
 		}
 		return larger/smaller;
+	}
+	
+	public static <K,V> void putInMapSet(Map<K, Set<V>> map, K key, V value)
+	{
+		Set<V> set = map.get(key);
+		if (null==set)
+		{
+			set = new LinkedHashSet<V>();
+			map.put(key, set);
+		}
+		set.add(value);
 	}
 
 }

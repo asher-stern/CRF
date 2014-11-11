@@ -10,7 +10,7 @@ import static org.postagging.utilities.PosTaggerUtilities.equalObjects;
  * Date: Nov 10, 2014
  *
  */
-public class TokenAndTagFeature implements CrfFeature<String, String>
+public class TokenAndTagFeature extends CrfFeature<String, String>
 {
 	public TokenAndTagFeature(String forToken, String forTag)
 	{

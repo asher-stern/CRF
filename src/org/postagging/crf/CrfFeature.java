@@ -8,7 +8,10 @@ package org.postagging.crf;
  * @param <K>
  * @param <G>
  */
-public interface CrfFeature<K,G> // K = token, G = tag
+public abstract class CrfFeature<K,G> // K = token, G = tag
 {
-	public double value(K[] sequence, int indexInSequence, G currentTag, G previousTag);
+	public abstract double value(K[] sequence, int indexInSequence, G currentTag, G previousTag);
+	
+	public abstract boolean equals(Object obj);
+	public abstract int hashCode();
 }

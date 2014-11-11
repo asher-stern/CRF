@@ -10,7 +10,7 @@ import static org.postagging.utilities.PosTaggerUtilities.equalObjects;
  * Date: Nov 10, 2014
  *
  */
-public class TagTransitionFeature implements CrfFeature<String, String>
+public class TagTransitionFeature extends CrfFeature<String, String>
 {
 	public TagTransitionFeature(String forPreviousTag, String forCurrentTag)
 	{
