@@ -1,10 +1,10 @@
 package org.postagging.function.optimization;
 
-import org.apache.log4j.Logger;
+import static org.postagging.function.optimization.LineSearchUtilities.derivationForAlpha;
+import static org.postagging.function.optimization.LineSearchUtilities.valueForAlpha;
+
 import org.postagging.function.DerivableFunction;
 import org.postagging.utilities.PosTaggerException;
-
-import static org.postagging.function.optimization.LineSearchUtilities.*;
 
 /**
  * 
@@ -23,8 +23,6 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 	@Override
 	public double findRate(final F function, final double[] point, final double[] direction)
 	{
-		logger.debug("Armijo line search...");
-		
 		final double valueForAlphaZero = valueForAlpha(function, point, direction, 0);
 		final double derivationForAlphaZero = derivationForAlpha(function, point, direction, 0);
 		
@@ -41,7 +39,7 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 			{
 				previousAlpha = alpha;
 				alpha = previousAlpha/beta_rateOfAlpha;
-				if (logger.isDebugEnabled()) {logger.debug(String.format("Armijo (increase): alpha = %-3.8f", alpha));}
+				//if (logger.isDebugEnabled()) {logger.debug(String.format("Armijo (increase): alpha = %-3.8f", alpha));}
 			}
 			while( (valueForAlpha(function, point, direction, alpha)-valueForAlphaZero) < sigma_convergenceCoefficient*alpha*derivationForAlphaZero);
 			ret = previousAlpha;
@@ -56,13 +54,12 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 					alpha = 0.0;
 					break;
 				}
-				if (logger.isDebugEnabled()) {logger.debug(String.format("Armijo (shrink): alpha = %-3.8f", alpha));}
+				//if (logger.isDebugEnabled()) {logger.debug(String.format("Armijo (shrink): alpha = %-3.8f", alpha));}
 			}
 			while (!( (valueForAlpha(function, point, direction, alpha)-valueForAlphaZero) < sigma_convergenceCoefficient*alpha*derivationForAlphaZero));
 			ret = alpha;
 		}
 		
-		logger.debug("Armijo line search - done.");
 		return ret;
 	}
 	
@@ -75,6 +72,4 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 	private final double beta_rateOfAlpha = DEFAULT_BETA_RATE_OF_ALPHA;
 	private final double sigma_convergenceCoefficient = DEFAULT_SIGMA_CONVERGENCE_COEFFICIENT;
 	private final double initialAlpha = DEFAULT_INITIAL_ALPHA;
-	
-	private static final Logger logger = Logger.getLogger(ArmijoLineSearch.class);
 }
