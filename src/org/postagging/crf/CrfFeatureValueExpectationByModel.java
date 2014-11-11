@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.postagging.crf.features.CrfFilteredFeature;
 import org.postagging.utilities.TaggedToken;
 
@@ -53,9 +54,12 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	private void addValueForSentence(List<? extends TaggedToken<K, G>> sentence)
 	{
 		K[] sentenceTokens = CrfUtilities.extractSentence(sentence);
+		logger.debug("Running forward backward...");
 		CrfForwardBackward<K,G> forwardBackward = new CrfForwardBackward<K,G>(model,sentenceTokens);
 		forwardBackward.calculateForwardAndBackward();
+		logger.debug("Running forward backward - done.");
 
+		logger.debug("Running loop for each feature...");
 		CrfFilteredFeature<K, G>[] filteredFeatures = model.getFeatures().getFilteredFeatures();
 		for (int featureIndex=0;featureIndex<filteredFeatures.length;++featureIndex)
 		{
@@ -86,6 +90,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 			}
 			featureValueExpectation[featureIndex] = safeAdd(featureValueExpectation[featureIndex], sum/forwardBackward.getCalculatedNormalizationFactor());
 		}
+		logger.debug("Running loop for each feature - done.");
 	}
 	
 	
@@ -95,4 +100,6 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	private final CrfModel<K, G> model;
 	
 	private double[] featureValueExpectation;
+	
+	private static final Logger logger = Logger.getLogger(CrfFeatureValueExpectationByModel.class);
 }

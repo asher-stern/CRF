@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.postagging.crf.features.CrfFeaturesAndFilters;
 import org.postagging.crf.features.CrfFilteredFeature;
 import org.postagging.crf.features.Filter;
@@ -47,7 +48,11 @@ public class CrfUtilities
 		Set<Filter<K, G>> filters = features.getFilterFactory().createFilters(token, currentTag, previousTag);
 		for (Filter<K, G> filter : filters)
 		{
-			addAll(activeFeatureIndexes, features.getMapActiveFeatures().get(filter));
+			Set<Integer> featureIndexesForFilter = features.getMapActiveFeatures().get(filter);
+			if (featureIndexesForFilter!=null)
+			{
+				addAll(activeFeatureIndexes, featureIndexesForFilter);
+			}
 		}
 		
 		return activeFeatureIndexes;
@@ -56,6 +61,7 @@ public class CrfUtilities
 	public static <K,G> double oneTokenSumWeightedFeatures(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
 	{
 		Set<Integer> activeFeatureIndexes = getActiveFeatureIndexes(model.getFeatures(),sentence,tokenIndex,currentTag,previousTag);
+		//if (logger.isDebugEnabled()) {logger.debug("Number of active featurens = "+activeFeatureIndexes.size());}
 
 		boolean debug_activeFeatureDetected = false;
 		double sum = 0.0;
@@ -147,4 +153,6 @@ public class CrfUtilities
 		set.add(value);
 	}
 
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(CrfUtilities.class);
 }

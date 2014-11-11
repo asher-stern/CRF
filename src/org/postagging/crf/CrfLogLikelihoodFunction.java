@@ -39,7 +39,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	@Override
 	public double value(double[] point)
 	{
-		logger.debug("Calculating value.");
+		logger.debug("Calculating value");
 		
 		CrfModel<K, G> model = createModel(point);
 		double regularization = useRegularization?calculateRegularizationFactor(point):0.0;
@@ -57,12 +57,15 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		
 		CrfModel<K, G> model = createModel(point);
 		
+		logger.debug("Calculating empirical feature value");
 		CrfEmpiricalFeatureValueDistributionInCorpus<K,G> empiricalFeatureValue = new CrfEmpiricalFeatureValueDistributionInCorpus<K,G>(corpus.iterator(),model.getFeatures());
 		empiricalFeatureValue.calculate();
 		
+		logger.debug("Calculating feature value expectations by model");
 		CrfFeatureValueExpectationByModel<K, G> featureValueExpectationsByModel = new CrfFeatureValueExpectationByModel<K, G>(corpus.iterator(),model);
 		featureValueExpectationsByModel.calculate();
 		
+		logger.debug("Creating array of gradient");
 		double[] ret = new double[point.length];
 		for (int parameterIndex=0;parameterIndex<ret.length;++parameterIndex)
 		{
