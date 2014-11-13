@@ -8,7 +8,9 @@ import org.postagging.data.StringTaggedToken;
 import org.postagging.postaggers.PosTagger;
 
 /**
- * 
+ * A {@link PosTagger} which assigns for each word the tag that occurs mostly with that word.
+ * For words that were not seen in the training corpus, this pos-tagger assigns that tag that is most frequent in the
+ * training corpus.
  * @author Asher Stern
  * Date: Nov 4, 2014
  *

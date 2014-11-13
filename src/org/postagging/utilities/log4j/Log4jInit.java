@@ -8,6 +8,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
+ * Initializes Log4j: log messages will be printed to screen with prefix of "INFO - ", "DEBUG - ", etc.
  * 
  * @author Asher Stern
  * Date: Nov 4, 2014

@@ -4,6 +4,7 @@ import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
+ * A layout for printing messages by Log4j. It prints the log message with prefix like "INFO - ", "DEBUG - ", etc.
  * 
  * @author Asher Stern
  * Date: Nov 4, 2014

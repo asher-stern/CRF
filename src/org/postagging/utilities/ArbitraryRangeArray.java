@@ -2,6 +2,18 @@ package org.postagging.utilities;
 
 import java.lang.reflect.Array;
 
+/**
+ * An array that starts not in index 0, but some other index.
+ * <P>
+ * A Java array starts in 0. This class provides an array which starts in another index.
+ * So, for example, if the starting index is -3, and the length of the array is 5, than the
+ * array indexes are [-3,-2,-1,0,1]. 
+ * 
+ * @author Asher Stern
+ * Date: November 2014
+ *
+ * @param <T>
+ */
 public class ArbitraryRangeArray<T>
 {
 	@SuppressWarnings("unchecked")

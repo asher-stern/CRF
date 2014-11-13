@@ -14,7 +14,11 @@ import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
 /**
- * 
+ * Trains a {@link MajorityPosTagger} from a given corpus.
+ * For each token the trainer counts how many times each tag was assigned to that token in the corpus.
+ * Then, for each token, the tag that was the most frequent for that token is considered as the tag to be used in
+ * annotating a test example.
+ *  
  * @author Asher Stern
  * Date: Nov 4, 2014
  *

@@ -1,6 +1,7 @@
 package org.postagging.utilities;
 
 /**
+ * A collection of static functions for handling strings.
  * 
  * @author Asher Stern
  * Date: Nov 6, 2014
@@ -8,6 +9,11 @@ package org.postagging.utilities;
  */
 public class StringUtilities
 {
+	/**
+	 * Provides a string representation for a given double array.
+	 * @param array
+	 * @return
+	 */
 	public static String arrayOfDoubleToString(double[] array)
 	{
 		StringBuilder sb = new StringBuilder();
@@ -23,11 +29,25 @@ public class StringUtilities
 		return sb.toString();
 	}
 	
+	/**
+	 * Provides a string representation for the given array.
+	 * @param array
+	 * @return
+	 */
 	public static <T> String arrayToString(T[] array)
 	{
 		return arrayToString(array, "", "", " ");
 	}
 	
+	/**
+	 * Provides a string representation for the given array, where the prefix and suffix of the string,
+	 * as well as the delimited between the array items are given as parameters.
+	 * @param array
+	 * @param prefix
+	 * @param suffix
+	 * @param delimiter
+	 * @return
+	 */
 	public static <T> String arrayToString(T[] array, String prefix, String suffix, String delimiter)
 	{
 		StringBuilder sb = new StringBuilder();

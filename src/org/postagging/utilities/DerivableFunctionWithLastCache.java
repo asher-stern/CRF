@@ -4,6 +4,11 @@ import org.apache.log4j.Logger;
 import org.postagging.function.DerivableFunction;
 
 /**
+ * A {@link DerivableFunction} that remembers the last computed value and gradient.
+ * So, if the user calls {@link #value(double[])} for the same point (and there was
+ * no other call to {@link #value(double[])} in between) then the value will no be computed twice. Rather, the value
+ * computed by the first call is stored, and will be returned.
+ * The same applies to {@link #gradient(double[])}.
  * 
  * @author Asher Stern
  * Date: Nov 13, 2014

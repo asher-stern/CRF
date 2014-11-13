@@ -1,6 +1,7 @@
 package org.postagging.utilities;
 
 /**
+ * A collection of static functions for the JVM runtime.
  * 
  * @author Asher Stern
  * Date: Nov 8, 2014

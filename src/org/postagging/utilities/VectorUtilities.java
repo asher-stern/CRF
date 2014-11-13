@@ -1,6 +1,7 @@
 package org.postagging.utilities;
 
 /**
+ * A collection of linear algebra functions over vectors.
  * 
  * @author Asher Stern
  * Date: Nov 7, 2014
@@ -8,6 +9,12 @@ package org.postagging.utilities;
  */
 public class VectorUtilities
 {
+	/**
+	 * Returns the inner product of the two given vectors.
+	 * @param rowVector
+	 * @param columnVector
+	 * @return
+	 */
 	public static double product(double[] rowVector, double[] columnVector)
 	{
 		if (rowVector.length!=columnVector.length) throw new PosTaggerException("Cannot multiply vector of different sizes.");
@@ -19,6 +26,12 @@ public class VectorUtilities
 		return ret;
 	}
 	
+	/**
+	 * Returns a new vector which is the multiplication of the given vector by a scalar.
+	 * @param scalar
+	 * @param vector
+	 * @return
+	 */
 	public static double[] multiplyByScalar(double scalar, double[] vector)
 	{
 		double[] ret = new double[vector.length];
@@ -29,6 +42,12 @@ public class VectorUtilities
 		return ret;
 	}
 	
+	/**
+	 * Returns the sum of the two vectors, as a new vector. For example [1,2]+[3,4] = [4,6].
+	 * @param vector1
+	 * @param vector2
+	 * @return
+	 */
 	public static double[] addVectors(double[] vector1, double[] vector2)
 	{
 		if (vector1.length!=vector2.length) throw new PosTaggerException("Cannot add two vectors of different sizes.");
@@ -40,6 +59,12 @@ public class VectorUtilities
 		return ret;
 	}
 	
+	/**
+	 * Returns the substraction of the given two vectors. For example [10,20]-[5,6] = [5,14].
+	 * @param vector1
+	 * @param vector2
+	 * @return
+	 */
 	public static double[] substractVectors(double[] vector1, double[] vector2)
 	{
 		if (vector1.length!=vector2.length) throw new PosTaggerException("Cannot substract vectors of difference sizes.");

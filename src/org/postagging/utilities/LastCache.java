@@ -1,6 +1,8 @@
 package org.postagging.utilities;
 
 /**
+ * A "cache" which remembers one item only.
+ * The cache remembers the value for a given key. When a new key-value pair is put, then the previous one is forgotten.
  * 
  * @author Asher Stern
  * Date: Nov 13, 2014
@@ -10,6 +12,11 @@ package org.postagging.utilities;
  */
 public class LastCache<K,V>
 {
+	/**
+	 * Remember the given value for the given key. Forget the older key-value pair.
+	 * @param key A key. Cannot be null.
+	 * @param value A value corresponds to this key. Cannot be null.
+	 */
 	public synchronized void put(K key, V value)
 	{
 		if (null==key) {throw new PosTaggerException("null key");}
@@ -19,6 +26,12 @@ public class LastCache<K,V>
 		this.value = value;
 	}
 	
+	/**
+	 * Get the value that was put earlier for this key. Return null if the value is unknown.
+	 * 
+	 * @param key
+	 * @return
+	 */
 	public synchronized V get(K key)
 	{
 		if (null==key) {throw new PosTaggerException("null key");}

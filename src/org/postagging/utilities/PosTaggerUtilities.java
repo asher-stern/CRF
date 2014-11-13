@@ -8,6 +8,7 @@ import org.postagging.data.InMemoryPosTagCorpus;
 
 
 /**
+ * A collection of static helper functions for pos-tagger. 
  * 
  * @author Asher Stern
  * Date: Nov 10, 2014

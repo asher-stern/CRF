@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 /**
+ * A collection of static functions for handling files.
  * 
  * @author Asher Stern
  * Date: Nov 4, 2014
@@ -13,6 +14,11 @@ import java.util.Comparator;
  */
 public class FileUtilities
 {
+	/**
+	 * Returns an array of File, sorted by their name (alphabetically).
+	 * @param files
+	 * @return
+	 */
 	public static File[] getSortedByName(File[] files)
 	{
 		ArrayList<File> list = new ArrayList<File>(files.length);

@@ -1,7 +1,9 @@
 package org.postagging.utilities;
 
 /**
- * 
+ * Encapsulates a token and its tag.
+ * <P>
+ * In the task of part-of-speech tagging, the token is usually a word, and the tag is a part-of-speech tag like verb, noun, etc.
  * @author Asher Stern
  * Date: Nov 8, 2014
  *

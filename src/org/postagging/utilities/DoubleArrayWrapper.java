@@ -3,6 +3,7 @@ package org.postagging.utilities;
 import java.util.Arrays;
 
 /**
+ * Wraps double[] with {@link #equals(Object)} and {@link #hashCode()}.
  * 
  * @author Asher Stern
  * Date: Nov 13, 2014
