@@ -3,8 +3,6 @@ package org.postagging.crf;
 import static org.postagging.crf.CrfUtilities.safeAdd;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -35,8 +33,6 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		this.features = features;
 		this.useRegularization = useRegularization;
 		this.sigmaSquare_inverseRegularizationFactor = sigmaSquare_inverseRegularizationFactor;
-		
-		buildActiveFeaturesWholeCorpus();
 	}
 
 
@@ -69,7 +65,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		empiricalFeatureValue.calculate();
 		
 		logger.debug("Calculating expected feature values by models");
-		CrfFeatureValueExpectationByModel<K, G> featureValueExpectationsByModel = new CrfFeatureValueExpectationByModel<K, G>(corpus.iterator(),model,activeFeaturesWholeCorpus);
+		CrfFeatureValueExpectationByModel<K, G> featureValueExpectationsByModel = new CrfFeatureValueExpectationByModel<K, G>(corpus.iterator(),model);
 		featureValueExpectationsByModel.calculate();
 		
 		logger.debug("Creating gradient array.");
@@ -117,11 +113,10 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	private double calculateSumOfLogNormalizations(CrfModel<K, G> model)
 	{
 		double sum = 0.0;
-		Iterator<CrfRememberActiveFeatures<K, G>> activeFeaturesIterator = activeFeaturesWholeCorpus.iterator();
 		for (List<? extends TaggedToken<K, G> > sentence : corpus)
 		{
-			CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = activeFeaturesIterator.next();
 			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
+			CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = CrfRememberActiveFeatures.findForSentence(features, tags, sentenceAsArray);
 			CrfForwardBackward<K, G> forwardBackward = new CrfForwardBackward<K, G>(model,sentenceAsArray,activeFeaturesForSentence);
 			//forwardBackward.calculateForwardAndBackward();
 			forwardBackward.calculateOnlyNormalizationFactor();
@@ -130,7 +125,6 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 			double logNormalizationFactor = Math.log(normalizationFactor);
 			sum = safeAdd(sum, logNormalizationFactor);
 		}
-		if (activeFeaturesIterator.hasNext()) {throw new PosTaggerException("BUG");}
 		
 		return sum;
 	}
@@ -167,24 +161,23 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		return ret;
 	}
 	
-	private void buildActiveFeaturesWholeCorpus()
-	{
-		activeFeaturesWholeCorpus = new LinkedList<CrfRememberActiveFeatures<K,G>>();
-		for (List<? extends TaggedToken<K, G> > sentence : corpus)
-		{
-			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
-			CrfRememberActiveFeatures<K,G> activeFeaturesOfSentence = CrfRememberActiveFeatures.findForSentence(features,tags, sentenceAsArray);
-			activeFeaturesWholeCorpus.add(activeFeaturesOfSentence);
-		}
-	}
+//	private void buildActiveFeaturesWholeCorpus()
+//	{
+//		activeFeaturesWholeCorpus = new LinkedList<CrfRememberActiveFeatures<K,G>>();
+//		for (List<? extends TaggedToken<K, G> > sentence : corpus)
+//		{
+//			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
+//			CrfRememberActiveFeatures<K,G> activeFeaturesOfSentence = CrfRememberActiveFeatures.findForSentence(features,tags, sentenceAsArray);
+//			activeFeaturesWholeCorpus.add(activeFeaturesOfSentence);
+//		}
+//		logger.info(RuntimeUtilities.getUsedMemory());
+//	}
 
 	private final Iterable<List<? extends TaggedToken<K, G> >> corpus;
 	private final Set<G> tags;
 	private final CrfFeaturesAndFilters<K, G> features;
 	private final boolean useRegularization;
 	private final double sigmaSquare_inverseRegularizationFactor;
-	
-	private List<CrfRememberActiveFeatures<K, G>> activeFeaturesWholeCorpus = null;
 	
 	private static final Logger logger = Logger.getLogger(CrfLogLikelihoodFunction.class);
 }
