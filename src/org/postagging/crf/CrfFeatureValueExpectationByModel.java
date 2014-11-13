@@ -53,14 +53,13 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	private void addValueForSentence(List<? extends TaggedToken<K, G>> sentence)
 	{
 		K[] sentenceTokens = CrfUtilities.extractSentence(sentence);
-//		logger.debug("Run forward backward...");
+		CrfPsi_FormulaAllTokens<K, G> allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model,sentenceTokens);
 		CrfForwardBackward<K,G> forwardBackward = new CrfForwardBackward<K,G>(model,sentenceTokens);
+		forwardBackward.setAllTokensFormulaValues(allTokensFormula);
 		forwardBackward.calculateForwardAndBackward();
-//		logger.debug("Run forward backward - done.");
 
 		final double normalizationFactor = forwardBackward.getCalculatedNormalizationFactor();
 		
-//		logger.debug("Run over sentence tokens...");
 		for (int tokenIndex=0;tokenIndex<sentenceTokens.length;++tokenIndex)
 		{
 			Set<G> possiblePreviousTags = null;
@@ -71,7 +70,8 @@ public class CrfFeatureValueExpectationByModel<K, G>
 			{
 				for (G currentTag : model.getTags())
 				{
-					Set<Integer> activeFeatures = CrfUtilities.getActiveFeatureIndexes(model.getFeatures(),sentenceTokens,tokenIndex,currentTag,previousTag);
+					//Set<Integer> activeFeatures = CrfUtilities.getActiveFeatureIndexes(model.getFeatures(),sentenceTokens,tokenIndex,currentTag,previousTag);
+					Set<Integer> activeFeatures = allTokensFormula.getOneTokenActiveFeatures(tokenIndex, currentTag, previousTag);
 					for (int featureIndex : activeFeatures)
 					{
 						double featureValue = 0.0;
@@ -97,7 +97,8 @@ public class CrfFeatureValueExpectationByModel<K, G>
 									alpha_forward_previousValue = forwardBackward.getAlpha_forward()[tokenIndex-1].get(previousTag);
 								}
 								double beta_backward_value = forwardBackward.getBeta_backward().get(tokenIndex).get(currentTag);
-								double psi_probabilityForGivenIndexAndTags = CrfUtilities.oneTokenFormula(model,sentenceTokens,tokenIndex,currentTag,previousTag,activeFeatures);
+								//double psi_probabilityForGivenIndexAndTags = CrfUtilities.oneTokenFormula(model,sentenceTokens,tokenIndex,currentTag,previousTag,activeFeatures);
+								double psi_probabilityForGivenIndexAndTags = allTokensFormula.getOneTokenFormula(tokenIndex,currentTag,previousTag);
 								probabilityUnderModel = (alpha_forward_previousValue*psi_probabilityForGivenIndexAndTags*beta_backward_value)/normalizationFactor;
 							}
 							
@@ -105,11 +106,11 @@ public class CrfFeatureValueExpectationByModel<K, G>
 
 							featureValueExpectation[featureIndex] = safeAdd(featureValueExpectation[featureIndex], addToExpectation);
 						}
-					}
-				}
-			}
-		}
-//		logger.debug("Run over sentence tokens - done.");
+					} // end for-each feature
+				} // end for-each current-tag
+			} // end for-each previous-tag
+		} // end for-each token
+		
 		
 		
 //		logger.debug("Running loop for each feature...");

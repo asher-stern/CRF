@@ -30,8 +30,18 @@ public class CrfForwardBackward<K,G>
 		this.sentence = sentence;
 	}
 	
+	public void setAllTokensFormulaValues(CrfPsi_FormulaAllTokens<K,G> allTokensFormula)
+	{
+		this.allTokensFormula = allTokensFormula;
+	}
+	
 	public void calculateForwardAndBackward()
 	{
+		if (null==allTokensFormula)
+		{
+			allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model, sentence);
+		}
+		
 		calculateAlphaForward();
 		calculateBetaBackward();
 		
@@ -47,6 +57,11 @@ public class CrfForwardBackward<K,G>
 	
 	public void calculateOnlyNormalizationFactor()
 	{
+		if (null==allTokensFormula)
+		{
+			allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model, sentence);
+		}
+
 		calculateAlphaForward();
 		onlyNormalizationFactorCalculated = true;
 	}
@@ -88,7 +103,8 @@ public class CrfForwardBackward<K,G>
 				double sumOverPreviousTags = 0.0;
 				for (G previousTag : previousTags)
 				{
-					double valueForPreviousTag = CrfUtilities.oneTokenFormula(model,sentence,index,tag,previousTag);
+					//double valueForPreviousTag = CrfUtilities.oneTokenFormula(model,sentence,index,tag,previousTag);
+					double valueForPreviousTag = allTokensFormula.getOneTokenFormula(index,tag,previousTag);
 					if (index>0)
 					{
 						double previousAlphaValue = alpha_forward[index-1].get(previousTag);
@@ -133,7 +149,8 @@ public class CrfForwardBackward<K,G>
 				double sum = 0.0;
 				for (G nextTag : beta_backward.get(index+1).keySet())
 				{
-					double valueCurrentTokenCrfFormula = CrfUtilities.oneTokenFormula(model,sentence,index+1,nextTag,tag);
+					//double valueCurrentTokenCrfFormula = CrfUtilities.oneTokenFormula(model,sentence,index+1,nextTag,tag);
+					double valueCurrentTokenCrfFormula = allTokensFormula.getOneTokenFormula(index+1,nextTag,tag);
 					double valueForNextTag = valueCurrentTokenCrfFormula*beta_backward.get(index+1).get(nextTag);
 					sum += valueForNextTag;
 				}
@@ -150,7 +167,8 @@ public class CrfForwardBackward<K,G>
 	
 	protected final CrfModel<K, G> model;
 	protected final K[] sentence;
-	
+
+	private CrfPsi_FormulaAllTokens<K, G> allTokensFormula = null;
 	private Map<G, Double>[] alpha_forward;
 	private ArbitraryRangeArray<LinkedHashMap<G, Double>> beta_backward;
 	private double finalAlpha = 0.0;
