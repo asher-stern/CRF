@@ -119,7 +119,8 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 			//if (logger.isDebugEnabled()) {logger.debug("sum of log normalization: calculating sentence: "+debug_sentenceIndex);}
 			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
 			CrfForwardBackward<K, G> forwardBackward = new CrfForwardBackward<K, G>(model,sentenceAsArray);
-			forwardBackward.calculateForwardAndBackward();
+			//forwardBackward.calculateForwardAndBackward();
+			forwardBackward.calculateOnlyNormalizationFactor();
 			
 			double normalizationFactor = forwardBackward.getCalculatedNormalizationFactor();
 			double logNormalizationFactor = Math.log(normalizationFactor);

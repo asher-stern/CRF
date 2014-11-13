@@ -1,5 +1,7 @@
 package org.postagging.evaluation;
 
+import java.util.Date;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.postagging.data.InMemoryPosTagCorpus;
@@ -98,10 +100,17 @@ public class TrainAndEvaluate
 	private PosTagger train(PosTagCorpus<String,String> corpus)
 	{
 		InMemoryPosTagCorpus<String,String> inMemoryCorpus = new InMemoryPosTagCorpusImplementation<String,String>(corpus);
+
+		long timeInit = new Date().getTime();
+		
 		//LingPipeWrapperPosTaggerTrainer trainer = new LingPipeWrapperPosTaggerTrainer();
 		CrfPosTaggerTrainerFactory factory = new CrfPosTaggerTrainerFactory();
 		CrfPosTaggerTrainer trainer = factory.createPosTaggerTrainer(inMemoryCorpus);
 		trainer.train(inMemoryCorpus);
+
+		long seconds = (new Date().getTime()-timeInit)/1000;
+		logger.info("Training time (HH:MM:SS) = "+String.format("%02d:%02d:%02d",(seconds/60)/60,(seconds/60)%60,seconds%60));
+		
 		PosTagger posTagger = trainer.getTrainedPosTagger();
 		return posTagger;
 	}

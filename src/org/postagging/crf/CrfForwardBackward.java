@@ -45,6 +45,12 @@ public class CrfForwardBackward<K,G>
 		calculated=true;
 	}
 	
+	public void calculateOnlyNormalizationFactor()
+	{
+		calculateAlphaForward();
+		onlyNormalizationFactorCalculated = true;
+	}
+	
 	
 	
 	public Map<G, Double>[] getAlpha_forward()
@@ -61,7 +67,7 @@ public class CrfForwardBackward<K,G>
 	
 	public double getCalculatedNormalizationFactor()
 	{
-		if (!calculated) {throw new PosTaggerException("forward-backward not calculated");}
+		if ( (!calculated) && (!onlyNormalizationFactorCalculated) ) {throw new PosTaggerException("forward-backward not calculated");}
 		return finalAlpha;
 	}
 
@@ -151,6 +157,7 @@ public class CrfForwardBackward<K,G>
 	private double finalBeta = 0.0;
 	
 	private boolean calculated = false;
+	private boolean onlyNormalizationFactorCalculated = false;
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CrfForwardBackward.class);
