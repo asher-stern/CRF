@@ -58,15 +58,17 @@ public class CrfUtilities
 		return activeFeatureIndexes;
 	}
 	
+	
 	public static <K,G> double oneTokenSumWeightedFeatures(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
 	{
 		Set<Integer> activeFeatureIndexes = getActiveFeatureIndexes(model.getFeatures(),sentence,tokenIndex,currentTag,previousTag);
-		//if (logger.isDebugEnabled()) {logger.debug("Number of active featurens = "+activeFeatureIndexes.size());}
-
-		//boolean debug_activeFeatureDetected = false;
+		return oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,activeFeatureIndexes);
+	}
+	
+	public static <K,G> double oneTokenSumWeightedFeatures(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag, Set<Integer> knownActiveFeatureIndexes)
+	{
 		double sum = 0.0;
-		
-		for (int index : activeFeatureIndexes)
+		for (int index : knownActiveFeatureIndexes)
 		{
 			CrfFilteredFeature<K, G> feature = model.getFeatures().getFilteredFeatures()[index];
 			double featureValue = 0.0;
@@ -78,23 +80,25 @@ public class CrfUtilities
 			{
 				featureValue = feature.getFeature().value(sentence,tokenIndex,currentTag,previousTag);
 			}
-			//if (featureValue!=0.0) {debug_activeFeatureDetected=true;}
 			
 			double weightedValue = model.getParameters().get(index)*featureValue;
 			sum = safeAdd(sum, weightedValue);
 		}
-
-//		if (!debug_activeFeatureDetected) {throw new PosTaggerException("Bug: no active feature detected for the given token.\n"
-//				+ "Token = "+sentence[tokenIndex]+". Current tag = "+currentTag+". Previous tag = "+previousTag+". Token-index = "+tokenIndex
-//				+"\nSentence = "+StringUtilities.arrayToString(sentence));}
-		
 		return sum;
 	}
 	
 	public static <K,G> double oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
 	{
-		return Math.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag));
+		Set<Integer> activeFeatureIndexes = getActiveFeatureIndexes(model.getFeatures(),sentence,tokenIndex,currentTag,previousTag);
+		return oneTokenFormula(model,sentence,tokenIndex,currentTag,previousTag,activeFeatureIndexes);
 	}
+	
+	public static <K,G> double oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag,Set<Integer> knownActiveFeatureIndexes)
+	{
+		return Math.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,knownActiveFeatureIndexes));
+	}
+	
+	
 	
 	public static <K> K[] extractSentence(List<? extends TaggedToken<K, ?>> sentence)
 	{

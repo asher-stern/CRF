@@ -6,6 +6,7 @@ import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
 import org.postagging.function.DerivableFunction;
+import org.postagging.utilities.DerivableFunctionWithLastCache;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.VectorUtilities;
 
@@ -27,7 +28,8 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 
 	public LbfgsMinimizer(DerivableFunction function, int numberOfPreviousIterationsToMemorize, double convergence)
 	{
-		super(function);
+//		super(function);
+		super(new DerivableFunctionWithLastCache(function));
 		this.numberOfPreviousIterationsToMemorize = numberOfPreviousIterationsToMemorize;
 		this.convergence = convergence;
 	}

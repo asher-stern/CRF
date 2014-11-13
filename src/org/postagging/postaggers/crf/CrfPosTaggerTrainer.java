@@ -12,7 +12,6 @@ import org.postagging.data.InMemoryPosTagCorpus;
 import org.postagging.function.DerivableFunction;
 import org.postagging.function.optimization.LbfgsMinimizer;
 import org.postagging.function.optimization.NegatedFunction;
-import org.postagging.postaggers.PosTagger;
 import org.postagging.postaggers.PosTaggerTrainer;
 import org.postagging.utilities.PosTaggerException;
 
@@ -70,7 +69,7 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 
 	
 	@Override
-	public PosTagger getTrainedPosTagger()
+	public CrfPosTagger getTrainedPosTagger()
 	{
 		if (null==posTagger) {throw new PosTaggerException("Not trained.");}
 		return posTagger;

@@ -84,22 +84,25 @@ public class CrfFeatureValueExpectationByModel<K, G>
 							featureValue = model.getFeatures().getFilteredFeatures()[featureIndex].getFeature().value(sentenceTokens,tokenIndex,currentTag,previousTag);
 						}
 						
+						Double probabilityUnderModel = null;
+						
 						if (featureValue!=0.0)
 						{
 							// Calculate probabilityUnderModel
-							double alpha_forward_previousValue = 1.0;
-							if (tokenIndex>0)
+							if (null==probabilityUnderModel)
 							{
-								alpha_forward_previousValue = forwardBackward.getAlpha_forward()[tokenIndex-1].get(previousTag);
+								double alpha_forward_previousValue = 1.0;
+								if (tokenIndex>0)
+								{
+									alpha_forward_previousValue = forwardBackward.getAlpha_forward()[tokenIndex-1].get(previousTag);
+								}
+								double beta_backward_value = forwardBackward.getBeta_backward().get(tokenIndex).get(currentTag);
+								double psi_probabilityForGivenIndexAndTags = CrfUtilities.oneTokenFormula(model,sentenceTokens,tokenIndex,currentTag,previousTag,activeFeatures);
+								probabilityUnderModel = (alpha_forward_previousValue*psi_probabilityForGivenIndexAndTags*beta_backward_value)/normalizationFactor;
 							}
-							double beta_backward_value = forwardBackward.getBeta_backward().get(tokenIndex).get(currentTag);
+							
+							double addToExpectation = featureValue*probabilityUnderModel;
 
-							double psi_probabilityForGivenIndexAndTags = CrfUtilities.oneTokenFormula(model,sentenceTokens,tokenIndex,currentTag,previousTag);
-							
-							double probabilityUnderModel = alpha_forward_previousValue*psi_probabilityForGivenIndexAndTags*beta_backward_value;
-							
-							double addToExpectation = (featureValue*probabilityUnderModel)/normalizationFactor;
-							
 							featureValueExpectation[featureIndex] = safeAdd(featureValueExpectation[featureIndex], addToExpectation);
 						}
 					}

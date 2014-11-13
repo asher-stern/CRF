@@ -1,5 +1,7 @@
 package org.postagging.crf;
 
+import static org.postagging.crf.CrfUtilities.safeAdd;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -9,8 +11,6 @@ import org.postagging.crf.features.CrfFeaturesAndFilters;
 import org.postagging.function.DerivableFunction;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
-
-import static org.postagging.crf.CrfUtilities.safeAdd;
 
 /**
  * This function is CONCAVE, not convex!!!
