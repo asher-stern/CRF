@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.postagging.utilities.TaggedToken;
+import org.postagging.utilities.PosTaggerException;
 
 import static org.postagging.crf.CrfUtilities.safeAdd;
 
@@ -22,11 +23,13 @@ public class CrfFeatureValueExpectationByModel<K, G>
 {
 	public CrfFeatureValueExpectationByModel(
 			Iterator<? extends List<? extends TaggedToken<K, G>>> corpusIterator,
-			CrfModel<K, G> model)
+			CrfModel<K, G> model,
+			List<CrfRememberActiveFeatures<K, G>> activeFeaturesWholeCorpus)
 	{
 		super();
 		this.corpusIterator = corpusIterator;
 		this.model = model;
+		this.activeFeaturesWholeCorpus = activeFeaturesWholeCorpus;
 	}
 
 
@@ -35,11 +38,15 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	{
 		featureValueExpectation = new double[model.getFeatures().getFilteredFeatures().length];
 		for (int i=0;i<featureValueExpectation.length;++i) {featureValueExpectation[i]=0.0;}
-		while (corpusIterator.hasNext())
+		
+		Iterator<CrfRememberActiveFeatures<K, G>> activeFeaturesIterator = activeFeaturesWholeCorpus.iterator();
+		while (corpusIterator.hasNext() && activeFeaturesIterator.hasNext())
 		{
 			List<? extends TaggedToken<K, G>> sentence = corpusIterator.next();
-			addValueForSentence(sentence);
+			CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = activeFeaturesIterator.next();
+			addValueForSentence(sentence,activeFeaturesForSentence);
 		}
+		if (corpusIterator.hasNext() || activeFeaturesIterator.hasNext()) {throw new PosTaggerException("BUG");}
 	}
 	
 	
@@ -50,11 +57,11 @@ public class CrfFeatureValueExpectationByModel<K, G>
 
 
 
-	private void addValueForSentence(List<? extends TaggedToken<K, G>> sentence)
+	private void addValueForSentence(List<? extends TaggedToken<K, G>> sentence, CrfRememberActiveFeatures<K, G> activeFeaturesForSentence)
 	{
 		K[] sentenceTokens = CrfUtilities.extractSentence(sentence);
-		CrfPsi_FormulaAllTokens<K, G> allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model,sentenceTokens);
-		CrfForwardBackward<K,G> forwardBackward = new CrfForwardBackward<K,G>(model,sentenceTokens);
+		CrfPsi_FormulaAllTokens<K, G> allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model,sentenceTokens,activeFeaturesForSentence);
+		CrfForwardBackward<K,G> forwardBackward = new CrfForwardBackward<K,G>(model,sentenceTokens,activeFeaturesForSentence);
 		forwardBackward.setAllTokensFormulaValues(allTokensFormula);
 		forwardBackward.calculateForwardAndBackward();
 
@@ -71,7 +78,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 				for (G currentTag : model.getTags())
 				{
 					//Set<Integer> activeFeatures = CrfUtilities.getActiveFeatureIndexes(model.getFeatures(),sentenceTokens,tokenIndex,currentTag,previousTag);
-					Set<Integer> activeFeatures = allTokensFormula.getOneTokenActiveFeatures(tokenIndex, currentTag, previousTag);
+					Set<Integer> activeFeatures = activeFeaturesForSentence.getOneTokenActiveFeatures(tokenIndex, currentTag, previousTag);
 					for (int featureIndex : activeFeatures)
 					{
 						double featureValue = 0.0;
@@ -153,6 +160,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 
 	private final Iterator<? extends List<? extends TaggedToken<K, G>>> corpusIterator;
 	private final CrfModel<K, G> model;
+	private final List<CrfRememberActiveFeatures<K, G>> activeFeaturesWholeCorpus;
 	
 	private double[] featureValueExpectation;
 	

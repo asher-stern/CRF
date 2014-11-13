@@ -23,11 +23,12 @@ public class CrfForwardBackward<K,G>
 {
 	public static final double DEBUG_ALLOWED_DIFFERENCE_BETWEEN_FINAL_ALPHA_AND_FINAL_BETA = 0.01;
 	
-	public CrfForwardBackward(CrfModel<K, G> model, K[] sentence)
+	public CrfForwardBackward(CrfModel<K, G> model, K[] sentence, CrfRememberActiveFeatures<K, G> activeFeaturesForSentence)
 	{
 		super();
 		this.model = model;
 		this.sentence = sentence;
+		this.activeFeaturesForSentence = activeFeaturesForSentence;
 	}
 	
 	public void setAllTokensFormulaValues(CrfPsi_FormulaAllTokens<K,G> allTokensFormula)
@@ -39,7 +40,7 @@ public class CrfForwardBackward<K,G>
 	{
 		if (null==allTokensFormula)
 		{
-			allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model, sentence);
+			allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model, sentence, activeFeaturesForSentence);
 		}
 		
 		calculateAlphaForward();
@@ -59,7 +60,7 @@ public class CrfForwardBackward<K,G>
 	{
 		if (null==allTokensFormula)
 		{
-			allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model, sentence);
+			allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model, sentence, activeFeaturesForSentence);
 		}
 
 		calculateAlphaForward();
@@ -167,6 +168,7 @@ public class CrfForwardBackward<K,G>
 	
 	protected final CrfModel<K, G> model;
 	protected final K[] sentence;
+	protected final CrfRememberActiveFeatures<K, G> activeFeaturesForSentence;
 
 	private CrfPsi_FormulaAllTokens<K, G> allTokensFormula = null;
 	private Map<G, Double>[] alpha_forward;
