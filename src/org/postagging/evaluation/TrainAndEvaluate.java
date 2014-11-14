@@ -103,7 +103,11 @@ public class TrainAndEvaluate
 
 		long timeInit = new Date().getTime();
 		
+//		MajorityPosTaggerTrainer trainer = new MajorityPosTaggerTrainer();
+//		trainer.train(inMemoryCorpus);
+		
 		//LingPipeWrapperPosTaggerTrainer trainer = new LingPipeWrapperPosTaggerTrainer();
+		
 		CrfPosTaggerTrainerFactory factory = new CrfPosTaggerTrainerFactory();
 		CrfPosTaggerTrainer trainer = factory.createPosTaggerTrainer(inMemoryCorpus);
 		trainer.train(inMemoryCorpus);

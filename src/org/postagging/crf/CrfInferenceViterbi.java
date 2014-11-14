@@ -28,20 +28,21 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 	public G[] inferBestTagSequence()
 	{
 		calculateViterbi();
-		return argmaxTags;
+		return result;
 	}
 	
 	
 	@SuppressWarnings("unchecked")
 	private void calculateViterbi()
 	{
-		delta_viterbiForward = (LinkedHashMap<G, Double>[]) Array.newInstance(LinkedHashMap.class, sentence.length); // = new LinkedHashMap<G, Double>[sentence.length]; 
-		argmaxTags = (G[]) Array.newInstance(model.getTags().iterator().next().getClass() , sentence.length); // = new G[sentence.length]
+		delta_viterbiForward = (LinkedHashMap<G, Double>[]) new LinkedHashMap[sentence.length];
+		argmaxTags = (LinkedHashMap<G, G>[]) new LinkedHashMap[sentence.length];
 		for (int i=0;i<argmaxTags.length;++i){argmaxTags[i]=null;}
 		
 		for (int index=0;index<sentence.length;++index)
 		{
 			Map<G, Double> delta_viterbiForwardCurrentToken = new LinkedHashMap<G, Double>();
+			argmaxTags[index] = new LinkedHashMap<G, G>();
 			for (G tag : model.getTags())
 			{
 				Set<G> tagsOfPrevious = null;
@@ -68,22 +69,26 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 						tagOfPreviousWithMaxValue=tagOfPrevious;
 					}
 				} // end for-each previous-tag
-				if (index>0)
-				{
-					argmaxTags[index-1]=tagOfPreviousWithMaxValue;
-				}
+				argmaxTags[index].put(tag,tagOfPreviousWithMaxValue);
 				delta_viterbiForwardCurrentToken.put(tag,maxValueByPrevious);
 			} // end for-each current-tag
 			delta_viterbiForward[index]=delta_viterbiForwardCurrentToken;
 		} // end for-each token-in-sentence
 
-		// Set the tag for the last token
-		if (argmaxTags[sentence.length-1]!=null) {throw new PosTaggerException("BUG");}
-		argmaxTags[sentence.length-1] = getArgMax(delta_viterbiForward[sentence.length-1]);
+		G tagOfLastToken = getArgMax(delta_viterbiForward[sentence.length-1]);
+		
+		result = (G[]) Array.newInstance(tagOfLastToken.getClass(), sentence.length); // new G[sentence.length];
+		G bestTagCurrentIndex = tagOfLastToken;
+		for (int tokenIndex=sentence.length-1;tokenIndex>=0;--tokenIndex)
+		{
+			result[tokenIndex] = bestTagCurrentIndex;
+			bestTagCurrentIndex = argmaxTags[tokenIndex].get(bestTagCurrentIndex);
+		}
+		if (bestTagCurrentIndex!=null) {throw new PosTaggerException("BUG");} // the tag of "before the first token" must be null.
 		
 		// Sanity checks
-		if (argmaxTags.length!=sentence.length) throw new PosTaggerException("BUG: assignment array has different length than the sentence.");
-		for (int i=0;i<argmaxTags.length;++i)
+		if (result.length!=sentence.length) throw new PosTaggerException("BUG: assignment array has different length than the sentence.");
+		for (int i=0;i<result.length;++i)
 		{
 			if (null==argmaxTags[i]) {throw new PosTaggerException("BUG: null tag assigned to token: "+i);}
 		}
@@ -114,6 +119,8 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 	
 	
 	
-	private Map<G, Double>[] delta_viterbiForward; // the map must permit null keys
-	private G[] argmaxTags;
+	private Map<G, Double>[] delta_viterbiForward = null; // the map must permit null keys
+	private Map<G, G>[] argmaxTags = null; // Map from current tag to previous tag.
+	
+	private G[] result = null;
 }
