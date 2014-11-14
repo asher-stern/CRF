@@ -9,6 +9,36 @@ import java.util.Set;
 import org.postagging.utilities.PosTaggerException;
 
 /**
+ * Implementation of the Viterbi algorithm.
+ * <BR>
+ * The Viterbi algorithm finds the most probable sequence of tags for a given sentence (sequence) under the given model.
+ * <BR>
+ * The algorithm works as follows:<BR>
+ * Let \delta_j(s) denote the probability of the most probable sequence of tags from 0 to j, which ends with the tag s.<BR>
+ * Consequently, \delta_l(s), where l is the "sentence-length -1" (in Java all arrays start with index 0), is the most
+ * probable sequence of tags for the whole sentence, where the last tag is s.<BR>
+ * Now, find the tag s which maximizes \delta_l(s), and you get the probability of the most probable sequence of tags for
+ * the whole sequence.
+ * Moreover, that "s" (the one which maximizes \delta_l(s)) is the tag of the last token in the sequence.
+ * <BR>
+ * The formula to calculate \delta_j(s) is:<BR>
+ * \delta_j(s) = max_{s'}{\delta_{j-1}(s')*\psi_j(s,s')}<BR>
+ * where \psi_j(s,s') is the formula for token number j in the sequence, where its tag is s, and the tag of token number j-1 is s'.<BR>
+ * This formula, in CRF, is e^{\sum_{i=0}^{k-1}{\theta_i*f_i(sequecne,j,s,s')}}/Z(sequence)<BR>
+ * where k is the number of features, theta_i is the parameter number i, and f_i is feature number i,
+ * and Z(sequence) is the normalization factor.
+ * <P>
+ * Now, it can be observed that to calculate \delta_j(s), the tag s' should be detected, and that s' is the tag assigned to
+ * token j-1, when it is needed to maximize a sequence of tags for [0..j] that ends with s.<BR>
+ * Thus, during the computation of \delta_j(s) the algorithm keeps track of argmax_j(s) = s'.
+ * In other words, the algorithm "remembers" for each j and s what is the tag s' that should be assigned to token j-1.
+ * <P>
+ * When the algorithm ends, the tag s for token "sentence-length-1" is known (see above).
+ * Using argmax_j(s) it is possible to find the tag s' for "sentence-length-2". In the same way, s'' for "sentence-length-3"
+ * can be found, until the first token of the sentence.
+ * 
+ * 
+ *  
  * 
  * @author Asher Stern
  * Date: Nov 8, 2014
@@ -18,12 +48,20 @@ import org.postagging.utilities.PosTaggerException;
  */
 public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 {
-
+	/**
+	 * Constructs Viterbi implementation for the given sentence, under the given model.
+	 * @param model
+	 * @param sentence
+	 */
 	public CrfInferenceViterbi(CrfModel<K, G> model, K[] sentence)
 	{
 		super(model, sentence);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.postagging.crf.CrfInference#inferBestTagSequence()
+	 */
 	@Override
 	public G[] inferBestTagSequence()
 	{
@@ -45,7 +83,7 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 			argmaxTags[index] = new LinkedHashMap<G, G>();
 			for (G tag : model.getTags())
 			{
-				Set<G> tagsOfPrevious = null;
+				Set<G> tagsOfPrevious = null; // The set of tags that can be assigned to token index-1.
 				if (0==index) {tagsOfPrevious=Collections.singleton(null);}
 				else {tagsOfPrevious=delta_viterbiForward[index-1].keySet();}
 				Double maxValueByPrevious = null;
@@ -118,9 +156,20 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 	}
 	
 	
-	
+	/**
+	 * This is \delta_j(s). delta_viterbiForward[j].get(s) is the probability of the most
+	 * probable sequence of tags from 0 to j, where the tag for token j is s.
+	 */
 	private Map<G, Double>[] delta_viterbiForward = null; // the map must permit null keys
+	
+	/**
+	 * argmaxTags[j].get(s) is the tag s', which is the tag for token j-1 in the most probable sequence of tags from 0 to j
+	 * where the tag for j is s.
+	 */
 	private Map<G, G>[] argmaxTags = null; // Map from current tag to previous tag.
 	
+	/**
+	 * The most probable sequence of tags for the given sentence.
+	 */
 	private G[] result = null;
 }

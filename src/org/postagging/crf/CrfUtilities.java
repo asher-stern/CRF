@@ -16,6 +16,7 @@ import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
 /**
+ * A collection of static functions needed by CRF.
  * 
  * @author Asher Stern
  * Date: Nov 8, 2014
@@ -39,6 +40,23 @@ public class CrfUtilities
 		}
 	}
 	
+	/**
+	 * Finds and returns the feature-indexes for which it is not sure that they return 0.<BR>
+	 * Typically in CRF, most of the features return 0 in most inputs.
+	 * For example, a feature that returns 1 if the token is "the" and its tag is "DETERMINER". This feature returns 0 for most
+	 * of the words in the corpus, and most of the tags.<BR>
+	 * This static function returns the features, for a given token and tags, that <b>might</b> return non-zero.
+	 * <BR>
+	 * See also {@link Filter}
+	 * 
+	 * 
+	 * @param features
+	 * @param sentence
+	 * @param tokenIndex
+	 * @param currentTag
+	 * @param previousTag
+	 * @return
+	 */
 	public static <K,G> Set<Integer> getActiveFeatureIndexes(CrfFeaturesAndFilters<K,G> features, K[] sentence, int tokenIndex, G currentTag, G previousTag)
 	{
 		Set<Integer> activeFeatureIndexes = new LinkedHashSet<Integer>();
@@ -58,13 +76,40 @@ public class CrfUtilities
 		return activeFeatureIndexes;
 	}
 	
-	
+	/**
+	 * Returns \Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}, where k is the number of features, \theta_i is parameter number i,
+	 * f_i is feature number i, x is the given sentence, j is the index of the token, s is the tag of token number j,
+	 * and s' is the tag of token number j-1.
+	 * 
+	 * @param model the CRF model: holds the features and the parameters.
+	 * @param sentence a sentence (sequence of tokens)
+	 * @param tokenIndex token index
+	 * @param currentTag tag of the token in tokenIndex
+	 * @param previousTag tag of the token in tokenIndex-1
+	 * @return \Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}
+	 */
 	public static <K,G> double oneTokenSumWeightedFeatures(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
 	{
 		Set<Integer> activeFeatureIndexes = getActiveFeatureIndexes(model.getFeatures(),sentence,tokenIndex,currentTag,previousTag);
 		return oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,activeFeatureIndexes);
 	}
-	
+
+	/**
+	 * Returns \Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}, where k is the number of features, \theta_i is parameter number i,
+	 * f_i is feature number i, x is the given sentence, j is the index of the token, s is the tag of token number j,
+	 * and s' is the tag of token number j-1.
+	 * <BR>
+	 * This function is also given a set of features for which <b>it is not known</b> that they return zero for (x,j,s,s').
+	 * See {@link #getActiveFeatureIndexes(CrfFeaturesAndFilters, Object[], int, Object, Object)}.
+	 *  
+	 * @param model the CRF model: holds the features and the parameters.
+	 * @param sentence a sentence (sequence of tokens)
+	 * @param tokenIndex token index
+	 * @param currentTag tag of the token in tokenIndex
+	 * @param previousTag tag of the token in tokenIndex-1
+	 * @param knownActiveFeatureIndexes a set of features for which <b>it is not known</b> that they return zero for (x,j,s,s').
+	 * @return \Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}
+	 */
 	public static <K,G> double oneTokenSumWeightedFeatures(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag, Set<Integer> knownActiveFeatureIndexes)
 	{
 		double sum = 0.0;
@@ -87,19 +132,51 @@ public class CrfUtilities
 		return sum;
 	}
 	
+	/**
+	 * Returns e^{\Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}}, where k is the number of features, \theta_i is parameter number i,
+	 * f_i is feature number i, x is the given sentence, j is the index of the token, s is the tag of token number j,
+	 * and s' is the tag of token number j-1.
+	 * 
+	 * @param model the CRF model: holds the features and the parameters.
+	 * @param sentence a sentence (sequence of tokens)
+	 * @param tokenIndex token index
+	 * @param currentTag tag of the token in tokenIndex
+	 * @param previousTag tag of the token in tokenIndex-1
+	 * @return e^{\Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}}
+	 */
 	public static <K,G> double oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
 	{
 		Set<Integer> activeFeatureIndexes = getActiveFeatureIndexes(model.getFeatures(),sentence,tokenIndex,currentTag,previousTag);
 		return oneTokenFormula(model,sentence,tokenIndex,currentTag,previousTag,activeFeatureIndexes);
 	}
 	
+	/**
+	 * Returns e^{\Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}}, where k is the number of features, \theta_i is parameter number i,
+	 * f_i is feature number i, x is the given sentence, j is the index of the token, s is the tag of token number j,
+	 * and s' is the tag of token number j-1.
+	 * <BR>
+	 * This function is also given a set of features for which <b>it is not known</b> that they return zero for (x,j,s,s').
+	 * See {@link #getActiveFeatureIndexes(CrfFeaturesAndFilters, Object[], int, Object, Object)}.
+	 * 
+	 * @param model the CRF model: holds the features and the parameters.
+	 * @param sentence a sentence (sequence of tokens)
+	 * @param tokenIndex token index
+	 * @param currentTag tag of the token in tokenIndex
+	 * @param previousTag tag of the token in tokenIndex-1
+	 * @param knownActiveFeatureIndexes a set of features for which <b>it is not known</b> that they return zero for (x,j,s,s').
+	 * @return e^{\Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}}
+	 */
 	public static <K,G> double oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag,Set<Integer> knownActiveFeatureIndexes)
 	{
 		return Math.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,knownActiveFeatureIndexes));
 	}
 	
 	
-	
+	/**
+	 * Returns a sentence as an array, for the given sentence (given as list of tagged tokens)
+	 * @param sentence a sentence
+	 * @return the given sentence as an array.
+	 */
 	public static <K> K[] extractSentence(List<? extends TaggedToken<K, ?>> sentence)
 	{
 		if (sentence==null) throw new PosTaggerException("The input is an empty sentence.");
@@ -116,7 +193,16 @@ public class CrfUtilities
 		return ret;
 	}
 	
-	
+	/**
+	 * Return variable+valueToAdd.
+	 * The user, instead of writing variable += valueToAdd, writes variable = safeAdd(variable,valueToAdd).
+	 * This function is required in order to be on the safe side,
+	 * in detecting whether a limitation of the "double" type caused unexpected results.
+	 *  
+	 * @param variable
+	 * @param valueToAdd
+	 * @return variable+valueToAdd.
+	 */
 	public static double safeAdd(double variable, final double valueToAdd)
 	{
 		final double oldValue = variable;
@@ -129,6 +215,9 @@ public class CrfUtilities
 		return variable;
 	}
 	
+	/**
+	 * If |value1|>|value2| returns |value1|/|value2|. Otherwise returns |value2|/|value1|.
+	 */
 	public static double relativeDifference(double value1, double value2)
 	{
 		double smaller;
@@ -146,6 +235,12 @@ public class CrfUtilities
 		return larger/smaller;
 	}
 	
+	/**
+	 * Given a map from K to set of V - adds v to the set of k.
+	 * @param map
+	 * @param key
+	 * @param value
+	 */
 	public static <K,V> void putInMapSet(Map<K, Set<V>> map, K key, V value)
 	{
 		Set<V> set = map.get(key);
