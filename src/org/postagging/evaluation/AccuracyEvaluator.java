@@ -42,8 +42,15 @@ public class AccuracyEvaluator
 			List<String> sentence = taggedSentenceToSentence(taggedSentence);
 			List<StringTaggedToken> taggedByPosTagger = posTagger.tagSentence(sentence);
 			evaluateSentence(taggedSentence,taggedByPosTagger);
+			if (logger.isDebugEnabled())
+			{
+				logger.debug("\n"+
+				printSentence(taggedSentence)+"\n"+
+				printSentence(taggedByPosTagger));
+				if ((debug_index%100)==0){logger.debug("Evaluated: "+debug_index);}	
+			}
 			
-			if (logger.isDebugEnabled()) {if ((debug_index%100)==0){logger.debug("Evaluated: "+debug_index);}}
+			
 		}
 		
 		accuracy = ((double)correct)/((double)(correct+incorrect));
@@ -89,6 +96,16 @@ public class AccuracyEvaluator
 		{
 			throw new PosTaggerException("Sentences sizes are not equal in evaluation.");
 		}
+	}
+	
+	private String printSentence(List<? extends TaggedToken<String,String>> taggedSentence)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (TaggedToken<String,String> taggedToken : taggedSentence)
+		{
+			sb.append(taggedToken.getToken()).append("/").append( String.format("%-4s", taggedToken.getTag()) ).append(" ");
+		}
+		return sb.toString();
 	}
 	
 	private List<String> taggedSentenceToSentence(List<? extends TaggedToken<String, String>> taggedSentence)

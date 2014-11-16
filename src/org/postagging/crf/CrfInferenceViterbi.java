@@ -90,13 +90,17 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 				G tagOfPreviousWithMaxValue = null;
 				for (G tagOfPrevious : tagsOfPrevious)
 				{
-					double crfFormulaValue = CrfUtilities.oneTokenFormula(model,sentence,index,tag,tagOfPrevious);
-					double valueByPrevious = crfFormulaValue;
-					if (index>0)
+					double valueByPrevious = 0.0;
+					if (model.getCrfTags().getCanPrecede().get(tag).contains(tagOfPrevious)) // did the sequence "tagOfPrevious" "tag" has ever been seen in the training corpus? If yes, calculate its probability. If no, the probability is 0.
 					{
-						valueByPrevious = valueByPrevious*delta_viterbiForward[index-1].get(tagOfPrevious);
+						double crfFormulaValue = CrfUtilities.oneTokenFormula(model,sentence,index,tag,tagOfPrevious);
+						valueByPrevious = crfFormulaValue;
+						if (index>0)
+						{
+							valueByPrevious = valueByPrevious*delta_viterbiForward[index-1].get(tagOfPrevious);
+						}
 					}
-					
+
 					boolean maxSoFarDetected = false;
 					if (null==maxValueByPrevious) {maxSoFarDetected=true;}
 					else if (maxValueByPrevious<valueByPrevious) {maxSoFarDetected=true;}
@@ -107,7 +111,7 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 						tagOfPreviousWithMaxValue=tagOfPrevious;
 					}
 				} // end for-each previous-tag
-				argmaxTags[index].put(tag,tagOfPreviousWithMaxValue);
+				argmaxTags[index].put(tag,tagOfPreviousWithMaxValue); // i.e. If the tag for token number "index" is "tag", then the tag for token "index-1" is "tagOfPreviousWithMaxValue". 
 				delta_viterbiForwardCurrentToken.put(tag,maxValueByPrevious);
 			} // end for-each current-tag
 			delta_viterbiForward[index]=delta_viterbiForwardCurrentToken;

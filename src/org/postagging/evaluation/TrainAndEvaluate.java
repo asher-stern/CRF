@@ -76,6 +76,7 @@ public class TrainAndEvaluate
 		logger.info("Evaluating...");
 		AccuracyEvaluator evaluator = new AccuracyEvaluator(corpus.createTestCorpus(), posTagger);
 		evaluator.evaluate();
+		logger.info(trainingTime);
 		logger.info("Accuracy = " + String.format("%-3.3f", evaluator.getAccuracy()));
 		logger.info("Correct = "+evaluator.getCorrect());
 		logger.info("Incorrect = "+evaluator.getIncorrect());
@@ -113,7 +114,8 @@ public class TrainAndEvaluate
 		trainer.train(inMemoryCorpus);
 
 		long seconds = (new Date().getTime()-timeInit)/1000;
-		logger.info("Training time (HH:MM:SS) = "+String.format("%02d:%02d:%02d",(seconds/60)/60,(seconds/60)%60,seconds%60));
+		trainingTime = "Training time (HH:MM:SS) = "+String.format("%02d:%02d:%02d",(seconds/60)/60,(seconds/60)%60,seconds%60);
+		logger.info(trainingTime);
 		
 		PosTagger posTagger = trainer.getTrainedPosTagger();
 		return posTagger;
@@ -123,6 +125,8 @@ public class TrainAndEvaluate
 	private final String brownDirectory;
 	private final int trainSize;
 	private final int testSize;
+	
+	private String trainingTime = null;
 	
 	private static final Logger logger = Logger.getLogger(TrainAndEvaluate.class);
 }
