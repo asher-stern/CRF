@@ -1,0 +1,81 @@
+package org.postagging.data.penn;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.postagging.data.PosTagCorpusReader;
+import org.postagging.utilities.FileUtilities;
+import org.postagging.utilities.TaggedToken;
+
+/**
+ * 
+ * @author Asher Stern
+ * Date: Nov 16, 2014
+ *
+ */
+public class PennCorpusReader implements PosTagCorpusReader<String,String>
+{
+	public static final String PENN_FILE_SUFFIX = ".mrg";
+
+	public PennCorpusReader(File directory)
+	{
+		super();
+		this.directory = directory;
+		initialize();
+	}
+
+	@Override
+	public boolean hasNext()
+	{
+		return (fileIterator.hasNext() || treeIterator.hasNext());
+	}
+
+	@Override
+	public List<? extends TaggedToken<String, String>> next()
+	{
+		while ((null==treeIterator) || (!treeIterator.hasNext()))
+		{
+			File file = fileIterator.next(); // might throw NoSuchElementException.
+			String fileContents = FileUtilities.readTextFile(file);
+			PennFileContentsParser parser = new PennFileContentsParser(fileContents.toCharArray());
+			parser.parse();
+			treeIterator = parser.getTrees().iterator();
+		}
+		PennParserTreeNode tree = treeIterator.next();
+		PennTreeToPosTaggedSentence extractor = new PennTreeToPosTaggedSentence(tree);
+		extractor.extractPosTaggedSentence();
+		return extractor.getSentence();
+	}
+	
+	
+	
+	private void initialize()
+	{
+		File[] files = directory.listFiles(new FileFilter()
+		{
+			@Override
+			public boolean accept(File pathname)
+			{
+				return (pathname.isFile() && pathname.getName().endsWith(PENN_FILE_SUFFIX));
+			}
+		});
+		
+		files = FileUtilities.getSortedByName(files);
+		
+		ArrayList<File> filesAsList = new ArrayList<File>(files.length);
+		for (File file : files)
+		{
+			filesAsList.add(file);
+		}
+		
+		fileIterator = filesAsList.iterator();
+	}
+
+	private final File directory;
+	
+	private Iterator<File> fileIterator = null;
+	private Iterator<PennParserTreeNode> treeIterator = null;
+}

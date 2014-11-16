@@ -1,6 +1,9 @@
 package org.postagging.utilities;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +37,26 @@ public class FileUtilities
 		}
 		return ret;
 	}
+	
+	public static String readTextFile(File file)
+	{
+		StringBuilder sb = new StringBuilder();
+		try(BufferedReader reader = new BufferedReader(new FileReader(file)))
+		{
+			String line = reader.readLine();
+			while (line != null)
+			{
+				sb.append(line).append("\n");
+				line = reader.readLine();
+			}
+		}
+		catch (IOException e)
+		{
+			throw new PosTaggerException("IO problem.",e);
+		}
+		
+		return sb.toString();
+	}
 
 	private static class FilenameComparator implements Comparator<File>
 	{
@@ -43,4 +66,7 @@ public class FileUtilities
 			return o1.getName().compareTo(o2.getName());
 		}
 	}
+	
+	
+	
 }

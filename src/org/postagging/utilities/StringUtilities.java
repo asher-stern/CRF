@@ -1,5 +1,7 @@
 package org.postagging.utilities;
 
+import java.util.regex.Pattern;
+
 /**
  * A collection of static functions for handling strings.
  * 
@@ -63,8 +65,16 @@ public class StringUtilities
 		sb.append(suffix);
 		
 		return sb.toString();
-		
 	}
+	
+	public static final boolean isLettersOnlyString(String str)
+	{
+		if (null==str) return true;
+		return lettersOnlyPattern.matcher(str).matches();
+	}
+	
+	
+	private static final Pattern lettersOnlyPattern = Pattern.compile("[a-zA-Z]+");
 	
 	 
 }

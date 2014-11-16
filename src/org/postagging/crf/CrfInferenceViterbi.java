@@ -14,27 +14,27 @@ import org.postagging.utilities.PosTaggerException;
  * The Viterbi algorithm finds the most probable sequence of tags for a given sentence (sequence) under the given model.
  * <BR>
  * The algorithm works as follows:<BR>
- * Let \delta_j(s) denote the probability of the most probable sequence of tags from 0 to j, which ends with the tag s.<BR>
- * Consequently, \delta_l(s), where l is the "sentence-length -1" (in Java all arrays start with index 0), is the most
- * probable sequence of tags for the whole sentence, where the last tag is s.<BR>
- * Now, find the tag s which maximizes \delta_l(s), and you get the probability of the most probable sequence of tags for
+ * Let \delta_j(g) denote the probability of the most probable sequence of tags from 0 to j, which ends with the tag g.<BR>
+ * Consequently, \delta_l(g), where l is the "sentence-length -1" (in Java all arrays start with index 0), is the most
+ * probable sequence of tags for the whole sentence, where the last tag is g.<BR>
+ * Now, find the tag g which maximizes \delta_l(g), and you get the probability of the most probable sequence of tags for
  * the whole sequence.
- * Moreover, that "s" (the one which maximizes \delta_l(s)) is the tag of the last token in the sequence.
+ * Moreover, that "g" (the one which maximizes \delta_l(g)) is the tag of the last token in the sequence.
  * <BR>
- * The formula to calculate \delta_j(s) is:<BR>
- * \delta_j(s) = max_{s'}{\delta_{j-1}(s')*\psi_j(s,s')}<BR>
- * where \psi_j(s,s') is the formula for token number j in the sequence, where its tag is s, and the tag of token number j-1 is s'.<BR>
- * This formula, in CRF, is e^{\sum_{i=0}^{k-1}{\theta_i*f_i(sequecne,j,s,s')}}/Z(sequence)<BR>
+ * The formula to calculate \delta_j(g) is:<BR>
+ * \delta_j(g) = max_{g'}{\delta_{j-1}(g')*\psi_j(g,g')}<BR>
+ * where \psi_j(g,g') is the formula for token number j in the sequence, where its tag is s, and the tag of token number j-1 is g'.<BR>
+ * This formula, in CRF, is e^{\sum_{i=0}^{k-1}{\theta_i*f_i(sequecne,j,g,g')}}/Z(sequence)<BR>
  * where k is the number of features, theta_i is the parameter number i, and f_i is feature number i,
  * and Z(sequence) is the normalization factor.
  * <P>
- * Now, it can be observed that to calculate \delta_j(s), the tag s' should be detected, and that s' is the tag assigned to
- * token j-1, when it is needed to maximize a sequence of tags for [0..j] that ends with s.<BR>
- * Thus, during the computation of \delta_j(s) the algorithm keeps track of argmax_j(s) = s'.
- * In other words, the algorithm "remembers" for each j and s what is the tag s' that should be assigned to token j-1.
+ * Now, it can be observed that to calculate \delta_j(g), the tag g' should be detected, and that g' is the tag assigned to
+ * token j-1, when it is needed to maximize a sequence of tags for [0..j] that ends with g.<BR>
+ * Thus, during the computation of \delta_j(g) the algorithm keeps track of argmax_j(g) = g'.
+ * In other words, the algorithm "remembers" for each j and g what is the tag g' that should be assigned to token j-1.
  * <P>
- * When the algorithm ends, the tag s for token "sentence-length-1" is known (see above).
- * Using argmax_j(s) it is possible to find the tag s' for "sentence-length-2". In the same way, s'' for "sentence-length-3"
+ * When the algorithm ends, the tag g for token "sentence-length-1" is known (see above).
+ * Using argmax_j(g) it is possible to find the tag g' for "sentence-length-2". In the same way, g'' for "sentence-length-3"
  * can be found, until the first token of the sentence.
  * 
  * 
@@ -90,15 +90,11 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 				G tagOfPreviousWithMaxValue = null;
 				for (G tagOfPrevious : tagsOfPrevious)
 				{
-					double valueByPrevious = 0.0;
-					if (model.getCrfTags().getCanPrecede().get(tag).contains(tagOfPrevious)) // did the sequence "tagOfPrevious" "tag" has ever been seen in the training corpus? If yes, calculate its probability. If no, the probability is 0.
+					double crfFormulaValue = CrfUtilities.oneTokenFormula(model,sentence,index,tag,tagOfPrevious);
+					double valueByPrevious = crfFormulaValue;
+					if (index>0)
 					{
-						double crfFormulaValue = CrfUtilities.oneTokenFormula(model,sentence,index,tag,tagOfPrevious);
-						valueByPrevious = crfFormulaValue;
-						if (index>0)
-						{
-							valueByPrevious = valueByPrevious*delta_viterbiForward[index-1].get(tagOfPrevious);
-						}
+						valueByPrevious = valueByPrevious*delta_viterbiForward[index-1].get(tagOfPrevious);
 					}
 
 					boolean maxSoFarDetected = false;
@@ -161,14 +157,14 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 	
 	
 	/**
-	 * This is \delta_j(s). delta_viterbiForward[j].get(s) is the probability of the most
-	 * probable sequence of tags from 0 to j, where the tag for token j is s.
+	 * This is \delta_j(g). delta_viterbiForward[j].get(g) is the probability of the most
+	 * probable sequence of tags from 0 to j, where the tag for token j is g.
 	 */
 	private Map<G, Double>[] delta_viterbiForward = null; // the map must permit null keys
 	
 	/**
-	 * argmaxTags[j].get(s) is the tag s', which is the tag for token j-1 in the most probable sequence of tags from 0 to j
-	 * where the tag for j is s.
+	 * argmaxTags[j].get(g) is the tag g', which is the tag for token j-1 in the most probable sequence of tags from 0 to j
+	 * where the tag for j is g.
 	 */
 	private Map<G, G>[] argmaxTags = null; // Map from current tag to previous tag.
 	
