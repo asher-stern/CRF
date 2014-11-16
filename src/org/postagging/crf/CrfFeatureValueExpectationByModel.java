@@ -2,7 +2,6 @@ package org.postagging.crf;
 
 import static org.postagging.crf.CrfUtilities.safeAdd;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -54,7 +53,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	private void addValueForSentence(List<? extends TaggedToken<K, G>> sentence)
 	{
 		K[] sentenceTokens = CrfUtilities.extractSentence(sentence);
-		CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = CrfRememberActiveFeatures.findForSentence(model.getFeatures(), model.getTags(), sentenceTokens);
+		CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = CrfRememberActiveFeatures.findForSentence(model.getFeatures(), model.getCrfTags(), sentenceTokens);
 		CrfPsi_FormulaAllTokens<K, G> allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model,sentenceTokens,activeFeaturesForSentence);
 		CrfForwardBackward<K,G> forwardBackward = new CrfForwardBackward<K,G>(model,sentenceTokens,activeFeaturesForSentence);
 		forwardBackward.setAllTokensFormulaValues(allTokensFormula);
@@ -64,13 +63,10 @@ public class CrfFeatureValueExpectationByModel<K, G>
 		
 		for (int tokenIndex=0;tokenIndex<sentenceTokens.length;++tokenIndex)
 		{
-			Set<G> possiblePreviousTags = null;
-			if (tokenIndex==0) {possiblePreviousTags=Collections.singleton(null);}
-			else {possiblePreviousTags=model.getTags();}
-			
-			for (G previousTag : possiblePreviousTags)
+			for (G currentTag : model.getCrfTags().getTags())
 			{
-				for (G currentTag : model.getTags())
+				Set<G> possiblePreviousTags = CrfUtilities.getPreviousTags(sentenceTokens, tokenIndex, currentTag, model.getCrfTags());
+				for (G previousTag : possiblePreviousTags)
 				{
 					//Set<Integer> activeFeatures = CrfUtilities.getActiveFeatureIndexes(model.getFeatures(),sentenceTokens,tokenIndex,currentTag,previousTag);
 					Set<Integer> activeFeatures = activeFeaturesForSentence.getOneTokenActiveFeatures(tokenIndex, currentTag, previousTag);
@@ -85,9 +81,9 @@ public class CrfFeatureValueExpectationByModel<K, G>
 						{
 							featureValue = model.getFeatures().getFilteredFeatures()[featureIndex].getFeature().value(sentenceTokens,tokenIndex,currentTag,previousTag);
 						}
-						
+
 						Double probabilityUnderModel = null;
-						
+
 						if (featureValue!=0.0)
 						{
 							// Calculate probabilityUnderModel
@@ -103,21 +99,21 @@ public class CrfFeatureValueExpectationByModel<K, G>
 								double psi_probabilityForGivenIndexAndTags = allTokensFormula.getOneTokenFormula(tokenIndex,currentTag,previousTag);
 								probabilityUnderModel = (alpha_forward_previousValue*psi_probabilityForGivenIndexAndTags*beta_backward_value)/normalizationFactor;
 							}
-							
+
 							double addToExpectation = featureValue*probabilityUnderModel;
 
 							featureValueExpectation[featureIndex] = safeAdd(featureValueExpectation[featureIndex], addToExpectation);
 						}
 					} // end for-each feature
-				} // end for-each current-tag
-			} // end for-each previous-tag
+				} // end for-each previous-tag
+			} // end for-each current-tag
 		} // end for-each token
-		
-		
-		
-//		logger.debug("Running loop for each feature...");
-//		CrfFilteredFeature<K, G>[] filteredFeatures = model.getFeatures().getFilteredFeatures();
-//		for (int featureIndex=0;featureIndex<filteredFeatures.length;++featureIndex)
+
+
+
+		//		logger.debug("Running loop for each feature...");
+		//		CrfFilteredFeature<K, G>[] filteredFeatures = model.getFeatures().getFilteredFeatures();
+		//		for (int featureIndex=0;featureIndex<filteredFeatures.length;++featureIndex)
 //		{
 //			CrfFeature<K, G> feature = filteredFeatures[featureIndex].getFeature();
 //			

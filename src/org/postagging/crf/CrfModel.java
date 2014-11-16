@@ -1,7 +1,6 @@
 package org.postagging.crf;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 import org.postagging.crf.features.CrfFeaturesAndFilters;
 
@@ -15,19 +14,19 @@ import org.postagging.crf.features.CrfFeaturesAndFilters;
  */
 public class CrfModel<K,G> // K = token, G = tag
 {
-	public CrfModel(Set<G> tags, CrfFeaturesAndFilters<K, G> features, ArrayList<Double> parameters)
+	public CrfModel(CrfTags<G> crfTags, CrfFeaturesAndFilters<K, G> features, ArrayList<Double> parameters)
 	{
 		super();
-		this.tags = tags;
+		this.crfTags = crfTags;
 		this.features = features;
 		this.parameters = parameters;
 	}
 	
 	
 	
-	public Set<G> getTags()
+	public CrfTags<G> getCrfTags()
 	{
-		return tags;
+		return crfTags;
 	}
 	public CrfFeaturesAndFilters<K, G> getFeatures()
 	{
@@ -40,7 +39,7 @@ public class CrfModel<K,G> // K = token, G = tag
 
 
 
-	private final Set<G> tags;
+	private final CrfTags<G> crfTags;
 	private final CrfFeaturesAndFilters<K, G> features;
 	private final ArrayList<Double> parameters;
 }

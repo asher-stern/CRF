@@ -4,7 +4,6 @@ import static org.postagging.crf.CrfUtilities.safeAdd;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.postagging.crf.features.CrfFeaturesAndFilters;
@@ -23,13 +22,13 @@ import org.postagging.utilities.TaggedToken;
  */
 public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 {
-	public CrfLogLikelihoodFunction(Iterable<List<? extends TaggedToken<K, G>>> corpus, Set<G> tags,
+	public CrfLogLikelihoodFunction(Iterable<List<? extends TaggedToken<K, G>>> corpus, CrfTags<G> crfTags,
 			CrfFeaturesAndFilters<K, G> features, boolean useRegularization,
 			double sigmaSquare_inverseRegularizationFactor)
 	{
 		super();
 		this.corpus = corpus;
-		this.tags = tags;
+		this.crfTags = crfTags;
 		this.features = features;
 		this.useRegularization = useRegularization;
 		this.sigmaSquare_inverseRegularizationFactor = sigmaSquare_inverseRegularizationFactor;
@@ -116,7 +115,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		for (List<? extends TaggedToken<K, G> > sentence : corpus)
 		{
 			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
-			CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = CrfRememberActiveFeatures.findForSentence(features, tags, sentenceAsArray);
+			CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = CrfRememberActiveFeatures.findForSentence(features, crfTags, sentenceAsArray);
 			CrfForwardBackward<K, G> forwardBackward = new CrfForwardBackward<K, G>(model,sentenceAsArray,activeFeaturesForSentence);
 			//forwardBackward.calculateForwardAndBackward();
 			forwardBackward.calculateOnlyNormalizationFactor();
@@ -148,7 +147,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		{
 			parameters.add(parameter);
 		}
-		return new CrfModel<K, G>(tags,features,parameters);
+		return new CrfModel<K, G>(crfTags,features,parameters);
 	}
 	
 	private double normSquare(double[] vector)
@@ -174,7 +173,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 //	}
 
 	private final Iterable<List<? extends TaggedToken<K, G> >> corpus;
-	private final Set<G> tags;
+	private final CrfTags<G> crfTags;
 	private final CrfFeaturesAndFilters<K, G> features;
 	private final boolean useRegularization;
 	private final double sigmaSquare_inverseRegularizationFactor;

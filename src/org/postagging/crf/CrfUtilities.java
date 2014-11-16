@@ -1,7 +1,6 @@
 package org.postagging.crf;
 
 import java.lang.reflect.Array;
-
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,8 +11,8 @@ import org.apache.log4j.Logger;
 import org.postagging.crf.features.CrfFeaturesAndFilters;
 import org.postagging.crf.features.CrfFilteredFeature;
 import org.postagging.crf.features.Filter;
-import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
+import org.postagging.utilities.TaggedToken;
 
 /**
  * A collection of static functions needed by CRF.
@@ -24,6 +23,21 @@ import org.postagging.utilities.PosTaggerException;
  */
 public class CrfUtilities
 {
+	public static <K,G> Set<G> getPreviousTags(K[] sentence, int index, G currentTag, CrfTags<G> crfTags)
+	{
+		Set<G> previousTags = null;
+		if (index<0) throw new PosTaggerException("Error: not tag can precede the virtual token that precedes the first token.");
+		if (index==0)
+		{
+			previousTags = crfTags.getPrecedeWhenFirst().get(currentTag);
+		}
+		else
+		{
+			previousTags = crfTags.getCanPrecedeNonNull().get(currentTag);
+		}
+		return previousTags;
+	}
+	
 	/**
 	 * Adds all the items in "fromCollection" into "intoCollection".
 	 * <BR>

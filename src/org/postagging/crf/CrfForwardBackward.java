@@ -96,11 +96,9 @@ public class CrfForwardBackward<K,G>
 		for (int index=0;index<sentence.length;++index)
 		{
 			Map<G, Double> alpha_forwardThisToken = new LinkedHashMap<G, Double>();
-			for (G tag : model.getTags())
+			for (G tag : model.getCrfTags().getTags())
 			{
-				Set<G> previousTags = null;
-				if (index==0) {previousTags = Collections.singleton(null);}
-				else {previousTags = alpha_forward[index-1].keySet();}
+				Set<G> previousTags = CrfUtilities.getPreviousTags(sentence, index, tag, model.getCrfTags());
 				double sumOverPreviousTags = 0.0;
 				for (G previousTag : previousTags)
 				{
@@ -133,7 +131,7 @@ public class CrfForwardBackward<K,G>
 	{
 		beta_backward = new ArbitraryRangeArray<LinkedHashMap<G, Double>>(sentence.length+1, -1); // i.e. [-1,0,1,2,...,sentence.length-1]
 		beta_backward.set(sentence.length-1,new LinkedHashMap<G, Double>());
-		for (G tag : model.getTags())
+		for (G tag : model.getCrfTags().getTags())
 		{
 			beta_backward.get(sentence.length-1).put(tag, 1.0);
 		}
@@ -144,11 +142,11 @@ public class CrfForwardBackward<K,G>
 			
 			Set<G> currentTokenPossibleTags = null;
 			if (index<0) {currentTokenPossibleTags=Collections.singleton(null);}
-			else {currentTokenPossibleTags = model.getTags();}
+			else {currentTokenPossibleTags = model.getCrfTags().getTags();}
 			for (G tag : currentTokenPossibleTags)
 			{
 				double sum = 0.0;
-				for (G nextTag : beta_backward.get(index+1).keySet())
+				for (G nextTag : model.getCrfTags().getCanFollow().get(tag))
 				{
 					//double valueCurrentTokenCrfFormula = CrfUtilities.oneTokenFormula(model,sentence,index+1,nextTag,tag);
 					double valueCurrentTokenCrfFormula = allTokensFormula.getOneTokenFormula(index+1,nextTag,tag);

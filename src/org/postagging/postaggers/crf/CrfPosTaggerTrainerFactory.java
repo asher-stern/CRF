@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.postagging.crf.CrfTags;
+import org.postagging.crf.CrfTagsBuilder;
 import org.postagging.crf.CrfUtilities;
 import org.postagging.crf.features.CrfFeaturesAndFilters;
 import org.postagging.crf.features.CrfFilteredFeature;
@@ -16,7 +18,6 @@ import org.postagging.data.InMemoryPosTagCorpus;
 import org.postagging.postaggers.crf.features.StandardFeatureGenerator;
 import org.postagging.postaggers.crf.features.StandardFilterFactory;
 import org.postagging.utilities.PosTaggerException;
-import org.postagging.utilities.PosTaggerUtilities;
 
 /**
  * 
@@ -38,15 +39,18 @@ public class CrfPosTaggerTrainerFactory
 	public CrfPosTaggerTrainer createPosTaggerTrainer(InMemoryPosTagCorpus<String, String> corpus, CrfPosTaggerFeatureGeneratorFactory featureGeneratorFactory)
 	{
 		logger.info("Extracting tags.");
-		Set<String> tags = PosTaggerUtilities.extractAllTagsFromCorpus(corpus);
+		CrfTagsBuilder<String> tagsBuilder = new CrfTagsBuilder<String>(corpus);
+		tagsBuilder.build();
+		CrfTags<String> crfTags = tagsBuilder.getCrfTags();
+		//Set<String> tags = PosTaggerUtilities.extractAllTagsFromCorpus(corpus);
 		logger.info("Generating features.");
-		CrfPosTaggerFeatureGenerator featureGenerator = featureGeneratorFactory.create(corpus, tags);
+		CrfPosTaggerFeatureGenerator featureGenerator = featureGeneratorFactory.create(corpus, crfTags.getTags());
 		featureGenerator.generateFeatures();
 		Set<CrfFilteredFeature<String, String>> setFilteredFeatures = featureGenerator.getFeatures();
 		CrfFeaturesAndFilters<String, String> features = createFeaturesAndFiltersObjectFromSetOfFeatures(setFilteredFeatures);
 		
 		logger.info("CrfPosTaggerTrainer has been created.");
-		return new CrfPosTaggerTrainer(features,tags);
+		return new CrfPosTaggerTrainer(features,crfTags);
 	}
 	
 	

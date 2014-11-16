@@ -2,11 +2,11 @@ package org.postagging.postaggers.crf;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.postagging.crf.CrfLogLikelihoodFunction;
 import org.postagging.crf.CrfModel;
+import org.postagging.crf.CrfTags;
 import org.postagging.crf.features.CrfFeaturesAndFilters;
 import org.postagging.data.InMemoryPosTagCorpus;
 import org.postagging.function.DerivableFunction;
@@ -28,17 +28,17 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 	public static final boolean DEFAULT_USE_REGULARIZATION = true;
 	
 	
-	public CrfPosTaggerTrainer(CrfFeaturesAndFilters<String, String> features, Set<String> tags)
+	public CrfPosTaggerTrainer(CrfFeaturesAndFilters<String, String> features, CrfTags<String> crfTags)
 	{
-		this(features,tags,DEFAULT_USE_REGULARIZATION,DEFAULT_SIGMA_SQUARED_INVERSE_REGULARIZATION_FACTOR);
+		this(features,crfTags,DEFAULT_USE_REGULARIZATION,DEFAULT_SIGMA_SQUARED_INVERSE_REGULARIZATION_FACTOR);
 	}
 
-	public CrfPosTaggerTrainer(CrfFeaturesAndFilters<String, String> features, Set<String> tags,
+	public CrfPosTaggerTrainer(CrfFeaturesAndFilters<String, String> features, CrfTags<String> crfTags,
 			boolean useRegularization, double sigmaSquare_inverseRegularizationFactor)
 	{
 		super();
 		this.features = features;
-		this.tags = tags;
+		this.crfTags = crfTags;
 		this.useRegularization = useRegularization;
 		this.sigmaSquare_inverseRegularizationFactor = sigmaSquare_inverseRegularizationFactor;
 	}
@@ -47,7 +47,7 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 	@Override
 	public void train(InMemoryPosTagCorpus<String, String> corpus)
 	{
-		logger.info("CRF pos tagger training: Number of tags = "+tags.size()+". Number of features = "+features.getFilteredFeatures().length +".");
+		logger.info("CRF pos tagger training: Number of tags = "+crfTags.getTags().size()+". Number of features = "+features.getFilteredFeatures().length +".");
 		logger.info("Creating log likelihood function.");
 		DerivableFunction convexNegatedCrfFunction = NegatedFunction.fromDerivableFunction(createLogLikelihoodFunctionConcave(corpus));
 		logger.info("Optimizing log likelihood function.");
@@ -62,7 +62,7 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 			parametersAsList.add(parameter);
 		}
 		
-		learnedModel = new CrfModel<String, String>(tags,features,parametersAsList);
+		learnedModel = new CrfModel<String, String>(crfTags,features,parametersAsList);
 		posTagger = new CrfPosTagger(learnedModel);
 		logger.info("Training of CRF pos tagger - done.");
 	}
@@ -85,7 +85,7 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 	
 	private DerivableFunction createLogLikelihoodFunctionConcave(InMemoryPosTagCorpus<String, String> corpus)
 	{
-		return new CrfLogLikelihoodFunction<String, String>(corpus,tags,features,useRegularization,sigmaSquare_inverseRegularizationFactor);
+		return new CrfLogLikelihoodFunction<String, String>(corpus,crfTags,features,useRegularization,sigmaSquare_inverseRegularizationFactor);
 	}
 	
 	
@@ -94,7 +94,7 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 
 	
 	private final CrfFeaturesAndFilters<String, String> features;
-	private final Set<String> tags;
+	private final CrfTags<String> crfTags;
 	private final boolean useRegularization;
 	private final double sigmaSquare_inverseRegularizationFactor;
 	

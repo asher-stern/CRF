@@ -1,6 +1,5 @@
 package org.postagging.crf;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -17,19 +16,19 @@ import org.postagging.crf.features.CrfFeaturesAndFilters;
  */
 public class CrfRememberActiveFeatures<K, G>
 {
-	public static <K, G> CrfRememberActiveFeatures<K, G> findForSentence(CrfFeaturesAndFilters<K, G> features, Set<G> tags, K[] sentence)
+	public static <K, G> CrfRememberActiveFeatures<K, G> findForSentence(CrfFeaturesAndFilters<K, G> features, CrfTags<G> crfTags, K[] sentence)
 	{
-		CrfRememberActiveFeatures<K, G> ret = new CrfRememberActiveFeatures<K, G>(features,tags,sentence);
+		CrfRememberActiveFeatures<K, G> ret = new CrfRememberActiveFeatures<K, G>(features,crfTags,sentence);
 		ret.findActiveFeaturesForAllTokens();
 		return ret;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public CrfRememberActiveFeatures(CrfFeaturesAndFilters<K, G> features, Set<G> tags, K[] sentence)
+	public CrfRememberActiveFeatures(CrfFeaturesAndFilters<K, G> features, CrfTags<G> crfTags, K[] sentence)
 	{
 		super();
 		this.features = features;
-		this.tags = tags;
+		this.crfTags = crfTags;
 		this.sentence = sentence;
 		allTokensAndTagsActiveFeatures = (Map<G, Map<G, Set<Integer> >>[]) new Map[sentence.length];
 	}
@@ -40,11 +39,9 @@ public class CrfRememberActiveFeatures<K, G>
 	{
 		for (int tokenIndex=0;tokenIndex<sentence.length;++tokenIndex)
 		{
-			for (G currentTag : tags)
+			for (G currentTag : crfTags.getTags())
 			{
-				Set<G> possiblePreviousTags = null;
-				if (tokenIndex>0) {possiblePreviousTags=tags;}
-				else {possiblePreviousTags=Collections.singleton(null);}
+				Set<G> possiblePreviousTags = CrfUtilities.getPreviousTags(sentence, tokenIndex, currentTag, crfTags);
 				for (G previousTag : possiblePreviousTags)
 				{
 					Set<Integer> activeFeatures = CrfUtilities.getActiveFeatureIndexes(features,sentence,tokenIndex,currentTag,previousTag);
@@ -82,7 +79,7 @@ public class CrfRememberActiveFeatures<K, G>
 	}
 	
 	
-	private final Set<G> tags;
+	private final CrfTags<G> crfTags;
 	private final CrfFeaturesAndFilters<K, G> features;
 	private final K[] sentence;
 

@@ -81,7 +81,7 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 		{
 			Map<G, Double> delta_viterbiForwardCurrentToken = new LinkedHashMap<G, Double>();
 			argmaxTags[index] = new LinkedHashMap<G, G>();
-			for (G tag : model.getTags())
+			for (G tag : model.getCrfTags().getTags())
 			{
 				Set<G> tagsOfPrevious = null; // The set of tags that can be assigned to token index-1.
 				if (0==index) {tagsOfPrevious=Collections.singleton(null);}
@@ -138,7 +138,7 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 	{
 		Double maxValueForLastToken = null;
 		G tagWithMaxValueForLastToken = null;
-		for (G tag : model.getTags())
+		for (G tag : model.getCrfTags().getTags())
 		{
 			double value = delta_oneTokenViterbiForward.get(tag);
 			

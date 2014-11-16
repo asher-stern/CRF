@@ -1,6 +1,5 @@
 package org.postagging.crf;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -37,11 +36,9 @@ public class CrfPsi_FormulaAllTokens<K,G>
 	{
 		for (int tokenIndex=0;tokenIndex<sentence.length;++tokenIndex)
 		{
-			for (G currentTag : model.getTags())
+			for (G currentTag : model.getCrfTags().getTags())
 			{
-				Set<G> possiblePreviousTags = null;
-				if (tokenIndex>0) {possiblePreviousTags=model.getTags();}
-				else {possiblePreviousTags=Collections.singleton(null);}
+				Set<G> possiblePreviousTags = CrfUtilities.getPreviousTags(sentence, tokenIndex, currentTag, model.getCrfTags());
 				for (G previousTag : possiblePreviousTags)
 				{
 					Set<Integer> activeFeatures = activeFeaturesForSentence.getOneTokenActiveFeatures(tokenIndex, currentTag, previousTag);
