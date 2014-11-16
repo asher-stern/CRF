@@ -1,5 +1,6 @@
 package org.postagging.data.penn;
 
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 import org.postagging.data.PosTagCorpusReader;
 import org.postagging.utilities.FileUtilities;
 import org.postagging.utilities.TaggedToken;
+import org.postagging.utilities.PosTaggerException;
 
 /**
  * 
@@ -62,6 +64,10 @@ public class PennCorpusReader implements PosTagCorpusReader<String,String>
 				return (pathname.isFile() && pathname.getName().endsWith(PENN_FILE_SUFFIX));
 			}
 		});
+		if (files.length<=0)
+		{
+			throw new PosTaggerException("Wrong directory: no Penn TreeBank file has been detected.");
+		}
 		
 		files = FileUtilities.getSortedByName(files);
 		

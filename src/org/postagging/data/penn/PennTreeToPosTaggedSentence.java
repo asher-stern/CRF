@@ -77,7 +77,7 @@ public class PennTreeToPosTaggedSentence
 			{
 				tag = tag.substring(0, indexOfHyphen);
 			}
-			if (!StringUtilities.isLettersOnlyString(tag))
+			if (!StringUtilities.stringContainsLetter(tag))
 			{
 				tag = PUNCTUATION_TAG;
 			}

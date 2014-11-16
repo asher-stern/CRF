@@ -1,5 +1,7 @@
 package org.postagging.evaluation;
 
+import java.io.File;
+
 import java.util.Date;
 
 import org.apache.log4j.Level;
@@ -7,9 +9,8 @@ import org.apache.log4j.Logger;
 import org.postagging.data.InMemoryPosTagCorpus;
 import org.postagging.data.InMemoryPosTagCorpusImplementation;
 import org.postagging.data.PosTagCorpus;
-import org.postagging.data.PosTagCorpusReader;
 import org.postagging.data.TrainTestPosTagCorpus;
-import org.postagging.data.brown.BrownCorpusReader;
+import org.postagging.data.penn.PennCorpus;
 import org.postagging.postaggers.PosTagger;
 import org.postagging.postaggers.crf.CrfPosTaggerTrainer;
 import org.postagging.postaggers.crf.CrfPosTaggerTrainerFactory;
@@ -56,7 +57,7 @@ public class TrainAndEvaluate
 	public TrainAndEvaluate(String brownDirectory, int trainSize, int testSize)
 	{
 		super();
-		this.brownDirectory = brownDirectory;
+		this.corpusDirectory = brownDirectory;
 		this.trainSize = trainSize;
 		this.testSize = testSize;
 	}
@@ -86,15 +87,19 @@ public class TrainAndEvaluate
 	private TrainTestPosTagCorpus<String,String> createCorpus()
 	{
 		return new TrainTestPosTagCorpus<String,String>(trainSize, testSize,
-				new PosTagCorpus<String,String>()
-				{
-					@Override
-					public PosTagCorpusReader<String,String> iterator()
-					{
-						return new BrownCorpusReader(brownDirectory);
-					}
-				}
-		);
+				new PennCorpus(new File(corpusDirectory))
+				);
+
+//		return new TrainTestPosTagCorpus<String,String>(trainSize, testSize,
+//				new PosTagCorpus<String,String>()
+//				{
+//					@Override
+//					public PosTagCorpusReader<String,String> iterator()
+//					{
+//						return new BrownCorpusReader(corpusDirectory);
+//					}
+//				}
+//				);
 	}
 
 	
@@ -122,7 +127,7 @@ public class TrainAndEvaluate
 	}
 	
 
-	private final String brownDirectory;
+	private final String corpusDirectory;
 	private final int trainSize;
 	private final int testSize;
 	
