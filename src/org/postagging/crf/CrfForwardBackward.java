@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.postagging.utilities.ArbitraryRangeArray;
 import org.postagging.utilities.PosTaggerException;
 
-import static org.postagging.crf.CrfUtilities.relativeDifference;
+import static org.postagging.crf.CrfUtilities.roughlyEqual;
 
 /**
  * 
@@ -21,8 +21,6 @@ import static org.postagging.crf.CrfUtilities.relativeDifference;
  */
 public class CrfForwardBackward<K,G>
 {
-	public static final double DEBUG_ALLOWED_DIFFERENCE_BETWEEN_FINAL_ALPHA_AND_FINAL_BETA = 0.01;
-	
 	public CrfForwardBackward(CrfModel<K, G> model, K[] sentence, CrfRememberActiveFeatures<K, G> activeFeaturesForSentence)
 	{
 		super();
@@ -46,12 +44,11 @@ public class CrfForwardBackward<K,G>
 		calculateAlphaForward();
 		calculateBetaBackward();
 		
-		if ((relativeDifference(finalAlpha,finalBeta)-1.0)>DEBUG_ALLOWED_DIFFERENCE_BETWEEN_FINAL_ALPHA_AND_FINAL_BETA)
+		if (!roughlyEqual(finalAlpha, finalAlpha))
 		{
 			String errorMessage = "The calculated final-alpha and final-beta, both correspond to Z(x) (the normalization factor) differ.\n"
 					+ "Z(x) by alpha (forward) = "+String.format("%-3.3f", finalAlpha)+". Z(x) by beta (backward) = "+String.format("%-3.3f", finalBeta);
 			throw new PosTaggerException(errorMessage);
-			//logger.error(errorMessage);
 		}
 		calculated=true;
 	}

@@ -23,6 +23,10 @@ import org.postagging.utilities.TaggedToken;
  */
 public class CrfUtilities
 {
+	public static final double ROUGHLY_EQUAL_DISTANCE_FROM_ZERO = 0.001;
+	public static final double ROUGHLY_EQUAL_DEVIATION_FROM_ONE = 0.01;
+
+	
 	public static <K,G> Set<G> getPreviousTags(K[] sentence, int index, G currentTag, CrfTags<G> crfTags)
 	{
 		Set<G> previousTags = null;
@@ -248,6 +252,41 @@ public class CrfUtilities
 		}
 		return larger/smaller;
 	}
+	
+	/**
+	 * Returns true if the two given numbers are roughly equal.
+	 * <BR>
+	 * The numbers are considered "roughly equal" if dividing the (absolute value of the) larger by the (absolute value of the)
+	 * smaller is around 1, where "around 1" means no larger than 1.01.
+	 * <BR>
+	 * In case they are near 0, then the criterion is that subtracting one from the other yields absolute value no larger then 0.001.
+	 *  
+	 * @param value1
+	 * @param value2
+	 * @return
+	 */
+	public static boolean roughlyEqual(double value1, double value2)
+	{
+		boolean ret = true;
+		if ( ( (value1<0.0) || (value2<0.0) ) &&  ( (value1>=0.0) || (value2>=0.0) ) )
+		{
+			double gap = Math.abs(value1-value2);
+			if (gap>ROUGHLY_EQUAL_DISTANCE_FROM_ZERO)
+			{
+				ret = false;
+			}
+		}
+		else
+		{
+			if ((relativeDifference(value1,value2)-1.0)>ROUGHLY_EQUAL_DEVIATION_FROM_ONE)
+			{
+				ret = false;
+			}
+		}
+		return ret;
+		
+	}
+
 	
 	/**
 	 * Given a map from K to set of V - adds v to the set of k.
