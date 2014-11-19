@@ -13,6 +13,7 @@ import static org.postagging.crf.CrfUtilities.safeAdd;
 
 
 /**
+ * Calculates the sum of all feature-values over the whole corpus.
  * 
  * @author Asher Stern
  * Date: Nov 9, 2014

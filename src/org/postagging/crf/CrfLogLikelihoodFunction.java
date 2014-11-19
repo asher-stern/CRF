@@ -12,7 +12,23 @@ import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
 
 /**
- * This function is CONCAVE, not convex!!!
+ * The CRF log-likelihood function for the given <B>tagged</B> corpus, under the given model.
+ * <BR>
+ * The "likelihood" of a sequence of tags for a given sentence is the probability of that sequence of tags to occur (to exist)
+ * for that sentence.
+ * This probability is:
+ * \Sum{j=0}^{sentence-length-1}(e^( \Sum_{i=0}^{number-of-features}(\theta_i*f_i(j,g,g')) )) / Z(x)
+ * where \theta_i is parameter number i (these are the parameters that are learned during training - these parameters form
+ * the input vector "point" of this function), f_i is feature number i, g is the tag of token number j, and g' is the tag of
+ * token number j-1. Z(x) is the normalization factor.
+ * <P>
+ * The log-likelihood is \Sum_{sentence \in corpus}log( \Sum{j=0}^{sentence-length-1}(e^( \Sum_{i=0}^{number-of-features}(\theta_i*f_i(j,g,g')) )) / Z(x) ).
+ * <BR>
+ * The log is in the natural basis (e) (It is actually ln).
+ * 
+ * <P>
+ * <B>This function is CONCAVE, not convex!!!</B>
+ * <P>
  * 
  * @author Asher Stern
  * Date: Nov 9, 2014
@@ -35,6 +51,10 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	}
 
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.postagging.function.Function#value(double[])
+	 */
 	@Override
 	public double value(double[] point)
 	{
@@ -52,6 +72,10 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	}
 	
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.postagging.function.DerivableFunction#gradient(double[])
+	 */
 	@Override
 	public double[] gradient(double[] point)
 	{
@@ -78,6 +102,10 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	}
 
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.postagging.function.Function#size()
+	 */
 	@Override
 	public int size()
 	{

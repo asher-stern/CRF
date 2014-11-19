@@ -10,6 +10,12 @@ import org.apache.log4j.Logger;
 import org.postagging.utilities.TaggedToken;
 
 /**
+ * Calculates, for each feature, the expected sum of its values over the whole corpus.
+ * For example, let's assume that the corpus contains 10 sentences, and each sentence contains 8 tokens,
+ * so there are 80 tokens, and in each of them the feature is expected to get some value. In this class the sum of all those
+ * expected values is calculated, for each feature.
+ * 
+ * @see CrfLogLikelihoodFunction
  * 
  * @author Asher Stern
  * Date: Nov 9, 2014

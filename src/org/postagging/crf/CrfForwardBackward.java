@@ -12,12 +12,51 @@ import org.postagging.utilities.PosTaggerException;
 import static org.postagging.crf.CrfUtilities.roughlyEqual;
 
 /**
+ * Calculates the probability of a sequence of <B>tokens</B>.
+ * <BR>
+ * While the Viterbi algorithm (see {@link CrfInferenceViterbi}) calculates the probability of a sequence of <B>tags</B> (given
+ * a sequence of tokens), the forward-backward algorithm calculates the probability of a sequence of tokens, whatever their
+ * real tags are.
+ * <BR>
+ * Formally, given a sequence of tokens (which is K[] in this class, given as "sentence" to the constructor)
+ * \alpha_j(g) is the (unnormalized) probability of the sequence k_0 k_1 ... k_j, where the tag of k_j is "g".<BR>
+ * \beta_j(g) is the (unnormalized) probability of the sequence k_{j+1} k_{j+2} ... k_{sentence-length-1} where the tag of
+ * k_j (whatever token it is) is "g".
+ * <P>
+ * Consequently, the probability of the whole sequence (k_0 k_1 ... k_{sentence-length-1}) is \Sum_{g \in G}(\alpha_{sentence-length-1}(g))
+ * where G is the set of all tags.
+ * Similarly, the probability of the whole sequence (k_0 k_1 ... k_{sentence-length-1}) is also \beta_{-1}(null), where "null" is
+ * a "virtual tag" for the "virtual token" that precedes k_0.
+ * <BR>
+ * Note, therefore, that \Sum_{g \in G}(\alpha_{sentence-length-1}(g)) = \beta_{-1}(null) = <B>The normalization factor Z(x)</B> (where x is the sentence). 
+ * <P>
+ * Also, the probability for the sequence k_0 k_1 ... k_{sentence-length-1} where the tag for k_j is g and the tag for
+ * k_{j-1} is g' is:
+ * \alpha_{j-1}(g')*\Psi(j,g,g')*\beta_{j}(g)
+ * where \Psi(j,g,g') is the formula for token number j where its tag is g and the tag of token (j-1) is g', i.e.,
+ * e^{\Sum{i=0}^{number-of-features}(\theta_i*f_i(j,g,g'))}
+ * where \theta_i is parameter number i (these are the parameters learned in the training) and f_i is feature number i (the
+ * features are defined by the user).
+ * <BR>
+ * This formula, \alpha_{j-1}(g')*\Psi(j,g,g')*\beta_{j}(g), is used to calculate the <B>expected</B> feature-values under the
+ * model, and is utilized by {@link CrfFeatureValueExpectationByModel}.
+ * <P>
+ * The forward-backward algorithm has two usages:
+ * 1. to calculate the normalization factor Z(x).
+ * 2. to calculate the expected feature-values over the corpus.
+ * <BR>
+ * The first usage is needed to calculate the value of the log likelihood function.
+ * The first and the second usages are needed to calculate the gradient of the log likelihood function.
+ * <BR>
+ * 
+ *  @see CrfLogLikelihoodFunction
+ *  @see CrfFeatureValueExpectationByModel
  * 
  * @author Asher Stern
  * Date: Nov 8, 2014
  *
- * @param <K>
- * @param <G>
+ * @param <K> type of tokens
+ * @param <G> type of tags
  */
 public class CrfForwardBackward<K,G>
 {

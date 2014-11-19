@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.postagging.data.PosTagCorpusReader;
 import org.postagging.utilities.FileUtilities;
 import org.postagging.utilities.TaggedToken;
@@ -45,6 +46,7 @@ public class PennCorpusReader implements PosTagCorpusReader<String,String>
 			PennFileContentsParser parser = new PennFileContentsParser(fileContents.toCharArray());
 			parser.parse();
 			treeIterator = parser.getTrees().iterator();
+			// if (logger.isDebugEnabled()) {logger.debug(file.getName());}
 		}
 		PennParserTreeNode tree = treeIterator.next();
 		PennTreeToPosTaggedSentence extractor = new PennTreeToPosTaggedSentence(tree);
@@ -84,4 +86,7 @@ public class PennCorpusReader implements PosTagCorpusReader<String,String>
 	
 	private Iterator<File> fileIterator = null;
 	private Iterator<PennParserTreeNode> treeIterator = null;
+	
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(PennCorpusReader.class);
 }

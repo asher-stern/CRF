@@ -10,9 +10,8 @@ package org.postagging.crf.features;
  */
 public class TwoTagsFilter<K, G> extends Filter<K, G>
 {
-	public TwoTagsFilter(K token, G currentTag, G previousTag)
+	public TwoTagsFilter(G currentTag, G previousTag)
 	{
-		super(token, currentTag, previousTag);
 		this.currentTag = currentTag;
 		this.previousTag = previousTag;
 	}

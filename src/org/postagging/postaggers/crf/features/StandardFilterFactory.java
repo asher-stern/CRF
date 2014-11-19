@@ -20,8 +20,8 @@ public class StandardFilterFactory implements FilterFactory<String, String>
 	public Set<Filter<String, String>> createFilters(String token, String currentTag, String previousTag)
 	{
 		Set<Filter<String, String>> ret = new LinkedHashSet<Filter<String,String>>();
-		ret.add(new TwoTagsFilter<String, String>(token, currentTag, previousTag));
-		ret.add(new TokenAndTagFilter<String, String>(token, currentTag, previousTag));
+		ret.add(new TwoTagsFilter<String, String>(currentTag, previousTag));
+		ret.add(new TokenAndTagFilter<String, String>(token, currentTag));
 		return ret;
 	}
 }

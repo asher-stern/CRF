@@ -1,7 +1,6 @@
 package org.postagging.evaluation;
 
 import java.io.File;
-
 import java.util.Date;
 
 import org.apache.log4j.Level;
@@ -75,7 +74,9 @@ public class TrainAndEvaluate
 		logger.info(RuntimeUtilities.getUsedMemory());
 		
 		logger.info("Evaluating...");
-		AccuracyEvaluator evaluator = new AccuracyEvaluator(corpus.createTestCorpus(), posTagger);
+		AccuracyEvaluator evaluator = new AccuracyEvaluator(corpus.createTestCorpus(), posTagger
+//				, new PrintWriter(System.out) // comment out this line to prevent tagged test sentence from being printed.
+				);
 		evaluator.evaluate();
 		logger.info(trainingTime);
 		logger.info("Accuracy = " + String.format("%-3.3f", evaluator.getAccuracy()));

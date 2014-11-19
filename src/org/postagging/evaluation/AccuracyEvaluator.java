@@ -1,5 +1,6 @@
 package org.postagging.evaluation;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,11 +23,19 @@ public class AccuracyEvaluator
 {
 	public AccuracyEvaluator(PosTagCorpus<String,String> corpus, PosTagger posTagger)
 	{
+		this(corpus,posTagger,null);
+	}
+
+	
+	public AccuracyEvaluator(PosTagCorpus<String,String> corpus, PosTagger posTagger, PrintWriter taggedTestWriter)
+	{
 		super();
 		this.corpus = corpus;
 		this.posTagger = posTagger;
+		this.taggedTestWriter = taggedTestWriter;
 	}
 
+	
 	public void evaluate()
 	{
 		correct = 0;
@@ -42,16 +51,19 @@ public class AccuracyEvaluator
 			List<String> sentence = taggedSentenceToSentence(taggedSentence);
 			List<StringTaggedToken> taggedByPosTagger = posTagger.tagSentence(sentence);
 			evaluateSentence(taggedSentence,taggedByPosTagger);
-			if (logger.isDebugEnabled())
+			
+			if (taggedTestWriter!=null)
 			{
-				logger.debug("\n"+
-				printSentence(taggedSentence)+"\n"+
-				printSentence(taggedByPosTagger));
-				if ((debug_index%100)==0){logger.debug("Evaluated: "+debug_index);}	
+				taggedTestWriter.println(printSentence(taggedSentence));
+				taggedTestWriter.println(printSentence(taggedByPosTagger));
 			}
 			
-			
+			if (logger.isDebugEnabled())
+			{
+				if ((debug_index%100)==0){logger.debug("Evaluated: "+debug_index);}	
+			}
 		}
+		if (taggedTestWriter!=null) {taggedTestWriter.flush();}
 		
 		accuracy = ((double)correct)/((double)(correct+incorrect));
 	}
@@ -128,6 +140,7 @@ public class AccuracyEvaluator
 	
 	private final PosTagCorpus<String,String> corpus;
 	private final PosTagger posTagger;
+	private final PrintWriter taggedTestWriter;
 	
 	private long correct = 0;
 	private long incorrect = 0;

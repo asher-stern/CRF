@@ -5,6 +5,7 @@ import java.io.File;
 import org.postagging.data.PosTagCorpus;
 
 /**
+ * Size of corpus = 1173766
  * 
  * @author Asher Stern
  * Date: Nov 16, 2014

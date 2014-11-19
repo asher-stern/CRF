@@ -52,7 +52,7 @@ public class StandardFeatureGenerator extends CrfPosTaggerFeatureGenerator
 				setFilteredFeatures.add(
 						new CrfFilteredFeature<String, String>(
 								new TokenAndTagFeature(taggedToken.getToken(),taggedToken.getTag()),
-								new TokenAndTagFilter<String, String>(taggedToken.getToken(),taggedToken.getTag(), null),
+								new TokenAndTagFilter<String, String>(taggedToken.getToken(),taggedToken.getTag()),
 								true
 								)
 						);
@@ -67,7 +67,7 @@ public class StandardFeatureGenerator extends CrfPosTaggerFeatureGenerator
 			setFilteredFeatures.add(
 					new CrfFilteredFeature<String,String>(
 							new TagTransitionFeature(null, tag),
-							new TwoTagsFilter<String, String>(null, tag, null),
+							new TwoTagsFilter<String, String>(tag, null),
 							true)
 					);
 			
@@ -76,7 +76,7 @@ public class StandardFeatureGenerator extends CrfPosTaggerFeatureGenerator
 				setFilteredFeatures.add(
 						new CrfFilteredFeature<String,String>(
 								new TagTransitionFeature(previousTag, tag),
-								new TwoTagsFilter<String, String>(null, tag, previousTag),
+								new TwoTagsFilter<String, String>(tag, previousTag),
 								true)
 						);
 

@@ -72,14 +72,20 @@ public class PennTreeToPosTaggedSentence
 		if (!(IGNORE_TAG.equals(tag)))
 		{
 			int indexOfHyphen = tag.indexOf('-');
-			if (indexOfHyphen==0) throw new PosTaggerException("Malformed PTB file contents.");
-			if (indexOfHyphen>0)
-			{
-				tag = tag.substring(0, indexOfHyphen);
-			}
-			if (!StringUtilities.stringContainsLetter(tag))
+			if (indexOfHyphen==0)
 			{
 				tag = PUNCTUATION_TAG;
+			}
+			else
+			{
+				if (indexOfHyphen>0)
+				{
+					tag = tag.substring(0, indexOfHyphen);
+				}
+				if (!StringUtilities.stringContainsLetter(tag))
+				{
+					tag = PUNCTUATION_TAG;
+				}
 			}
 			return new StringTaggedToken(components[1].trim(),tag);
 		}
