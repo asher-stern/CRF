@@ -1,5 +1,6 @@
 package org.postagging.crf.features;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Set;
  * @param <K>
  * @param <G>
  */
-public interface FilterFactory<K, G>
+public interface FilterFactory<K, G> extends Serializable
 {
 	public Set<Filter<K, G>> createFilters(K token, G currentTag, G previousTag);
 }

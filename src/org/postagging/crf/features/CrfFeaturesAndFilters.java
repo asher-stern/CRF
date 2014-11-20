@@ -1,5 +1,6 @@
 package org.postagging.crf.features;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,8 +12,10 @@ import java.util.Set;
  * @param <K>
  * @param <G>
  */
-public class CrfFeaturesAndFilters<K, G>
+public class CrfFeaturesAndFilters<K, G> implements Serializable
 {
+	private static final long serialVersionUID = 5815029007668803039L;
+	
 	public CrfFeaturesAndFilters(FilterFactory<K, G> filterFactory,
 			CrfFilteredFeature<K, G>[] filteredFeatures,
 			Map<Filter<K, G>, Set<Integer>> mapActiveFeatures,

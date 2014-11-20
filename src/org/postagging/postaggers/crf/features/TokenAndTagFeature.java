@@ -4,6 +4,7 @@ import org.postagging.crf.CrfFeature;
 
 import static org.postagging.utilities.PosTaggerUtilities.equalObjects;
 
+
 /**
  * 
  * @author Asher Stern
@@ -12,6 +13,8 @@ import static org.postagging.utilities.PosTaggerUtilities.equalObjects;
  */
 public class TokenAndTagFeature extends CrfFeature<String, String>
 {
+	private static final long serialVersionUID = -3196603759120595624L;
+	
 	public TokenAndTagFeature(String forToken, String forTag)
 	{
 		super();

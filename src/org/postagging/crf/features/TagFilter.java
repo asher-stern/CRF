@@ -10,6 +10,9 @@ package org.postagging.crf.features;
  */
 public class TagFilter<K,G> extends Filter<K, G>
 {
+	private static final long serialVersionUID = 3624873223333620234L;
+
+	
 	public TagFilter(G currentTag)
 	{
 		this.currentTag = currentTag;

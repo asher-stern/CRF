@@ -10,6 +10,8 @@ package org.postagging.crf.features;
  */
 public class TokenAndTagFilter<K,G> extends Filter<K, G>
 {
+	private static final long serialVersionUID = 1856640638264818467L;
+	
 	public TokenAndTagFilter(K token, G currentTag)
 	{
 		this.token = token;
@@ -17,17 +19,28 @@ public class TokenAndTagFilter<K,G> extends Filter<K, G>
 	}
 	
 	
-	
+
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((currentTag == null) ? 0 : currentTag.hashCode());
-		result = prime * result + ((token == null) ? 0 : token.hashCode());
-		return result;
+		if (hashCodeCalculated)
+		{
+			return hashCodeValue;
+		}
+		else
+		{
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((currentTag == null) ? 0 : currentTag.hashCode());
+			result = prime * result + ((token == null) ? 0 : token.hashCode());
+			hashCodeValue = result;
+			hashCodeCalculated = true;
+			return result;
+		}
 	}
+	
+	
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -57,4 +70,7 @@ public class TokenAndTagFilter<K,G> extends Filter<K, G>
 
 	private final K token;
 	private final G currentTag;
+	
+	private transient int hashCodeValue = 0;
+	private transient boolean hashCodeCalculated = false;
 }

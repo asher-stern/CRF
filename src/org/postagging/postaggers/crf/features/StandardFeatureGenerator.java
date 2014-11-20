@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.postagging.crf.features.CrfFilteredFeature;
-import org.postagging.crf.features.TokenAndTagFilter;
 import org.postagging.crf.features.TwoTagsFilter;
 import org.postagging.data.InMemoryPosTagCorpus;
 import org.postagging.postaggers.crf.CrfPosTaggerFeatureGenerator;
@@ -51,8 +50,8 @@ public class StandardFeatureGenerator extends CrfPosTaggerFeatureGenerator
 			{
 				setFilteredFeatures.add(
 						new CrfFilteredFeature<String, String>(
-								new TokenAndTagFeature(taggedToken.getToken(),taggedToken.getTag()),
-								new TokenAndTagFilter<String, String>(taggedToken.getToken(),taggedToken.getTag()),
+								new CaseInsensitiveTokenAndTagFeature(taggedToken.getToken(), taggedToken.getTag()),
+								new CaseInsensitiveTokenAndTagFilter(taggedToken.getToken(), taggedToken.getTag()),
 								true
 								)
 						);

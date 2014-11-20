@@ -1,5 +1,7 @@
 package org.postagging.crf.features;
 
+import java.io.Serializable;
+
 import org.postagging.crf.CrfFeature;
 
 /**
@@ -10,8 +12,10 @@ import org.postagging.crf.CrfFeature;
  * @param <K>
  * @param <G>
  */
-public class CrfFilteredFeature<K, G>
+public class CrfFilteredFeature<K, G> implements Serializable
 {
+	private static final long serialVersionUID = -5835863638916635217L;
+	
 	public CrfFilteredFeature(CrfFeature<K, G> feature, Filter<K, G> filter, boolean whenNotFilteredIsAlwaysOne)
 	{
 		super();

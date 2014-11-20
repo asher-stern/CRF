@@ -41,7 +41,9 @@ public class TrainAndEvaluate
 		{
 			int testSize = 0;
 			if (args.length>=3) {testSize = Integer.parseInt(args[2]);}
-			new TrainAndEvaluate(args[0],Integer.parseInt(args[1]),testSize).go();
+			String loadSaveDirectoryName = null;
+			if (args.length>=4) {loadSaveDirectoryName = args[3];}
+			new TrainAndEvaluate(args[0],Integer.parseInt(args[1]),testSize,loadSaveDirectoryName).go();
 		}
 		catch(Throwable t)
 		{
@@ -53,12 +55,13 @@ public class TrainAndEvaluate
 	
 	
 	
-	public TrainAndEvaluate(String brownDirectory, int trainSize, int testSize)
+	public TrainAndEvaluate(String brownDirectory, int trainSize, int testSize, String loadSaveDirectoryName)
 	{
 		super();
 		this.corpusDirectory = brownDirectory;
 		this.trainSize = trainSize;
 		this.testSize = testSize;
+		this.loadSaveDirectoryName = loadSaveDirectoryName;
 		
 		System.out.println("trainSize = " + trainSize);
 		System.out.println("testSize = " + testSize);
@@ -126,6 +129,14 @@ public class TrainAndEvaluate
 		trainingTime = "Training time (HH:MM:SS) = "+String.format("%02d:%02d:%02d",(seconds/60)/60,(seconds/60)%60,seconds%60);
 		logger.info(trainingTime);
 		
+		if (loadSaveDirectoryName!=null)
+		{
+			File saveDirectory = new File(loadSaveDirectoryName);
+			logger.info("Saving pos tagger into directory: "+saveDirectory.getAbsolutePath()+" ...");
+			trainer.save(saveDirectory);
+			logger.info("Save done.");
+		}
+		
 		PosTagger posTagger = trainer.getTrainedPosTagger();
 		return posTagger;
 	}
@@ -134,6 +145,7 @@ public class TrainAndEvaluate
 	private final String corpusDirectory;
 	private final int trainSize;
 	private final int testSize;
+	private final String loadSaveDirectoryName;
 	
 	private String trainingTime = null;
 	

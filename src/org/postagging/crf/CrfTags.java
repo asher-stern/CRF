@@ -1,5 +1,6 @@
 package org.postagging.crf;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -17,8 +18,10 @@ import org.postagging.utilities.PosTaggerException;
  *
  * @param <G>
  */
-public class CrfTags<G>
+public class CrfTags<G> implements Serializable
 {
+	private static final long serialVersionUID = -4286815527883493811L;
+	
 	public CrfTags(Set<G> tags, Map<G, Set<G>> canFollow, Map<G, Set<G>> canPrecede)
 	{
 		super();

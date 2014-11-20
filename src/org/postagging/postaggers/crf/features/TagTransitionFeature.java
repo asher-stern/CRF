@@ -12,6 +12,8 @@ import static org.postagging.utilities.PosTaggerUtilities.equalObjects;
  */
 public class TagTransitionFeature extends CrfFeature<String, String>
 {
+	private static final long serialVersionUID = -61200838311988363L;
+	
 	public TagTransitionFeature(String forPreviousTag, String forCurrentTag)
 	{
 		super();

@@ -43,6 +43,7 @@ public class CrfPosTaggerTrainerFactory
 		tagsBuilder.build();
 		CrfTags<String> crfTags = tagsBuilder.getCrfTags();
 		//Set<String> tags = PosTaggerUtilities.extractAllTagsFromCorpus(corpus);
+		
 		logger.info("Generating features.");
 		CrfPosTaggerFeatureGenerator featureGenerator = featureGeneratorFactory.create(corpus, crfTags.getTags());
 		featureGenerator.generateFeatures();
