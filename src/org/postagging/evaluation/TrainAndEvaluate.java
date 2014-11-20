@@ -59,6 +59,9 @@ public class TrainAndEvaluate
 		this.corpusDirectory = brownDirectory;
 		this.trainSize = trainSize;
 		this.testSize = testSize;
+		
+		System.out.println("trainSize = " + trainSize);
+		System.out.println("testSize = " + testSize);
 	}
 
 

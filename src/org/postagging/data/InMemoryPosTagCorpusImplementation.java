@@ -52,7 +52,12 @@ public class InMemoryPosTagCorpusImplementation<K,G> implements InMemoryPosTagCo
 			List<? extends TaggedToken<K, G>> sentence = reader.next();
 			listSentences.add(sentence);
 		}
-		logger.debug("Reading corpus to memory - done.");
+		if (logger.isDebugEnabled())
+		{
+			logger.debug("Reading corpus to memory - done.");
+			logger.debug("Number of sentences = " + listSentences.size());
+		}
+		
 		if (logger.isDebugEnabled())
 		{
 			logger.debug(RuntimeUtilities.getUsedMemory());
