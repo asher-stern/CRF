@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 import org.postagging.crf.CrfModel;
-import org.postagging.postaggers.PosTagger;
 import org.postagging.postaggers.PosTaggerLoader;
 import org.postagging.utilities.PosTaggerException;
 
@@ -19,7 +18,7 @@ import org.postagging.utilities.PosTaggerException;
 public class CrfPosTaggerLoader implements PosTaggerLoader
 {
 	@Override
-	public PosTagger load(File directory)
+	public CrfPosTagger load(File directory)
 	{
 		if (!directory.exists()) {throw new PosTaggerException("Given directory: "+directory.getAbsolutePath()+" does not exist.");}
 		if (!directory.isDirectory()) {throw new PosTaggerException("The loader requires a directory, but was provided with a file: "+directory.getAbsolutePath()+".");}
