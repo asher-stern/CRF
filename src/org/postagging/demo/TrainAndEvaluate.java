@@ -1,4 +1,4 @@
-package org.postagging.evaluation;
+package org.postagging.demo;
 
 import java.io.File;
 import java.util.Date;
@@ -10,6 +10,7 @@ import org.postagging.data.InMemoryPosTagCorpusImplementation;
 import org.postagging.data.PosTagCorpus;
 import org.postagging.data.TrainTestPosTagCorpus;
 import org.postagging.data.penn.PennCorpus;
+import org.postagging.evaluation.AccuracyEvaluator;
 import org.postagging.postaggers.PosTagger;
 import org.postagging.postaggers.crf.CrfPosTaggerTrainer;
 import org.postagging.postaggers.crf.CrfPosTaggerTrainerFactory;

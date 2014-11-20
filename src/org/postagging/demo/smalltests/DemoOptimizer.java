@@ -1,4 +1,4 @@
-package org.postagging.demo;
+package org.postagging.demo.smalltests;
 
 import org.apache.log4j.Level;
 import org.postagging.function.DerivableFunction;

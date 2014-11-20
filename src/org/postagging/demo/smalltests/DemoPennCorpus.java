@@ -1,4 +1,4 @@
-package org.postagging.demo;
+package org.postagging.demo.smalltests;
 
 import java.io.File;
 import java.util.List;
