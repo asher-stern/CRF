@@ -38,6 +38,11 @@ public class FileUtilities
 		return ret;
 	}
 	
+	/**
+	 * Reads all the contents of the given text file into a string, and returns that string.
+	 * @param file
+	 * @return
+	 */
 	public static String readTextFile(File file)
 	{
 		StringBuilder sb = new StringBuilder();
@@ -58,6 +63,10 @@ public class FileUtilities
 		return sb.toString();
 	}
 
+	/**
+	 * A comparator of two files, where the comparison is by the lexicographic ordering of their names.
+	 *
+	 */
 	private static class FilenameComparator implements Comparator<File>
 	{
 		@Override

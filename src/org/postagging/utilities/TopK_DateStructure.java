@@ -44,6 +44,11 @@ public class TopK_DateStructure<T>
 
 
 
+	/**
+	 * Insert an item to this data-structure. This item might be discarded later when it is absolutely sure that it is not
+	 * one of the top-k items that were inserted to this data-structure.
+	 * @param item
+	 */
 	public void insert(T item)
 	{
 		storage[index] = item;
@@ -56,6 +61,11 @@ public class TopK_DateStructure<T>
 		}
 	}
 	
+	/**
+	 * Get the top-k items among all the items that were inserted to this data-structure so far.
+	 * <B>Note that this method has time complexity of O(k*log(k)).</B>
+	 * @return
+	 */
 	public ArrayList<T> getTopK()
 	{
 		if (index>k)

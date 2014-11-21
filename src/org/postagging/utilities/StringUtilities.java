@@ -67,6 +67,12 @@ public class StringUtilities
 	}
 	
 	
+	/**
+	 * Checks whether the given string contains a letter.
+	 * For example, for "43$!a00" the function would return true, while for "223344" the function would return false.
+	 * @param str
+	 * @return
+	 */
 	public static final boolean stringContainsLetter(String str)
 	{
 		char [] charArray = str.toCharArray();
