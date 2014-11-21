@@ -6,6 +6,10 @@ import static org.postagging.utilities.PosTaggerUtilities.equalObjects;
 
 
 /**
+ * A feature that models that the given token is assigned the given tag. Tokens are considered case-sensitive, i.e.,
+ * "AbC" is <B>NOT</B> equal to "abc".
+ * <BR>
+ * In practice, this feature is not used. Rather {@link CaseInsensitiveTokenAndTagFeature} is used. 
  * 
  * @author Asher Stern
  * Date: Nov 10, 2014

@@ -12,6 +12,12 @@ import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
 
 /**
+ * Generates the standard set of CRF features for part-of-speech tagging.
+ * This standard set is:
+ * <OL>
+ * <LI>For each token and tag - a feature that models that that token is assigned that tag.</LI>
+ * <LI>For each tag that follows a preceding tag - a feature that models this tag transition.</LI>
+ * </OL>
  * 
  * @author Asher Stern
  * Date: Nov 10, 2014

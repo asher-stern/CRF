@@ -5,6 +5,8 @@ import org.postagging.crf.CrfFeature;
 import static org.postagging.utilities.PosTaggerUtilities.equalObjects;
 
 /**
+ * A CRF feature the models that a certain token is assigned a certain tag.
+ * The token is considered in a case-insensitivity manner, i.e., "AbC" is considered equal to "abc".
  * 
  * @author Asher Stern
  * Date: Nov 20, 2014

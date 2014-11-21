@@ -5,6 +5,7 @@ import org.postagging.crf.CrfFeature;
 import static org.postagging.utilities.PosTaggerUtilities.equalObjects;
 
 /**
+ * A feature that models the transition from one tag to another (possibly the same) tag.
  * 
  * @author Asher Stern
  * Date: Nov 10, 2014
