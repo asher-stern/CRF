@@ -7,6 +7,13 @@ import org.postagging.function.DerivableFunction;
 import org.postagging.utilities.PosTaggerException;
 
 /**
+ * The Armijo line search is a relatively efficient inexact line search method.
+ * <BR>
+ * More information about Armijo line search can be found at the <B>Hebrew</B> notebook
+ * about Optimization computational methods - theory and exercises notebook by
+ * Dori Peleg for Technion course 046197 version 3.0, page 65.
+ * <BR>
+ * The notebook can be downloaded from here: http://webee.technion.ac.il/people/dorip/optimization%20book.pdf
  * 
  * @author Asher Stern
  * Date: Nov 7, 2014

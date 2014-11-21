@@ -7,6 +7,9 @@ import org.postagging.utilities.StringUtilities;
 import org.postagging.utilities.VectorUtilities;
 
 /**
+ * A {@link Minimizer} which updates the function's input by moving it along the negation of its
+ * gradient.
+ * This method is simple but <B> inefficient</B>.
  * 
  * @author Asher Stern
  * Date: Nov 6, 2014

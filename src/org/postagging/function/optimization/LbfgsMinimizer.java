@@ -11,6 +11,22 @@ import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.VectorUtilities;
 
 /**
+ * Implementation of L-BFGS algorithm for minimizing a function.
+ * <BR>
+ * L-BFGS stands for "Limited memory BFGS", where "BFGS" is an acronym of
+ * "Broyden Fletcher Goldfarb Shanno" who developed the BFGS algorithm.
+ * <BR>
+ * The BFGS algorithm approximates Newton method for optimization, by approximating
+ * the inverse of the Hessian without calculating the exact Hessian.
+ * The L-BFGS algorithm approximates the BFGS algorithm by approximating calculations
+ * that are performed with the inverse of the Hessian, but stores neither the
+ * inverse of the Hessian nor its approximation in the memory.
+ * Thus the L-BFGS algorithm is much cheaper in space complexity notion.
+ * <BR>
+ * The L-BFGS algorithm is described in the book "Numerical Optimization" by Jorge Nocedal and Stephen J. Wright,
+ * Chapter 9. The book can be downloaded from http://www.bioinfo.org.cn/~wangchao/maa/Numerical_Optimization.pdf 
+ *  
+ *  
  * 
  * @author Asher Stern
  * Date: Nov 7, 2014

@@ -3,6 +3,8 @@ package org.postagging.function.optimization;
 import org.postagging.function.Function;
 
 /**
+ * A simple inexact and inaccurate non-efficient line search which merely returns a small
+ * constant for any input.
  * 
  * @author Asher Stern
  * Date: Nov 7, 2014

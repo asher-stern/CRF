@@ -28,6 +28,7 @@ import org.postagging.utilities.PosTaggerUtilities;
 
 
 /**
+ * A {@link PosTaggerTrainer} which creates a {@link CrfPosTagger}. Training and inference are performed by the CRF algorithm. 
  * 
  * @author Asher Stern
  * Date: Nov 10, 2014

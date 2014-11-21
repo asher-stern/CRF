@@ -6,6 +6,10 @@ import org.postagging.function.TwiceDerivableFunction;
 import org.postagging.utilities.PosTaggerException;
 
 /**
+ * Represent "-f(x)" for a given function "f(x)".
+ * <BR>
+ * This negated function can be used when maximization of a function is needed, but a minimization algorithm is available.
+ * Just minimize "-f(x)", and the resulting "x" is the point of the maximum for "f(x)".
  * 
  * @author Asher Stern
  * Date: Nov 6, 2014

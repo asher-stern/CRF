@@ -1,6 +1,10 @@
 package org.postagging.function.optimization;
 
 /**
+ * Encapsulates the substraction of two given points, and the substraction of the gradient calculated for them (for a given
+ * function).
+ * This class is used by {@link LbfgsMinimizer}.
+ * 
  * 
  * @author Asher Stern
  * Date: Nov 7, 2014

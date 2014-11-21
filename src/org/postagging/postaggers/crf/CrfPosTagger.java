@@ -12,6 +12,7 @@ import org.postagging.postaggers.PosTagger;
 import org.postagging.utilities.PosTaggerException;
 
 /**
+ * A part-of-speech tagger which assigns the tags using CRF inference. CRF is an acronym of Conditional Random Fields.
  * 
  * @author Asher Stern
  * Date: Nov 10, 2014

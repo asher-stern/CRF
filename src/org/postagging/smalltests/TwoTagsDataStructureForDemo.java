@@ -1,4 +1,4 @@
-package org.postagging.demo.smalltests;
+package org.postagging.smalltests;
 
 /**
  * 

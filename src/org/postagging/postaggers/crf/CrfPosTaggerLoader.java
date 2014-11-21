@@ -10,6 +10,8 @@ import org.postagging.postaggers.PosTaggerLoader;
 import org.postagging.utilities.PosTaggerException;
 
 /**
+ * Loads a {@link CrfPosTagger} from a model that is stored in a directory in the file-system.
+ * The model was earlier saved in the file-system by {@link CrfPosTaggerTrainer#save(File)}.
  * 
  * @author Asher Stern
  * Date: Nov 20, 2014
@@ -17,6 +19,10 @@ import org.postagging.utilities.PosTaggerException;
  */
 public class CrfPosTaggerLoader implements PosTaggerLoader
 {
+	/*
+	 * (non-Javadoc)
+	 * @see org.postagging.postaggers.PosTaggerLoader#load(java.io.File)
+	 */
 	@Override
 	public CrfPosTagger load(File directory)
 	{
