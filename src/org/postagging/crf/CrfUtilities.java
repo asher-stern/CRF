@@ -27,10 +27,20 @@ public class CrfUtilities
 	public static final double ROUGHLY_EQUAL_DEVIATION_FROM_ONE = 0.01;
 
 	
+	/**
+	 * Returns the set of tags that can be assigned to the token which precedes the given token, assuming "currentTag" is
+	 * the tag of the current token.
+	 * @param sentence a sequence of tokens
+	 * @param index the index of the "current token"
+	 * @param currentTag the tag of the "current token"
+	 * @param crfTags A data-structure that holds all the tags in the training corpus, and the restrictions over them.
+	 * @return the set of tags that can be assigned to the token which precedes the given token, assuming "currentTag" is
+	 * the tag of the current token.
+	 */
 	public static <K,G> Set<G> getPreviousTags(K[] sentence, int index, G currentTag, CrfTags<G> crfTags)
 	{
 		Set<G> previousTags = null;
-		if (index<0) throw new PosTaggerException("Error: not tag can precede the virtual token that precedes the first token.");
+		if (index<0) throw new PosTaggerException("Error: no tag can precede the virtual token that precedes the first token.");
 		if (index==0)
 		{
 			previousTags = crfTags.getPrecedeWhenFirst().get(currentTag);
@@ -80,8 +90,7 @@ public class CrfUtilities
 		Set<Integer> activeFeatureIndexes = new LinkedHashSet<Integer>();
 		addAll(activeFeatureIndexes, features.getIndexesOfFeaturesWithNoFilter());
 		
-		K token = sentence[tokenIndex];
-		Set<Filter<K, G>> filters = features.getFilterFactory().createFilters(token, currentTag, previousTag);
+		Set<Filter<K, G>> filters = features.getFilterFactory().createFilters(sentence, tokenIndex, currentTag, previousTag);
 		for (Filter<K, G> filter : filters)
 		{
 			Set<Integer> featureIndexesForFilter = features.getMapActiveFeatures().get(filter);

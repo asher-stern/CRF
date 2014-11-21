@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Encapsulates all the features, the {@link FilterFactory}, and data-structures used for filtering features.
  * 
  * @author Asher Stern
  * Date: Nov 11, 2014

@@ -1,6 +1,7 @@
 package org.postagging.crf.features;
 
 /**
+ * A filter which filters the given input by examining its token and the token's tag.
  * 
  * @author Asher Stern
  * Date: Nov 11, 2014

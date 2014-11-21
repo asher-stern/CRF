@@ -3,8 +3,24 @@ package org.postagging.crf.features;
 import java.io.Serializable;
 
 import org.postagging.crf.CrfFeature;
+import org.postagging.crf.CrfUtilities;
 
 /**
+ * Encapsulates a {@link CrfFeature} and its {@link Filter}.
+ * <BR>
+ * The filter should represent the case in which the feature <B>might</B> return a non-zero value.
+ * It is the responsibility of the programmer who subclasses this class to encapsulate the right filter for the feature.
+ * <P>
+ * Filters work as follows: the programmer who programs the CRF features, writes for each feature also a filter.
+ * In addition, the programmer writers a {@link FilterFactory} which returns a set of filters for each input.
+ * That's all for the feature programmer.
+ * In the CRF side of training and inference, the {@link FilterFactory} is queried for each input for a set of filters,
+ * which are used to retrieve the features which <B>might</B> return non-zero for the given input.
+ * 
+ * @see Filter
+ * @see FilterFactory
+ * @see CrfUtilities#getActiveFeatureIndexes(CrfFeaturesAndFilters, Object[], int, Object, Object)
+ * 
  * 
  * @author Asher Stern
  * Date: Nov 11, 2014
@@ -34,6 +50,11 @@ public class CrfFilteredFeature<K, G> implements Serializable
 		return filter;
 	}
 
+	/**
+	 * Returns true if it is <B>guaranteed</B> that the feature returns 1.0 for any input for which its filter
+	 * is equal to the filter returned by {@link #getFilter()}.
+	 * @return
+	 */
 	public boolean isWhenNotFilteredIsAlwaysOne()
 	{
 		return whenNotFilteredIsAlwaysOne;

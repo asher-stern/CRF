@@ -9,6 +9,7 @@ import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.RuntimeUtilities;
 
 /**
+ * Loads a corpus into the internal memory.
  * 
  * @author Asher Stern
  * Date: Nov 8, 2014

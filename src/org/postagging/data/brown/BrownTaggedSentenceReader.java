@@ -5,18 +5,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.postagging.data.TaggedSentenceReader;
 import org.postagging.data.StringTaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
 /**
  * Sentence reader for Brown corpus.
  * Brown corpus can be downloaded from: http://www.nltk.org/nltk_data/
+ * 
  * @author Asher Stern
  * Date: Nov 3, 2014
  *
  */
-public class BrownTaggedSentenceReader extends TaggedSentenceReader
+public class BrownTaggedSentenceReader
 {
 	public static final String SEPARATOR = "/";
 	public static final String PUNC_TAG = "PUNC";
@@ -122,10 +122,9 @@ public class BrownTaggedSentenceReader extends TaggedSentenceReader
 
 	public BrownTaggedSentenceReader(String annotatedSentence)
 	{
-		super(annotatedSentence);
+		this.annotatedSentence = annotatedSentence;
 	}
 
-	@Override
 	public List<StringTaggedToken> read()
 	{
 		String[] tokens = annotatedSentence.split("\\s+");
@@ -224,5 +223,5 @@ public class BrownTaggedSentenceReader extends TaggedSentenceReader
 		return ret;
 	}
 	
-
+	protected final String annotatedSentence;
 }

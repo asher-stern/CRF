@@ -18,8 +18,9 @@ public class StandardFilterFactory implements FilterFactory<String, String>
 	private static final long serialVersionUID = 6283122214266870374L;
 
 	@Override
-	public Set<Filter<String, String>> createFilters(String token, String currentTag, String previousTag)
+	public Set<Filter<String, String>> createFilters(String[] sequence, int tokenIndex, String currentTag, String previousTag)
 	{
+		String token = sequence[tokenIndex];
 		Set<Filter<String, String>> ret = new LinkedHashSet<Filter<String,String>>();
 		ret.add(new TwoTagsFilter<String, String>(currentTag, previousTag));
 		//ret.add(new TokenAndTagFilter<String, String>(token, currentTag));

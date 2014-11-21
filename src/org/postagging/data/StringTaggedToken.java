@@ -3,6 +3,7 @@ package org.postagging.data;
 import org.postagging.utilities.TaggedToken;
 
 /**
+ * A token and a tag, both represented as strings.
  * 
  * @author Asher Stern
  * Date: Nov 3, 2014

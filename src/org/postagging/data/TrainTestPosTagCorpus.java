@@ -1,6 +1,16 @@
 package org.postagging.data;
 
 /**
+ * Splits a given corpus into a train corpus and a test corpus.
+ * <P>
+ * If train-size is provided, and is larger than zero, then the first "train-size" sentences are returned as the train corpus.
+ * Otherwise, the whole corpus is provided as the train corpus.
+ * <P>
+ * If the "train-size" is provided, then the test corpus contains <B>only</B> sentences that are not included in the train corpus.
+ * If "test-size" is provided, then only the first "test-size" sentences are included in the test corpus, where "the first sentences"
+ * means those which immediately the last sentence in the training (if "train-size" > 0), or the first sentences in the original
+ * corpus (if "train-size<=0).
+ *  
  * 
  * @author Asher Stern
  * Date: Nov 5, 2014

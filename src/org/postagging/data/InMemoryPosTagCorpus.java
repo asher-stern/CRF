@@ -1,6 +1,7 @@
 package org.postagging.data;
 
 /**
+ * A corpus that completely resides in the internal memory. 
  * 
  * @author Asher Stern
  * Date: Nov 8, 2014

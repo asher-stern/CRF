@@ -6,6 +6,8 @@ import java.util.NoSuchElementException;
 import org.postagging.utilities.TaggedToken;
 
 /**
+ * A corpus that contains only a portion of an original corpus.
+ * It contains only the fixed number of the first sentences that are included in the original corpus.
  * 
  * @author Asher Stern
  * Date: Nov 4, 2014

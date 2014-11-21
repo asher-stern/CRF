@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Holds, for a given sentence, the CRF formula value for each token-index and every pair of tags (for the current token and the
+ * preceding token).
  * 
  * @author Asher Stern
  * Date: Nov 13, 2014

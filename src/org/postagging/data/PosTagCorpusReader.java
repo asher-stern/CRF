@@ -6,6 +6,7 @@ import java.util.List;
 import org.postagging.utilities.TaggedToken;
 
 /**
+ * An iterator of pos-tagged sentences.
  * 
  * @author Asher Stern
  * Date: Nov 3, 2014

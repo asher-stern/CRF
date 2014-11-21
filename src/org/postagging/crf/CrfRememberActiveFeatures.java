@@ -7,6 +7,7 @@ import java.util.Set;
 import org.postagging.crf.features.CrfFeaturesAndFilters;
 
 /**
+ * Holds sets of active features for every token, and every pair of tags (for this token and the preceding token) in the given input.
  * 
  * @author Asher Stern
  * Date: Nov 13, 2014

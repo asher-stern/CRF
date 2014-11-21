@@ -1,6 +1,7 @@
 package org.postagging.crf.features;
 
 /**
+ * A filter which filters only by the tag of the token.
  * 
  * @author Asher Stern
  * Date: Nov 11, 2014

@@ -12,6 +12,7 @@ import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
 
 /**
+ * Finds the set of tags in the given corpus, and which tag can follow which tag.
  * 
  * @author Asher Stern
  * Date: Nov 16, 2014
