@@ -8,10 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.postagging.data.PosTagCorpusReader;
 import org.postagging.utilities.FileUtilities;
-import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
+import org.postagging.utilities.TaggedToken;
 
 /**
  * 
@@ -19,7 +18,7 @@ import org.postagging.utilities.PosTaggerException;
  * Date: Nov 16, 2014
  *
  */
-public class PennCorpusReader implements PosTagCorpusReader<String,String>
+public class PennCorpusReader implements Iterator<List<TaggedToken<String, String>>>
 {
 	public static final String PENN_FILE_SUFFIX = ".mrg";
 
@@ -37,7 +36,7 @@ public class PennCorpusReader implements PosTagCorpusReader<String,String>
 	}
 
 	@Override
-	public List<? extends TaggedToken<String, String>> next()
+	public List<TaggedToken<String, String>> next()
 	{
 		while ((null==treeIterator) || (!treeIterator.hasNext()))
 		{

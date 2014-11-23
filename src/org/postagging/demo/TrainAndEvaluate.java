@@ -2,23 +2,17 @@ package org.postagging.demo;
 
 import java.io.File;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.postagging.crf.run.CrfTrainer;
-import org.postagging.crf.run.CrfTrainerFactory;
-import org.postagging.data.InMemoryPosTagCorpus;
-import org.postagging.data.InMemoryPosTagCorpusImplementation;
-import org.postagging.data.PosTagCorpus;
 import org.postagging.data.TrainTestPosTagCorpus;
 import org.postagging.data.penn.PennCorpus;
 import org.postagging.evaluation.AccuracyEvaluator;
 import org.postagging.postaggers.PosTagger;
 import org.postagging.postaggers.crf.CrfPosTaggerTrainer;
-import org.postagging.postaggers.crf.features.StandardFeatureGenerator;
-import org.postagging.postaggers.crf.features.StandardFilterFactory;
+import org.postagging.postaggers.crf.CrfPosTaggerTrainerFactory;
 import org.postagging.utilities.ExceptionUtil;
 import org.postagging.utilities.RuntimeUtilities;
 import org.postagging.utilities.TaggedToken;
@@ -117,21 +111,23 @@ public class TrainAndEvaluate
 	}
 
 	
-	private PosTagger train(PosTagCorpus<String,String> corpus)
+	private PosTagger train(Iterable<? extends List<? extends TaggedToken<String, String>>> corpus)
 	{
-		InMemoryPosTagCorpus<String,String> inMemoryCorpus = new InMemoryPosTagCorpusImplementation<String,String>(corpus);
+		
 
 		long timeInit = new Date().getTime();
 		
 //		MajorityPosTaggerTrainer trainer = new MajorityPosTaggerTrainer();
 //		trainer.train(inMemoryCorpus);
 		
-		CrfTrainerFactory<String, String> factory = new CrfTrainerFactory<String, String>();
-		CrfTrainer<String, String> crfTrainer = factory.createTrainer(corpus,
-				(Iterable<List<? extends TaggedToken<String, String> >> theCorpus, Set<String> tags) -> new StandardFeatureGenerator(theCorpus, tags),
-				new StandardFilterFactory());
-		CrfPosTaggerTrainer trainer = new CrfPosTaggerTrainer(crfTrainer);
-		trainer.train(inMemoryCorpus);
+		List<List<? extends TaggedToken<String, String>>> corpusAsList = new LinkedList<List<? extends TaggedToken<String,String>>>();
+		for (List<? extends TaggedToken<String, String>> sentence : corpus)
+		{
+			corpusAsList.add(sentence);
+		}
+		CrfPosTaggerTrainer trainer = new CrfPosTaggerTrainerFactory().createTrainer(corpusAsList);
+		
+		trainer.train(corpusAsList);
 
 		long seconds = (new Date().getTime()-timeInit)/1000;
 		trainingTime = "Training time (HH:MM:SS) = "+String.format("%02d:%02d:%02d",(seconds/60)/60,(seconds/60)%60,seconds%60);

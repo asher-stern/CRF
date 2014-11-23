@@ -1,8 +1,9 @@
 package org.postagging.postaggers;
 
 import java.io.File;
+import java.util.List;
 
-import org.postagging.data.PosTagCorpus;
+import org.postagging.utilities.TaggedToken;
 
 /**
  * Trains a {@link PosTagger} with the given corpus, and provides method to get the trained pos-tagger and
@@ -12,7 +13,7 @@ import org.postagging.data.PosTagCorpus;
  * Date: Nov 4, 2014
  *
  */
-public interface PosTaggerTrainer<C extends PosTagCorpus<String,String>>
+public interface PosTaggerTrainer<C extends Iterable<? extends List<? extends TaggedToken<String, String>>>>
 {
 	/**
 	 * Train the pos-tagger with the given corpus.

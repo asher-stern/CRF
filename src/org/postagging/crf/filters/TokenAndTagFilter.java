@@ -1,4 +1,4 @@
-package org.postagging.crf.features;
+package org.postagging.crf.filters;
 
 /**
  * A filter which filters the given input by examining its token and the token's tag.

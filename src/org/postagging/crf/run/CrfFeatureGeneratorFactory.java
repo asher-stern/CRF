@@ -20,5 +20,5 @@ public interface CrfFeatureGeneratorFactory<K,G>
 	 * @param tags
 	 * @return
 	 */
-	public CrfFeatureGenerator<K,G> create(Iterable<List<? extends TaggedToken<K, G> >> corpus, Set<G> tags);
+	public CrfFeatureGenerator<K,G> create(Iterable<? extends List<? extends TaggedToken<K, G> >> corpus, Set<G> tags);
 }

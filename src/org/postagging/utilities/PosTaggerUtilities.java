@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.postagging.data.InMemoryPosTagCorpus;
-
 
 /**
  * A collection of static helper functions for pos-tagger. 
@@ -26,7 +24,7 @@ public class PosTaggerUtilities
 	 * @param corpus A corpus of POS-tagged sentences.
 	 * @return All the tags in the given corpus.
 	 */
-	public static Set<String> extractAllTagsFromCorpus(InMemoryPosTagCorpus<String, String> corpus)
+	public static Set<String> extractAllTagsFromCorpus(Iterable<? extends List<? extends TaggedToken<String, String>>> corpus)
 	{
 		Set<String> allTags = new LinkedHashSet<String>();
 		for (List<? extends TaggedToken<String, String> > sentence : corpus)

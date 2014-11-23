@@ -12,6 +12,8 @@ import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
 
 /**
+ * Performs the inference -- the process of finding the most likely sequence of tags to a sequence of tokens, for new
+ * unseen sequences of tokens (test data).
  * 
  * @author Asher Stern
  * Date: Nov 23, 2014
@@ -27,6 +29,11 @@ public class CrfInferencePerformer<K, G>
 		this.model = model;
 	}
 
+	/**
+	 * Finds the most likely sequence of tags for the given sequence of tokens
+	 * @param sequence A sequence of tokens
+	 * @return A list in which each element is a {@link TaggedToken}, which encapsulates a token and its tag.
+	 */
 	public List<TaggedToken<K,G>> tagSequence(List<K> sequence)
 	{
 		if (null==sequence) {return null;}

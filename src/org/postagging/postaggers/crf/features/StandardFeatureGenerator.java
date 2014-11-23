@@ -4,8 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.postagging.crf.features.CrfFilteredFeature;
-import org.postagging.crf.features.TwoTagsFilter;
+import org.postagging.crf.filters.CrfFilteredFeature;
+import org.postagging.crf.filters.TwoTagsFilter;
 import org.postagging.crf.run.CrfFeatureGenerator;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
@@ -25,7 +25,7 @@ import org.postagging.utilities.TaggedToken;
 public class StandardFeatureGenerator extends CrfFeatureGenerator<String,String>
 {
 
-	public StandardFeatureGenerator(Iterable<List<? extends TaggedToken<String, String> >> corpus, Set<String> tags)
+	public StandardFeatureGenerator(Iterable<? extends List<? extends TaggedToken<String, String> >> corpus, Set<String> tags)
 	{
 		super(corpus, tags);
 	}

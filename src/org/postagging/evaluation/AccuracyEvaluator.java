@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.postagging.data.PosTagCorpus;
-import org.postagging.data.PosTagCorpusReader;
 import org.postagging.postaggers.PosTagger;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
@@ -20,13 +18,13 @@ import org.postagging.utilities.TaggedToken;
  */
 public class AccuracyEvaluator
 {
-	public AccuracyEvaluator(PosTagCorpus<String,String> corpus, PosTagger posTagger)
+	public AccuracyEvaluator(Iterable<? extends List<? extends TaggedToken<String, String>>> corpus, PosTagger posTagger)
 	{
 		this(corpus,posTagger,null);
 	}
 
 	
-	public AccuracyEvaluator(PosTagCorpus<String,String> corpus, PosTagger posTagger, PrintWriter taggedTestWriter)
+	public AccuracyEvaluator(Iterable<? extends List<? extends TaggedToken<String, String>>> corpus, PosTagger posTagger, PrintWriter taggedTestWriter)
 	{
 		super();
 		this.corpus = corpus;
@@ -40,7 +38,7 @@ public class AccuracyEvaluator
 		correct = 0;
 		incorrect = 0;
 		accuracy = 0.0;
-		PosTagCorpusReader<String,String> reader = corpus.iterator();
+		Iterator<? extends List<? extends TaggedToken<String, String>>> reader = corpus.iterator();
 		
 		int debug_index=0;
 		while (reader.hasNext())
@@ -137,7 +135,7 @@ public class AccuracyEvaluator
 	}
 
 	
-	private final PosTagCorpus<String,String> corpus;
+	private final Iterable<? extends List<? extends TaggedToken<String, String>>> corpus;
 	private final PosTagger posTagger;
 	private final PrintWriter taggedTestWriter;
 	

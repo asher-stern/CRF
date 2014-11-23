@@ -11,15 +11,16 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.postagging.crf.CrfTags;
 import org.postagging.crf.CrfUtilities;
-import org.postagging.crf.features.CrfFeaturesAndFilters;
-import org.postagging.crf.features.CrfFilteredFeature;
-import org.postagging.crf.features.Filter;
-import org.postagging.crf.features.FilterFactory;
+import org.postagging.crf.filters.CrfFeaturesAndFilters;
+import org.postagging.crf.filters.CrfFilteredFeature;
+import org.postagging.crf.filters.Filter;
+import org.postagging.crf.filters.FilterFactory;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
 
 
 /**
+ * A factory which generates a new CRF trainer.
  * 
  * @author Asher Stern
  * Date: Nov 23, 2014
@@ -29,7 +30,17 @@ import org.postagging.utilities.TaggedToken;
  */
 public class CrfTrainerFactory<K,G>
 {
-	public CrfTrainer<K,G> createTrainer(Iterable<List<? extends TaggedToken<K, G> >> corpus, CrfFeatureGeneratorFactory<K,G> featureGeneratorFactory, FilterFactory<K, G> filterFactory)
+	/**
+	 * Creates a CRF trainer.<BR>
+	 * <B>The given corpus must reside completely in the internal memory. Not in disk/data-base etc.</B>
+	 * 
+	 * @param corpus The corpus: a list a tagged sequences. Must reside completely in memory.
+	 * @param featureGeneratorFactory A factory which creates a feature-generator (the feature-generator creates a set of features)
+	 * @param filterFactory The {@link FilterFactory} <B>that corresponds to the feature-generator.</B>
+	 * 
+	 * @return a CRF trainer.
+	 */
+	public CrfTrainer<K,G> createTrainer(List<List<? extends TaggedToken<K, G> >> corpus, CrfFeatureGeneratorFactory<K,G> featureGeneratorFactory, FilterFactory<K, G> filterFactory)
 	{
 		logger.info("Extracting tags.");
 		CrfTagsBuilder<G> tagsBuilder = new CrfTagsBuilder<G>(corpus);

@@ -1,5 +1,10 @@
 package org.postagging.data;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.postagging.utilities.TaggedToken;
+
 /**
  * Splits a given corpus into a train corpus and a test corpus.
  * <P>
@@ -18,12 +23,12 @@ package org.postagging.data;
  */
 public class TrainTestPosTagCorpus<K,G>
 {
-	public TrainTestPosTagCorpus(int trainSize, PosTagCorpus<K,G> realCorpus)
+	public TrainTestPosTagCorpus(int trainSize, Iterable<List<TaggedToken<K, G>>> realCorpus)
 	{
 		this(trainSize,0,realCorpus);
 	}
 
-	public TrainTestPosTagCorpus(int trainSize, int testSize, PosTagCorpus<K,G> realCorpus)
+	public TrainTestPosTagCorpus(int trainSize, int testSize, Iterable<List<TaggedToken<K, G>>> realCorpus)
 	{
 		super();
 		this.trainSize = trainSize;
@@ -33,14 +38,14 @@ public class TrainTestPosTagCorpus<K,G>
 
 
 
-	public PosTagCorpus<K,G> createTrainCorpus()
+	public Iterable<List<TaggedToken<K, G>>> createTrainCorpus()
 	{
 		if (trainSize>0)
 		{
-			return new PosTagCorpus<K,G>()
+			return new Iterable<List<TaggedToken<K, G>>>()
 			{
 				@Override
-				public PosTagCorpusReader<K,G> iterator()
+				public Iterator<List<TaggedToken<K, G>>> iterator()
 				{
 					return new LimitedSizePosTagCorpusReader<K,G>(realCorpus.iterator(), trainSize);
 				}
@@ -53,11 +58,11 @@ public class TrainTestPosTagCorpus<K,G>
 	}
 
 	
-	public PosTagCorpus<K,G> createTestCorpus()
+	public Iterable<List<TaggedToken<K, G>>> createTestCorpus()
 	{
 		if ( (trainSize<=0) && (testSize<=0) ) return realCorpus;
 		
-		PosTagCorpusReader<K,G> reader = realCorpus.iterator();
+		Iterator<List<TaggedToken<K, G>>> reader = realCorpus.iterator();
 		if (trainSize>0)
 		{
 			for (int i=0;(i<trainSize)&&(reader.hasNext());++i)
@@ -71,12 +76,12 @@ public class TrainTestPosTagCorpus<K,G>
 			reader = new LimitedSizePosTagCorpusReader<K,G>(reader, testSize);
 		}
 		
-		final PosTagCorpusReader<K,G> finalReader = reader;
+		final Iterator<List<TaggedToken<K, G>>> finalReader = reader;
 		
-		return new PosTagCorpus<K,G>()
+		return new Iterable<List<TaggedToken<K, G>>>()
 		{
 			@Override
-			public PosTagCorpusReader<K,G> iterator()
+			public Iterator<List<TaggedToken<K, G>>> iterator()
 			{
 				return finalReader;
 			}
@@ -86,6 +91,6 @@ public class TrainTestPosTagCorpus<K,G>
 
 	private final int trainSize;
 	private final int testSize;
-	private final PosTagCorpus<K,G> realCorpus;
+	private final Iterable<List<TaggedToken<K, G>>> realCorpus;
 	
 }

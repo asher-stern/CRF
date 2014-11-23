@@ -1,17 +1,16 @@
 package org.postagging.postaggers.majority;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.postagging.data.PosTagCorpus;
-import org.postagging.data.PosTagCorpusReader;
 import org.postagging.postaggers.PosTagger;
 import org.postagging.postaggers.PosTaggerTrainer;
-import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
+import org.postagging.utilities.TaggedToken;
 
 /**
  * Trains a {@link MajorityPosTagger} from a given corpus.
@@ -23,11 +22,11 @@ import org.postagging.utilities.PosTaggerException;
  * Date: Nov 4, 2014
  *
  */
-public class MajorityPosTaggerTrainer implements PosTaggerTrainer<PosTagCorpus<String,String>>
+public class MajorityPosTaggerTrainer implements PosTaggerTrainer<Iterable<List<TaggedToken<String, String>>>>
 {
 
 	@Override
-	public void train(PosTagCorpus<String,String> corpus)
+	public void train(Iterable<List<TaggedToken<String, String>>> corpus)
 	{
 		processCorpus(corpus);
 		
@@ -87,11 +86,11 @@ public class MajorityPosTaggerTrainer implements PosTaggerTrainer<PosTagCorpus<S
 		}
 	}
 	
-	private void processCorpus(PosTagCorpus<String,String> corpus)
+	private void processCorpus(Iterable<List<TaggedToken<String, String>>> corpus)
 	{
 		majorityMapPerToken = new LinkedHashMap<String, Map<String,Integer>>();
 		majorityMapGeneralTag = new LinkedHashMap<String, Integer>();
-		PosTagCorpusReader<String,String> reader = corpus.iterator();
+		Iterator<List<TaggedToken<String, String>>> reader = corpus.iterator();
 		
 		int index = 0;
 		while(reader.hasNext())

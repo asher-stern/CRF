@@ -1,4 +1,4 @@
-package org.postagging.crf.features;
+package org.postagging.crf.filters;
 
 /**
  * A filter which filters only by the tag of the token.

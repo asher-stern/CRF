@@ -1,6 +1,6 @@
 package org.postagging.postaggers.crf.features;
 
-import org.postagging.crf.features.Filter;
+import org.postagging.crf.filters.Filter;
 
 /**
  * A {@link Filter} for {@link CaseInsensitiveTokenAndTagFeature}.

@@ -1,5 +1,6 @@
 package org.postagging.data;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -13,9 +14,9 @@ import org.postagging.utilities.TaggedToken;
  * Date: Nov 4, 2014
  *
  */
-public class LimitedSizePosTagCorpusReader<K,G> implements PosTagCorpusReader<K,G>
+public class LimitedSizePosTagCorpusReader<K,G> implements Iterator<List<TaggedToken<K, G>>>
 {
-	public LimitedSizePosTagCorpusReader(PosTagCorpusReader<K,G> realCorpus, int size)
+	public LimitedSizePosTagCorpusReader(Iterator<List<TaggedToken<K, G>>> realCorpus, int size)
 	{
 		super();
 		this.realCorpus = realCorpus;
@@ -29,7 +30,7 @@ public class LimitedSizePosTagCorpusReader<K,G> implements PosTagCorpusReader<K,
 	}
 
 	@Override
-	public List<? extends TaggedToken<K, G> > next()
+	public List<TaggedToken<K, G> > next()
 	{
 		if (index<size)
 		{
@@ -40,7 +41,7 @@ public class LimitedSizePosTagCorpusReader<K,G> implements PosTagCorpusReader<K,
 	}
 
 	
-	private final PosTagCorpusReader<K,G> realCorpus;
+	private final Iterator<List<TaggedToken<K, G>>> realCorpus;
 	private final int size;
 	
 	private int index=0;

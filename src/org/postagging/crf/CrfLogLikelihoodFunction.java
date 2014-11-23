@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.postagging.crf.features.CrfFeaturesAndFilters;
+import org.postagging.crf.filters.CrfFeaturesAndFilters;
+import org.postagging.crf.run.CrfTagsBuilder;
 import org.postagging.function.DerivableFunction;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
@@ -38,7 +39,17 @@ import org.postagging.utilities.TaggedToken;
  */
 public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 {
-	public CrfLogLikelihoodFunction(Iterable<List<? extends TaggedToken<K, G>>> corpus, CrfTags<G> crfTags,
+	/**
+	 * Constructs the log-likelihood function of the CRF.
+	 * Note that the whole corpus should be inside the internal memory (the JVM heap). It should not be in disk or data-base.
+	 * 
+	 * @param corpus A corpus -- a list of sequences of tokens, where each token has a tag (this is a gold-standard corpus: the tags are known).
+	 * @param crfTags The tags that exist in the given corpus. See {@link CrfTagsBuilder}.
+	 * @param features The CRF features.
+	 * @param useRegularization whether to use a regularization factor or not.
+	 * @param sigmaSquare_inverseRegularizationFactor the \sigma^2 parameter of the L2 regularization factor.
+	 */
+	public CrfLogLikelihoodFunction(List<? extends List<? extends TaggedToken<K, G>>> corpus, CrfTags<G> crfTags,
 			CrfFeaturesAndFilters<K, G> features, boolean useRegularization,
 			double sigmaSquare_inverseRegularizationFactor)
 	{
@@ -200,7 +211,11 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 //		logger.info(RuntimeUtilities.getUsedMemory());
 //	}
 
-	private final Iterable<List<? extends TaggedToken<K, G> >> corpus;
+	/**
+	 * A corpus -- a list of tagged sequences.
+	 * <B>The whole corpus should reside in the internal memory completely!</B> Otherwise, the run will be very slow.
+	 */
+	private final List<? extends List<? extends TaggedToken<K, G> >> corpus;
 	private final CrfTags<G> crfTags;
 	private final CrfFeaturesAndFilters<K, G> features;
 	private final boolean useRegularization;

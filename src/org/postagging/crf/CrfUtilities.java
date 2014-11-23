@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.postagging.crf.features.CrfFeaturesAndFilters;
-import org.postagging.crf.features.CrfFilteredFeature;
-import org.postagging.crf.features.Filter;
+import org.postagging.crf.filters.CrfFeaturesAndFilters;
+import org.postagging.crf.filters.CrfFilteredFeature;
+import org.postagging.crf.filters.Filter;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
 

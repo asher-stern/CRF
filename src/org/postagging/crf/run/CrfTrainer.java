@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.postagging.crf.CrfLogLikelihoodFunction;
 import org.postagging.crf.CrfModel;
 import org.postagging.crf.CrfTags;
-import org.postagging.crf.features.CrfFeaturesAndFilters;
+import org.postagging.crf.filters.CrfFeaturesAndFilters;
 import org.postagging.function.DerivableFunction;
 import org.postagging.function.optimization.LbfgsMinimizer;
 import org.postagging.function.optimization.NegatedFunction;
@@ -44,7 +44,7 @@ public class CrfTrainer<K,G>
 	}
 
 
-	public void train(Iterable<List<? extends TaggedToken<K, G> >> corpus)
+	public void train(List<? extends List<? extends TaggedToken<K, G> >> corpus)
 	{
 		logger.info("CRF training: Number of tags = "+crfTags.getTags().size()+". Number of features = "+features.getFilteredFeatures().length +".");
 		logger.info("Creating log likelihood function.");
@@ -84,7 +84,7 @@ public class CrfTrainer<K,G>
 
 	
 	
-	private DerivableFunction createLogLikelihoodFunctionConcave(Iterable<List<? extends TaggedToken<K, G> >> corpus)
+	private DerivableFunction createLogLikelihoodFunctionConcave(List<? extends List<? extends TaggedToken<K, G> >> corpus)
 	{
 		return new CrfLogLikelihoodFunction<K, G>(corpus,crfTags,features,useRegularization,sigmaSquare_inverseRegularizationFactor);
 	}

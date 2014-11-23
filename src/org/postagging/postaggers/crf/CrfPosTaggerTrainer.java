@@ -13,13 +13,13 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.postagging.crf.CrfModel;
-import org.postagging.crf.features.CrfFilteredFeature;
+import org.postagging.crf.filters.CrfFilteredFeature;
 import org.postagging.crf.run.CrfTrainer;
-import org.postagging.data.InMemoryPosTagCorpus;
 import org.postagging.postaggers.PosTaggerTrainer;
 import org.postagging.utilities.AbsoluteValueComparator;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.PosTaggerUtilities;
+import org.postagging.utilities.TaggedToken;
 
 
 /**
@@ -29,7 +29,7 @@ import org.postagging.utilities.PosTaggerUtilities;
  * Date: Nov 10, 2014
  *
  */
-public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpus<String,String>>
+public class CrfPosTaggerTrainer implements PosTaggerTrainer<List<? extends List<? extends TaggedToken<String, String>>>>
 {
 	public static final String SAVE_LOAD_FILE_NAME = "crfptmdl.ser";
 	public static final String HUMAN_READABLE_FILE_NAME = "rdbl_mdl.txt";
@@ -45,7 +45,7 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<InMemoryPosTagCorpu
 
 
 	@Override
-	public void train(InMemoryPosTagCorpus<String, String> corpus)
+	public void train(List<? extends List<? extends TaggedToken<String, String>>> corpus)
 	{
 		crfTrainer.train(corpus);
 		crfPosTagger = new CrfPosTagger(crfTrainer.getInferencePerformer());

@@ -4,7 +4,7 @@ package org.postagging.crf.run;
 import java.util.List;
 import java.util.Set;
 
-import org.postagging.crf.features.CrfFilteredFeature;
+import org.postagging.crf.filters.CrfFilteredFeature;
 import org.postagging.postaggers.crf.CrfPosTagger;
 import org.postagging.utilities.TaggedToken;
 
@@ -17,7 +17,7 @@ import org.postagging.utilities.TaggedToken;
  */
 public abstract class CrfFeatureGenerator<K,G>
 {
-	public CrfFeatureGenerator(Iterable<List<? extends TaggedToken<K, G> >> corpus, Set<String> tags)
+	public CrfFeatureGenerator(Iterable<? extends List<? extends TaggedToken<K, G> >> corpus, Set<String> tags)
 	{
 		super();
 		this.corpus = corpus;
@@ -37,6 +37,6 @@ public abstract class CrfFeatureGenerator<K,G>
 
 	
 	
-	protected final Iterable<List<? extends TaggedToken<K, G> >> corpus;
+	protected final Iterable<? extends List<? extends TaggedToken<K, G> >> corpus;
 	protected final Set<String> tags;
 }

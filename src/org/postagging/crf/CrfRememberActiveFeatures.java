@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.postagging.crf.features.CrfFeaturesAndFilters;
+import org.postagging.crf.filters.CrfFeaturesAndFilters;
 
 /**
  * Holds sets of active features for every token, and every pair of tags (for this token and the preceding token) in the given input.

@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.postagging.data.PosTagCorpusReader;
 import org.postagging.utilities.FileUtilities;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
@@ -28,7 +27,7 @@ import org.postagging.utilities.TaggedToken;
  * Date: Nov 3, 2014
  *
  */
-public class BrownCorpusReader implements PosTagCorpusReader<String,String>
+public class BrownCorpusReader implements Iterator<List<TaggedToken<String, String>>>
 {
 	public static final String CATALOG_FILE_NAME = "cats.txt";
 

@@ -1,4 +1,4 @@
-package org.postagging.crf.features;
+package org.postagging.crf.filters;
 
 import java.io.Serializable;
 import java.util.Map;

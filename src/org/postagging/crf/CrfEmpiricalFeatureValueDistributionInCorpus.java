@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.postagging.crf.features.CrfFeaturesAndFilters;
-import org.postagging.crf.features.CrfFilteredFeature;
+import org.postagging.crf.filters.CrfFeaturesAndFilters;
+import org.postagging.crf.filters.CrfFilteredFeature;
 import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
 
