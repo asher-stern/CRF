@@ -17,6 +17,16 @@ import org.postagging.crf.filters.CrfFeaturesAndFilters;
  */
 public class CrfRememberActiveFeatures<K, G>
 {
+	/**
+	 * Creates an instance of {@link CrfRememberActiveFeatures} for the given sentence, calls its {@link #findActiveFeaturesForAllTokens()}
+	 * method, and returns it. With the returned object, the method {@link #getOneTokenActiveFeatures(int, Object, Object)} can be
+	 * used to retrieve active features for any token/tag/tag-of-previous in the sentence.
+	 * 
+	 * @param features
+	 * @param crfTags
+	 * @param sentence
+	 * @return
+	 */
 	public static <K, G> CrfRememberActiveFeatures<K, G> findForSentence(CrfFeaturesAndFilters<K, G> features, CrfTags<G> crfTags, K[] sentence)
 	{
 		CrfRememberActiveFeatures<K, G> ret = new CrfRememberActiveFeatures<K, G>(features,crfTags,sentence);
@@ -24,6 +34,13 @@ public class CrfRememberActiveFeatures<K, G>
 		return ret;
 	}
 	
+	/**
+	 * Constructor for a given sentence.
+	 * 
+	 * @param features
+	 * @param crfTags
+	 * @param sentence
+	 */
 	@SuppressWarnings("unchecked")
 	public CrfRememberActiveFeatures(CrfFeaturesAndFilters<K, G> features, CrfTags<G> crfTags, K[] sentence)
 	{
@@ -36,6 +53,10 @@ public class CrfRememberActiveFeatures<K, G>
 
 
 
+	/**
+	 * Finds all the active features for every triple of token/tag/tag-of-previous. Then, the method
+	 * {@link #getOneTokenActiveFeatures(int, Object, Object)} can be used.
+	 */
 	public void findActiveFeaturesForAllTokens()
 	{
 		for (int tokenIndex=0;tokenIndex<sentence.length;++tokenIndex)

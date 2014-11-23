@@ -30,19 +30,34 @@ public class CrfFeaturesAndFilters<K, G> implements Serializable
 	}
 	
 	
-	
+	/**
+	 * Returns the {@link FilterFactory} to be used with the features encapsulated here, for efficient feature-value calculations.
+	 */
 	public FilterFactory<K, G> getFilterFactory()
 	{
 		return filterFactory;
 	}
+	
+	/**
+	 * An array of all the features in the CRF model.
+	 */
 	public CrfFilteredFeature<K, G>[] getFilteredFeatures()
 	{
 		return filteredFeatures;
 	}
+	
+	/**
+	 * Returns a map from each filter to a set of indexes of features, that might be active if their filters are equal to
+	 * this filter. "Active" means that they might return non-zero. 
+	 */
 	public Map<Filter<K, G>, Set<Integer>> getMapActiveFeatures()
 	{
 		return mapActiveFeatures;
 	}
+	
+	/**
+	 * Returns a set of indexes of features that might be active for any type of input. These features have no filters. 
+	 */
 	public Set<Integer> getIndexesOfFeaturesWithNoFilter()
 	{
 		return indexesOfFeaturesWithNoFilter;

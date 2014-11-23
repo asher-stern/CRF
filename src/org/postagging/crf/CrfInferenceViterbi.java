@@ -46,7 +46,7 @@ import org.postagging.utilities.PosTaggerException;
  * @param <K>
  * @param <G>
  */
-public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
+public class CrfInferenceViterbi<K, G>
 {
 	/**
 	 * Constructs Viterbi implementation for the given sentence, under the given model.
@@ -55,14 +55,13 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 	 */
 	public CrfInferenceViterbi(CrfModel<K, G> model, K[] sentence)
 	{
-		super(model, sentence);
+		this.model = model;
+		this.sentence = sentence;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.postagging.crf.CrfInference#inferBestTagSequence()
+	/**
+	 * Finds and returns the most probable sequence of tags for the sentence given in the constructor.
 	 */
-	@Override
 	public G[] inferBestTagSequence()
 	{
 		calculateViterbi();
@@ -154,6 +153,10 @@ public class CrfInferenceViterbi<K, G> extends CrfInference<K, G>
 		}
 		return tagWithMaxValueForLastToken;
 	}
+	
+	
+	private final CrfModel<K, G> model;
+	private final K[] sentence;
 	
 	
 	/**

@@ -19,6 +19,8 @@ import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.log4j.Log4jInit;
 
 /**
+ * An application which trains a {@link PosTagger} by a portion of the given corpus, and then evaluates that {@link PosTagger}
+ * over another portion of the given corpus.
  * 
  * @author Asher Stern
  * Date: Nov 4, 2014
@@ -30,6 +32,7 @@ public class TrainAndEvaluate
 	/**
 	 * 
 	 * @param args 1. corpus. 2. train-size (how many train sentences, where the rest are test sentences). 3. (optional) test-size
+	 * 4. (optional) directory-name for saving the trained pos-tagger model.
 	 * <BR>
 	 * If train-size <=0, then the whole corpus is train, and the test is on the training data.
 	 * <BR>
@@ -102,8 +105,6 @@ public class TrainAndEvaluate
 	
 	private PosTagger train(Iterable<? extends List<? extends TaggedToken<String, String>>> corpus)
 	{
-		
-
 		long timeInit = new Date().getTime();
 		
 //		MajorityPosTaggerTrainer trainer = new MajorityPosTaggerTrainer();
@@ -114,8 +115,8 @@ public class TrainAndEvaluate
 		{
 			corpusAsList.add(sentence);
 		}
-		CrfPosTaggerTrainer trainer = new CrfPosTaggerTrainerFactory().createTrainer(corpusAsList);
 		
+		CrfPosTaggerTrainer trainer = new CrfPosTaggerTrainerFactory().createTrainer(corpusAsList);
 		trainer.train(corpusAsList);
 
 		long seconds = (new Date().getTime()-timeInit)/1000;

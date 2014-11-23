@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.postagging.crf.CrfInference;
 import org.postagging.crf.CrfInferenceViterbi;
 import org.postagging.crf.CrfModel;
 import org.postagging.utilities.PosTaggerException;
@@ -41,7 +40,7 @@ public class CrfInferencePerformer<K, G>
 		
 		@SuppressWarnings("unchecked")
 		K[] sentenceAsArray = sequence.toArray( (K[]) Array.newInstance(sequence.get(0).getClass(), sequence.size()) );
-		CrfInference<K, G> crfInference = new CrfInferenceViterbi<K, G>(model, sentenceAsArray);
+		CrfInferenceViterbi<K, G> crfInference = new CrfInferenceViterbi<K, G>(model, sentenceAsArray);
 		G[] bestTags = crfInference.inferBestTagSequence();
 
 		if (sentenceAsArray.length!=bestTags.length) {throw new PosTaggerException("Inference failed. Array of tags differs in length from array of tokens.");}
