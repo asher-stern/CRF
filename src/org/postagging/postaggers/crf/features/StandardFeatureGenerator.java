@@ -6,8 +6,7 @@ import java.util.Set;
 
 import org.postagging.crf.features.CrfFilteredFeature;
 import org.postagging.crf.features.TwoTagsFilter;
-import org.postagging.data.InMemoryPosTagCorpus;
-import org.postagging.postaggers.crf.CrfPosTaggerFeatureGenerator;
+import org.postagging.crf.run.CrfFeatureGenerator;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
 
@@ -23,10 +22,10 @@ import org.postagging.utilities.TaggedToken;
  * Date: Nov 10, 2014
  *
  */
-public class StandardFeatureGenerator extends CrfPosTaggerFeatureGenerator
+public class StandardFeatureGenerator extends CrfFeatureGenerator<String,String>
 {
 
-	public StandardFeatureGenerator(InMemoryPosTagCorpus<String, String> corpus, Set<String> tags)
+	public StandardFeatureGenerator(Iterable<List<? extends TaggedToken<String, String> >> corpus, Set<String> tags)
 	{
 		super(corpus, tags);
 	}

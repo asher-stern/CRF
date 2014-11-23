@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.postagging.data.StringTaggedToken;
 import org.postagging.data.brown.BrownCorpusReader;
+import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.log4j.Log4jInit;
 
 /**
@@ -52,11 +52,11 @@ public class DemoReadBrownCorpus
 		//while (index<NUMBER_OF_SENTENCES && reader.hasNext())
 		while (reader.hasNext())
 		{
-			List<StringTaggedToken> taggedSentence = reader.next();
+			List<TaggedToken<String,String>> taggedSentence = reader.next();
 			++index;
 //			StringBuilder sb = new StringBuilder();
 			String previousTag = null;
-			for (StringTaggedToken token : taggedSentence)
+			for (TaggedToken<String,String> token : taggedSentence)
 			{
 //				sb.append(token).append(" ");
 				tags.add(token.getTag());

@@ -5,8 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.postagging.data.StringTaggedToken;
 import org.postagging.utilities.PosTaggerException;
+import org.postagging.utilities.TaggedToken;
 
 /**
  * Sentence reader for Brown corpus.
@@ -125,10 +125,10 @@ public class BrownTaggedSentenceReader
 		this.annotatedSentence = annotatedSentence;
 	}
 
-	public List<StringTaggedToken> read()
+	public List<TaggedToken<String,String>> read()
 	{
 		String[] tokens = annotatedSentence.split("\\s+");
-		List<StringTaggedToken> ret = new ArrayList<StringTaggedToken>(tokens.length);
+		List<TaggedToken<String,String>> ret = new ArrayList<TaggedToken<String,String>>(tokens.length);
 		
 		for (String token : tokens)
 		{
@@ -142,7 +142,7 @@ public class BrownTaggedSentenceReader
 					tag = normalizeTag(tag);
 					if (tag!=null)
 					{
-						ret.add(new StringTaggedToken(tokenWord, tag));
+						ret.add(new TaggedToken<String,String>(tokenWord, tag));
 					}
 				}
 			}

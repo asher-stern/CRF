@@ -1,4 +1,4 @@
-package org.postagging.crf;
+package org.postagging.crf.run;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.postagging.crf.CrfTags;
+import org.postagging.crf.CrfUtilities;
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.TaggedToken;
 

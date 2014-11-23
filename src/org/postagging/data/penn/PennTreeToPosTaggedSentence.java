@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.postagging.utilities.PosTaggerException;
 import org.postagging.utilities.StringUtilities;
-import org.postagging.data.StringTaggedToken;
+import org.postagging.utilities.TaggedToken;
 
 
 /**
@@ -32,7 +32,7 @@ public class PennTreeToPosTaggedSentence
 
 	public void extractPosTaggedSentence()
 	{
-		ArrayList<StringTaggedToken> sentenceArrayList = new ArrayList<StringTaggedToken>(INITIAL_SENTENCE_LENGTH);
+		ArrayList<TaggedToken<String,String>> sentenceArrayList = new ArrayList<TaggedToken<String,String>>(INITIAL_SENTENCE_LENGTH);
 		sentence = sentenceArrayList;
 		dfsScan(tree);
 		sentenceArrayList.trimToSize();
@@ -40,7 +40,7 @@ public class PennTreeToPosTaggedSentence
 	
 	
 	
-	public List<StringTaggedToken> getSentence()
+	public List<TaggedToken<String,String>> getSentence()
 	{
 		return sentence;
 	}
@@ -51,7 +51,7 @@ public class PennTreeToPosTaggedSentence
 	{
 		if (node.getChildren().size()==0)
 		{
-			StringTaggedToken taggedToken = fromLeaf(node.getNodeString());
+			TaggedToken<String,String> taggedToken = fromLeaf(node.getNodeString());
 			if (taggedToken!=null)
 			{
 				sentence.add(taggedToken);
@@ -63,7 +63,7 @@ public class PennTreeToPosTaggedSentence
 		}
 	}
 	
-	private StringTaggedToken fromLeaf(String leafContents)
+	private TaggedToken<String,String> fromLeaf(String leafContents)
 	{
 		String[] components = leafContents.split("\\s+");
 		if (components.length!=2) {throw new PosTaggerException("Malformed leaf in PTB tree.");}
@@ -87,12 +87,12 @@ public class PennTreeToPosTaggedSentence
 					tag = PUNCTUATION_TAG;
 				}
 			}
-			return new StringTaggedToken(components[1].trim(),tag);
+			return new TaggedToken<String,String>(components[1].trim(),tag);
 		}
 		else return null;
 	}
 
 	private final PennParserTreeNode tree;
 	
-	private List<StringTaggedToken> sentence;
+	private List<TaggedToken<String,String>> sentence;
 }

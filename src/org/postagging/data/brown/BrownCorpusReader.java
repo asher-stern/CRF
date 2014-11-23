@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.postagging.data.PosTagCorpusReader;
-import org.postagging.data.StringTaggedToken;
 import org.postagging.utilities.FileUtilities;
 import org.postagging.utilities.PosTaggerException;
+import org.postagging.utilities.TaggedToken;
 
 /**
  * A reader for the Brown-corpus.
@@ -47,9 +47,9 @@ public class BrownCorpusReader implements PosTagCorpusReader<String,String>
 	}
 
 	@Override
-	public List<StringTaggedToken> next()
+	public List<TaggedToken<String,String>> next()
 	{
-		List<StringTaggedToken> ret = null;
+		List<TaggedToken<String,String>> ret = null;
 		if (thereIsNext)
 		{
 			String sentence = sentencesIterator.next();

@@ -2,7 +2,7 @@ package org.postagging.postaggers;
 
 import java.util.List;
 
-import org.postagging.data.StringTaggedToken;
+import org.postagging.utilities.TaggedToken;
 
 /**
  * Assigns part-of-speech tags for a given sentence.
@@ -18,5 +18,5 @@ public interface PosTagger
 	 * @param sentence An input sentence, given as a list of tokens.
 	 * @return The tagged sentence.
 	 */
-	public List<StringTaggedToken> tagSentence(List<String> sentence);
+	public List<TaggedToken<String,String>> tagSentence(List<String> sentence);
 }

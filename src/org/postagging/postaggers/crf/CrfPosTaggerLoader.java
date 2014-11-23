@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 import org.postagging.crf.CrfModel;
+import org.postagging.crf.run.CrfInferencePerformer;
 import org.postagging.postaggers.PosTaggerLoader;
 import org.postagging.utilities.PosTaggerException;
 
@@ -33,7 +34,7 @@ public class CrfPosTaggerLoader implements PosTaggerLoader
 		{
 			@SuppressWarnings("unchecked")
 			CrfModel<String, String> model = (CrfModel<String, String>) inputStream.readObject();
-			return new CrfPosTagger(model);
+			return new CrfPosTagger(new CrfInferencePerformer<String, String>(model));
 		}
 		catch (IOException | ClassNotFoundException e)
 		{

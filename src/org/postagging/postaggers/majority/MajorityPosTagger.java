@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.postagging.data.StringTaggedToken;
 import org.postagging.postaggers.PosTagger;
+import org.postagging.utilities.TaggedToken;
 
 /**
  * A {@link PosTagger} which assigns for each word the tag that occurs mostly with that word.
@@ -27,9 +27,9 @@ public class MajorityPosTagger implements PosTagger
 	
 	
 	@Override
-	public List<StringTaggedToken> tagSentence(List<String> sentence)
+	public List<TaggedToken<String,String>> tagSentence(List<String> sentence)
 	{
-		List<StringTaggedToken> ret = new ArrayList<StringTaggedToken>(sentence.size());
+		List<TaggedToken<String,String>> ret = new ArrayList<TaggedToken<String,String>>(sentence.size());
 		for (String token : sentence)
 		{
 			String tag = majorityMap.get(token);
@@ -38,7 +38,7 @@ public class MajorityPosTagger implements PosTagger
 				tag = generalMajorTag;
 			}
 			
-			ret.add(new StringTaggedToken(token, tag));
+			ret.add(new TaggedToken<String,String>(token, tag));
 		}
 		
 		return ret;

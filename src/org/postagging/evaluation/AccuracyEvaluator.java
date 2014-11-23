@@ -8,10 +8,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.postagging.data.PosTagCorpus;
 import org.postagging.data.PosTagCorpusReader;
-import org.postagging.data.StringTaggedToken;
 import org.postagging.postaggers.PosTagger;
-import org.postagging.utilities.TaggedToken;
 import org.postagging.utilities.PosTaggerException;
+import org.postagging.utilities.TaggedToken;
 
 /**
  * 
@@ -49,7 +48,7 @@ public class AccuracyEvaluator
 			List<? extends TaggedToken<String, String>> taggedSentence = reader.next();
 			++debug_index;
 			List<String> sentence = taggedSentenceToSentence(taggedSentence);
-			List<StringTaggedToken> taggedByPosTagger = posTagger.tagSentence(sentence);
+			List<TaggedToken<String,String>> taggedByPosTagger = posTagger.tagSentence(sentence);
 			evaluateSentence(taggedSentence,taggedByPosTagger);
 			
 			if (taggedTestWriter!=null)
@@ -86,7 +85,7 @@ public class AccuracyEvaluator
 	
 	
 	
-	private void evaluateSentence(List<? extends TaggedToken<String,String>> taggedSentence, List<StringTaggedToken> taggedByPosTagger)
+	private void evaluateSentence(List<? extends TaggedToken<String,String>> taggedSentence, List<TaggedToken<String,String>> taggedByPosTagger)
 	{
 		Iterator<? extends TaggedToken<String,String>> iteratorTaggedOriginal = taggedSentence.iterator();
 		Iterator<? extends TaggedToken<String,String>> iteratorTaggedByPosTagger = taggedByPosTagger.iterator();

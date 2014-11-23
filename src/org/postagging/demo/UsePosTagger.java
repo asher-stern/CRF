@@ -10,12 +10,12 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.postagging.data.StringTaggedToken;
 import org.postagging.postaggers.crf.CrfPosTagger;
 import org.postagging.postaggers.crf.CrfPosTaggerLoader;
 import org.postagging.utilities.ExceptionUtil;
-import org.postagging.utilities.log4j.Log4jInit;
 import org.postagging.utilities.PosTaggerException;
+import org.postagging.utilities.TaggedToken;
+import org.postagging.utilities.log4j.Log4jInit;
 
 
 /**
@@ -84,7 +84,7 @@ public class UsePosTagger
 					String[] tokens = line.split("\\s+");
 					ArrayList<String> listTokens = new ArrayList<String>(tokens.length);
 					for (String token : tokens) {listTokens.add(token);}
-					List<StringTaggedToken> taggedTokens = posTagger.tagSentence(listTokens);
+					List<TaggedToken<String,String>> taggedTokens = posTagger.tagSentence(listTokens);
 					writer.println(representTaggedTokens(taggedTokens));
 					
 					line = reader.readLine();
@@ -99,11 +99,11 @@ public class UsePosTagger
 	}
 	
 	
-	private String representTaggedTokens(List<StringTaggedToken> taggedTokens)
+	private String representTaggedTokens(List<TaggedToken<String,String>> taggedTokens)
 	{
 		StringBuilder sb = new StringBuilder();
 		boolean firstIteration = true;
-		for (StringTaggedToken taggedToken : taggedTokens)
+		for (TaggedToken<String,String> taggedToken : taggedTokens)
 		{
 			if (firstIteration) {firstIteration=false;}
 			else {sb.append(" ");}
