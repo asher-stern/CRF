@@ -6,7 +6,7 @@ import org.postagging.crf.CrfUtilities;
 
 /**
  * A filter determines whether it is known <B>a priori</B> that the feature value is zero
- * for a given input.
+ * for a given input. "Input" is the sequence of tokens, the token-index, its tag, and the tag of the preceding token.
  * <P>
  * The CRF formula e^{weight-vector*feature-vector} might be quite expensive in run-time complexity notion. However,
  * in most cases most of the features return zero for the given input. Thus, there is no need to sum over all the features,

@@ -6,7 +6,7 @@ import java.util.Set;
 import org.postagging.crf.CrfUtilities;
 
 /**
- * Creates a set of filters for the given input.
+ * Creates a set of filters for the given input. "Input" is the sequence of tokens, the token-index, its tag, and the tag of the preceding token.
  * 
  * @see Filter
  * @see CrfFilteredFeature

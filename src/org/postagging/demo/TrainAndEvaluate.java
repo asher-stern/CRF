@@ -97,17 +97,6 @@ public class TrainAndEvaluate
 		return new TrainTestPosTagCorpus<String,String>(trainSize, testSize,
 				new PennCorpus(new File(corpusDirectory))
 				);
-
-//		return new TrainTestPosTagCorpus<String,String>(trainSize, testSize,
-//				new PosTagCorpus<String,String>()
-//				{
-//					@Override
-//					public PosTagCorpusReader<String,String> iterator()
-//					{
-//						return new BrownCorpusReader(corpusDirectory);
-//					}
-//				}
-//				);
 	}
 
 	

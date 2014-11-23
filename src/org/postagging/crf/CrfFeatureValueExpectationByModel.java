@@ -39,7 +39,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	public void calculate()
 	{
 		featureValueExpectation = new double[model.getFeatures().getFilteredFeatures().length];
-		for (int i=0;i<featureValueExpectation.length;++i) {featureValueExpectation[i]=0.0;}
+		for (int i=0;i<featureValueExpectation.length;++i) {featureValueExpectation[i]=0.0;} // Explicit initialization to zero, just to be on the safe side.
 		
 		while (corpusIterator.hasNext())
 		{
@@ -59,8 +59,13 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	private void addValueForSentence(List<? extends TaggedToken<K, G>> sentence)
 	{
 		K[] sentenceTokens = CrfUtilities.extractSentence(sentence);
+		
+		// Find the "active" features for each triple of {token-index,tag-of-token,tag-of-previous-token}
 		CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = CrfRememberActiveFeatures.findForSentence(model.getFeatures(), model.getCrfTags(), sentenceTokens);
+		
+		// Calculate the CRF formula: e^{\Sum_{i=0}^{F-1}\theta_i*f_i(j,g,g')} where F is the number of features, j is a token index, g is a tag for that token, and g' is a tag for the previous token.
 		CrfPsi_FormulaAllTokens<K, G> allTokensFormula = CrfPsi_FormulaAllTokens.createAndCalculate(model,sentenceTokens,activeFeaturesForSentence);
+		
 		CrfForwardBackward<K,G> forwardBackward = new CrfForwardBackward<K,G>(model,sentenceTokens,activeFeaturesForSentence);
 		forwardBackward.setAllTokensFormulaValues(allTokensFormula);
 		forwardBackward.calculateForwardAndBackward();
@@ -113,43 +118,8 @@ public class CrfFeatureValueExpectationByModel<K, G>
 					} // end for-each feature
 				} // end for-each previous-tag
 			} // end for-each current-tag
-		} // end for-each token
-
-
-
-		//		logger.debug("Running loop for each feature...");
-		//		CrfFilteredFeature<K, G>[] filteredFeatures = model.getFeatures().getFilteredFeatures();
-		//		for (int featureIndex=0;featureIndex<filteredFeatures.length;++featureIndex)
-//		{
-//			CrfFeature<K, G> feature = filteredFeatures[featureIndex].getFeature();
-//			
-//			double sum = 0.0;
-//			for (int sentenceIndex=0;sentenceIndex<sentenceTokens.length;++sentenceIndex)
-//			{
-//				Set<G> possiblePreviousTags = null;
-//				if (sentenceIndex==0) {possiblePreviousTags=Collections.singleton(null);}
-//				else {possiblePreviousTags=model.getTags();}
-//				for (G previousTag : possiblePreviousTags)
-//				{
-//					for (G currentTokenTag : model.getTags())
-//					{
-//						double featureValue = feature.value(sentenceTokens,sentenceIndex,currentTokenTag,previousTag);
-//						double alpha_forward_previousValue = 1.0;
-//						if (sentenceIndex>0)
-//						{
-//							alpha_forward_previousValue = forwardBackward.getAlpha_forward()[sentenceIndex-1].get(previousTag);
-//						}
-//						double beta_backward_value = forwardBackward.getBeta_backward().get(sentenceIndex).get(currentTokenTag);
-//						
-//						// error?
-//						double probabilityUnderModel = alpha_forward_previousValue*featureValue*beta_backward_value;
-//						sum = safeAdd(sum, probabilityUnderModel);
-//					}
-//				}
-//			}
-//			featureValueExpectation[featureIndex] = safeAdd(featureValueExpectation[featureIndex], sum/forwardBackward.getCalculatedNormalizationFactor());
-//		}
-//		logger.debug("Running loop for each feature - done.");
+		} // end for-each token-index
+		
 	}
 	
 	
