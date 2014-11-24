@@ -9,10 +9,20 @@ The CRF is exemplified by being used for the task of Part-Of-Speech tagging.
 This is a free open-source project, which can be used also for commercial purposes. See LICENSE file.
 
 
+Advantages
+==========
+
+1. Self contained: all the algorithms are implemented in the package itself.
+2. Free open source, also for commercial use.
+3. Relatively efficient: while this is a "by the book" implementation, some techniques have been invented
+and implemented to significantly improve run time efficiency.
+4. Clear, readable and well documented code. Might be useful also for educational purposes.
+
+
 Compile and run
 ===============
 
-The project can be compiled with J2SE version 8.
+The project can be compiled with J2SE **version 8**.
 The only thrid party required is for logging, Log4j. See [http://logging.apache.org/log4j/1.2/](http://logging.apache.org/log4j/1.2/)
 
 The algorithms, including function optimization using LBFGS algorithm, forward-backward algorithm and Viterbi algorithm
@@ -30,7 +40,7 @@ and other stuff required to run the CRF for the user's specific problem.
 
 
 Those who are interested in the POS-tagging example can use the following two entry points:
-`org.crf.demo.TrainAndEvaluate` and `org.crf.demo.UsePosTagger`.
+`org.crf.postagging.demo.TrainAndEvaluate` and `org.crf.postagging.demo.UsePosTagger`.
 
 The first entry point is for training the POS-tagger and evaluating it, and the second is for running it on
 test examples.
@@ -39,8 +49,8 @@ Note that training requires the Penn Tree-Bank corpus, and it should be provided
 no subdirectories, which contains ".mrg" files, where each files contains parse-trees.
 
 
-A note about the POS-tagging example
-====================================
+### A note about the POS-tagging example
+
 
 Please note that this is not a state-of-the-art POS tagger, since it does not employ state-of-the-art features.
 Rather, this POS-tagger uses very simplistic features, and is intended to exemplify CRF.
