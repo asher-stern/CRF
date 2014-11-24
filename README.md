@@ -23,14 +23,14 @@ Entry points
 ============
 
 For those who are interested only in the CRF but not the POS-tagger, an example entry point is
-`org.postagging.crf.run.ExampleMain`.
+`org.crf.crf.run.ExampleMain`.
 
 Note that this entry point is only a skeleton, and the user should copy it, and implement the feature generator
 and other stuff required to run the CRF for the user's specific problem.
 
 
 Those who are interested in the POS-tagging example can use the following two entry points:
-`org.postagging.demo.TrainAndEvaluate` and `org.postagging.demo.UsePosTagger`.
+`org.crf.demo.TrainAndEvaluate` and `org.crf.demo.UsePosTagger`.
 
 The first entry point is for training the POS-tagger and evaluating it, and the second is for running it on
 test examples.
