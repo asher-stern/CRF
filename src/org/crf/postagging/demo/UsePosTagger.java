@@ -31,6 +31,10 @@ import org.crf.utilities.log4j.Log4jInit;
 public class UsePosTagger
 {
 
+	/**
+	 * Entry point
+	 * @param args 1. directory that contains the learned model file. 2. input file name. 3. output file name.
+	 */
 	public static void main(String[] args)
 	{
 		try
