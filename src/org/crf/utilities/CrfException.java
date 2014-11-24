@@ -1,7 +1,7 @@
 package org.crf.utilities;
 
 /**
- * Exception for the pos tagging project.
+ * Exception for this project.
  * 
  * @author Asher Stern
  * Date: Nov 3, 2014
