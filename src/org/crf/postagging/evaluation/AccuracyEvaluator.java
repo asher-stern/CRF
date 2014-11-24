@@ -11,6 +11,7 @@ import org.crf.utilities.CrfException;
 import org.crf.utilities.TaggedToken;
 
 /**
+ * Evaluates the accuracy of a given {@link PosTagger} on a given test corpus.
  * 
  * @author Asher Stern
  * Date: Nov 4, 2014
@@ -65,16 +66,29 @@ public class AccuracyEvaluator
 		accuracy = ((double)correct)/((double)(correct+incorrect));
 	}
 	
+	/**
+	 * Returns how many tags were correctly annotated by the {@link PosTagger}.
+	 * @return
+	 */
 	public long getCorrect()
 	{
 		return correct;
 	}
 
+	/**
+	 * Returns how many tags were incorrectly annotated by the {@link PosTagger}.
+	 * @return
+	 */
 	public long getIncorrect()
 	{
 		return incorrect;
 	}
 
+	
+	/**
+	 * Returns the accuracy over tag-annotations in the given corpus of the {@link PosTagger}.
+	 * @return
+	 */
 	public double getAccuracy()
 	{
 		return accuracy;
