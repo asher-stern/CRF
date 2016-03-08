@@ -237,7 +237,7 @@ public class CrfUtilities
 		if ( ( (valueToAdd<0.0) && (oldValue<variable) ) || ( (valueToAdd>0.0) && (oldValue>variable) ) )
 		{
 			throw new CrfException("Error: adding value to \"double\" variable yielded unexpected results. This seems like a limitation of double."
-					+ "variable was: "+String.format("%-3.3", oldValue)+", value to add was: "+String.format("%-3.3f", valueToAdd));
+					+ "variable was: "+String.format("%1$.3f", oldValue)+", value to add was: "+String.format("%1$.3f", valueToAdd));
 		}
 		return variable;
 	}
