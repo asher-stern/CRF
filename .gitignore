@@ -14,3 +14,8 @@ hs_err_pid*
 bin/
 doc/
 /target/
+
+.classpath
+.project
+/.settings/
+
