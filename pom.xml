@@ -5,6 +5,7 @@
 	<groupId>com.github.asher-stern</groupId>
 	<artifactId>CRF</artifactId>
 	<version>1.0.1</version>
+	<packaging>jar</packaging>
 	
 	<name>CRF</name>
 	<description>Implementation of linear-chain Conditional Random Fields (CRF) in pure Java</description>
