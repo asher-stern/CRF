@@ -19,14 +19,29 @@ and implemented to significantly improve run time efficiency.
 4. Clear, readable and well documented code. Might be useful also for educational purposes.
 
 
-Compile and run
-===============
-
-The project can be compiled with J2SE **version 8**.
-The only thrid party required is for logging, Log4j. See [http://logging.apache.org/log4j/1.2/](http://logging.apache.org/log4j/1.2/)
+Self contained
+==============
+The only required thrid party is Log4j. See [http://logging.apache.org/log4j/1.2/](http://logging.apache.org/log4j/1.2/)
 
 The algorithms, including function optimization using LBFGS algorithm, forward-backward algorithm and Viterbi algorithm
 are fully implemented in the code.
+
+
+Compile and run
+===============
+The project can be compiled with J2SE **version 8**.
+
+This is a Maven project, compiled by simply running `mvn compile`.
+
+To use this project as a library in another Maven project, add the following to the other project's POM file:
+```xml
+<dependency>
+    <groupId>com.github.asher-stern</groupId>
+    <artifactId>CRF</artifactId>
+    <version>1.0.1</version>
+</dependency>
+```
+
 
 
 Entry points
