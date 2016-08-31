@@ -22,6 +22,7 @@ and implemented to significantly improve run time efficiency.
 Self contained
 ==============
 The only required thrid party is Log4j. See [http://logging.apache.org/log4j/1.2/](http://logging.apache.org/log4j/1.2/)
+(Note that it is automatically downloaded by Maven. No user action required).
 
 The algorithms, including function optimization using LBFGS algorithm, forward-backward algorithm and Viterbi algorithm
 are fully implemented in the code.
