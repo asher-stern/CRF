@@ -21,11 +21,26 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 	public static final double DEFAULT_RATE = 0.01;
 	public static final double DEFAULT_CONVERGENCE_THRESHOLD = 0.0001;
 	
+	/**
+	 * Constructor with default convergence threshold. See {@link GradientDescentOptimizer#GradientDescentOptimizer(DerivableFunction, double, double)}.
+	 * @param function
+	 */
 	public GradientDescentOptimizer(DerivableFunction function)
 	{
 		this(function,DEFAULT_RATE,DEFAULT_CONVERGENCE_THRESHOLD);
 	}
 	
+	/**
+	 * Constructor with convergence threshold.
+	 * @param function the function to optimize (find its minimum).
+	 * @param rate <b>Not used in this implementation</b>. Rate is a coefficient by which the gradient is multiplied at
+	 * each step of the gradient descent. However, a more advanced technique is to use Armijo line search
+	 * (see {@link ArmijoLineSearch}) which find a good rate automatically.
+	 * For developers: it is possible to change the code and use {@link ConstantLineSearch}, and use this given rate. 
+	 * @param convergenceThreshold the convergence threshold, which is the maximum allowed gap between the result of this
+	 * optimizer and the real optimum (i.e., the optimizer might return a result which is only "close enough" to the optimum,
+	 * while being slightly different from the real optimum).
+	 */
 	public GradientDescentOptimizer(DerivableFunction function,double rate,double convergenceThreshold)
 	{
 		super(function);

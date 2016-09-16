@@ -78,6 +78,10 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		double sumWeightedFeatures = calculateSumWeightedFeatures(model);
 		logger.debug("Calculating sum log normalizations");
 		double sumOfLogNormalizations = calculateSumOfLogNormalizations(model);
+		
+		// Note: log(x/y) = log(x)-log(y). Thus, log (e^x/y) = x - log(y).
+		// In our case we need log(e^(sum_weighted_features_for_sentence)/Normalization) = sum_weighted_features_for_sentence - log(Normalization.)
+		// And we sum the above over the whole corpus (i.e., over all the sentences).
 		double ret = sumWeightedFeatures - sumOfLogNormalizations - regularization;
 		logger.debug("Calculating value - done.");
 		return ret;

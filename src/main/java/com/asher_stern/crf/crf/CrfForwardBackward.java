@@ -84,7 +84,7 @@ public class CrfForwardBackward<K,G>
 		calculateAlphaForward();
 		calculateBetaBackward();
 		
-		if (!roughlyEqual(finalAlpha, finalAlpha))
+		if (!roughlyEqual(finalAlpha, finalBeta))
 		{
 			String errorMessage = "The calculated final-alpha and final-beta, both correspond to Z(x) (the normalization factor) differ.\n"
 					+ "Z(x) by alpha (forward) = "+String.format("%-3.3f", finalAlpha)+". Z(x) by beta (backward) = "+String.format("%-3.3f", finalBeta);

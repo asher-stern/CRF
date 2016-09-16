@@ -29,6 +29,12 @@ import com.asher_stern.crf.utilities.TaggedToken;
 
  * </pre>
  * 
+ * <p>
+ * Obtaining the full Penn Tree-Bank is by purchasing it from LDC.
+ * However, a free sample of 5-10% of the full Tree-Bank is available for free at
+ * <a href="https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/treebank.zip">https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/treebank.zip</a>.
+ * This data is for non-commercial use only. 
+ * 
  * 
  * 
  * @author Asher Stern

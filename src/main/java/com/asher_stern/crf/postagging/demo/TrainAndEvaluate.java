@@ -60,10 +60,10 @@ public class TrainAndEvaluate
 	
 	
 	
-	public TrainAndEvaluate(String brownDirectory, int trainSize, int testSize, String loadSaveDirectoryName)
+	public TrainAndEvaluate(String corpusDirectory, int trainSize, int testSize, String loadSaveDirectoryName)
 	{
 		super();
-		this.corpusDirectory = brownDirectory;
+		this.corpusDirectory = corpusDirectory;
 		this.trainSize = trainSize;
 		this.testSize = testSize;
 		this.loadSaveDirectoryName = loadSaveDirectoryName;
