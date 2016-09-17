@@ -314,6 +314,23 @@ public class CrfUtilities
 		}
 		set.add(value);
 	}
+	
+	
+	
+	public static void sanityCheckDouble(final double d)
+	{
+		if (Double.isNaN(d)) logger.error("NaN");
+		if (Double.isInfinite(d)) logger.error("Infinite");
+		if (Double.POSITIVE_INFINITY==d) logger.error("Positive Inifinite");
+		if (Double.NEGATIVE_INFINITY==d) logger.error("Negative Inifinite");
+		if (Double.isNaN(d)) logger.error("NaN");
+		if (!Double.isFinite(d))
+		{
+			throw new CrfException("Some calculation ended beyond the limitations of real-number representation. "
+					+ "A variable of type \"double\" was calculated to NaN or infinite value.\n"
+					+ "This is rather rare, and is considered a known limitation of this software.");
+		}
+	}
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CrfUtilities.class);

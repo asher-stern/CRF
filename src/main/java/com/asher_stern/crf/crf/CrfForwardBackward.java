@@ -1,6 +1,7 @@
 package com.asher_stern.crf.crf;
 
 import static com.asher_stern.crf.crf.CrfUtilities.roughlyEqual;
+import static com.asher_stern.crf.crf.CrfUtilities.sanityCheckDouble;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -84,6 +85,8 @@ public class CrfForwardBackward<K,G>
 		calculateAlphaForward();
 		calculateBetaBackward();
 		
+		sanityCheckDouble(finalAlpha);
+		sanityCheckDouble(finalBeta);
 		if (!roughlyEqual(finalAlpha, finalBeta))
 		{
 			String errorMessage = "The calculated final-alpha and final-beta, both correspond to Z(x) (the normalization factor) differ.\n"
@@ -101,6 +104,7 @@ public class CrfForwardBackward<K,G>
 		}
 
 		calculateAlphaForward();
+		sanityCheckDouble(finalAlpha);
 		onlyNormalizationFactorCalculated = true;
 	}
 	
@@ -197,8 +201,6 @@ public class CrfForwardBackward<K,G>
 		
 		finalBeta = beta_backward.get(-1).get(null);
 	}
-	
-	
 	
 	
 	protected final CrfModel<K, G> model;
