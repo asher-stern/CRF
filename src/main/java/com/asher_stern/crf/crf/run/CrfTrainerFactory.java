@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.asher_stern.crf.crf.CrfLogLikelihoodFunction;
 import com.asher_stern.crf.crf.CrfTags;
 import com.asher_stern.crf.crf.CrfUtilities;
 import com.asher_stern.crf.crf.filters.CrfFeaturesAndFilters;
@@ -31,6 +32,21 @@ import com.asher_stern.crf.utilities.TaggedToken;
  */
 public class CrfTrainerFactory<K,G>
 {
+	/**
+	 * Optional setter for regularization factor. If this method was not called, the default regularization factor is used.
+	 * <br>
+	 * The regularization factor is the denominator of the regularization part of the likelihood function. When regularization
+	 * is used, an element (\Sum_{i=0}^{number-of-features}\theta_i)/(\sigma^2) is added to the likelihood function (where
+	 * \theta_i is parameter number i).
+	 * See {@link CrfLogLikelihoodFunction}.
+	 * 
+	 * @param sigmaSquare_inverseRegularizationFactor regularization factor. 
+	 */
+	public void setRegularizationSigmaSquareFactor(double sigmaSquare_inverseRegularizationFactor)
+	{
+		this.sigmaSquare_inverseRegularizationFactor = sigmaSquare_inverseRegularizationFactor;
+	}
+	
 	/**
 	 * Creates a CRF trainer.<BR>
 	 * <B>The given corpus must reside completely in the internal memory. Not in disk/data-base etc.</B>
@@ -55,7 +71,14 @@ public class CrfTrainerFactory<K,G>
 		CrfFeaturesAndFilters<K, G> features = createFeaturesAndFiltersObjectFromSetOfFeatures(setFilteredFeatures, filterFactory);
 		
 		logger.info("CrfPosTaggerTrainer has been created.");
-		return new CrfTrainer<K,G>(features,crfTags);
+		if (null == this.sigmaSquare_inverseRegularizationFactor) // use default
+		{
+			return new CrfTrainer<K,G>(features,crfTags);
+		}
+		else // use the value set by setRegularizationSigmaSquareFactor().
+		{
+			return new CrfTrainer<K,G>(features,crfTags, (this.sigmaSquare_inverseRegularizationFactor!=null)?true:false, this.sigmaSquare_inverseRegularizationFactor);
+		}
 	}
 	
 	
@@ -102,6 +125,9 @@ public class CrfTrainerFactory<K,G>
 		return allFeatures;
 	}
 
+
 	
+	private Double sigmaSquare_inverseRegularizationFactor = null;
+
 	private static final Logger logger = Logger.getLogger(CrfTrainerFactory.class);
 }

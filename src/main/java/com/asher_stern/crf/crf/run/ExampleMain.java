@@ -34,6 +34,8 @@ public class ExampleMain
 		// Create trainer factory
 		CrfTrainerFactory<String, String> trainerFactory = new CrfTrainerFactory<String, String>();
 		
+		// Optionally call trainerFactory.setRegularizationSigmaSquareFactor() to override the default regularization factor.
+		
 		// Create trainer
 		CrfTrainer<String,String> trainer = trainerFactory.createTrainer(
 				corpus,
