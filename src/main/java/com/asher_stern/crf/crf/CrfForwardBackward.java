@@ -145,12 +145,36 @@ public class CrfForwardBackward<K,G>
 				{
 					//double valueForPreviousTag = CrfUtilities.oneTokenFormula(model,sentence,index,tag,previousTag);
 					double valueForPreviousTag = allTokensFormula.getOneTokenFormula(index,tag,previousTag);
+					
+					double __backup_valueForPreviousTag = valueForPreviousTag;
+					boolean __valueForPreviousTagOK = !Double.isInfinite(valueForPreviousTag);
+					if (!__valueForPreviousTagOK)
+					{
+						logger.error("valueForPreviousTag is infinite");
+					}
+					
+					boolean __previousOK = true;
 					if (index>0)
 					{
 						double previousAlphaValue = alpha_forward[index-1].get(previousTag);
+						__previousOK = !Double.isInfinite(previousAlphaValue);
 						valueForPreviousTag = valueForPreviousTag*previousAlphaValue;
+						
+						if (__valueForPreviousTagOK && __previousOK && Double.isInfinite(valueForPreviousTag))
+						{
+							logger.error( String.format("valueForPreviousTag became infinite.\n\tvalueForPreviousTag was %f. previousAlphaValue = %f.", __backup_valueForPreviousTag, previousAlphaValue) );
+						}
 					}
+					
+//					boolean __sumOK = !Double.isInfinite(sumOverPreviousTags);
+//					double __backupBeforeAddition = sumOverPreviousTags;
+					
 					sumOverPreviousTags += valueForPreviousTag;
+					
+//					if (__sumOK && __previousOK && Double.isInfinite(sumOverPreviousTags))
+//					{
+//						logger.error(String.format("Sum failed here: was %f. Now %f\n\tvalueForPreviousTag=%f", __backupBeforeAddition, sumOverPreviousTags, valueForPreviousTag ));
+//					}
 				}
 				alpha_forwardThisToken.put(tag, sumOverPreviousTags);
 			}
