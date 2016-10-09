@@ -59,22 +59,29 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		
 		point = new double[function.size()];
 		for (int i=0;i<point.length;++i) {point[i]=0.0;}
+		System.out.println("*1");
 		value = function.value(point);
+		System.out.println("*2");
 		if (logger.isInfoEnabled()) {logger.info("LBFGS: initial value = "+String.format("%-3.3f", value));}
 		double[] gradient = function.gradient(point);
 		double previousValue = value;
 		int forLogger_iterationIndex=0;
 		do
 		{
+			//System.out.println(prVector(point));
 			previousValue = value;
 			double[] previousPoint = point;
 			double[] previousGradient = gradient;
 			
 			double[] direction = VectorUtilities.multiplyByScalar(-1.0, twoLoopRecursion(point));
 			double alpha_rate = lineSearch.findRate(function, point, direction);
+			System.out.println("1");
 			point = VectorUtilities.addVectors(point, VectorUtilities.multiplyByScalar(alpha_rate, direction));
+			System.out.println("2");
 			value = function.value(point);
+			System.out.println("3");
 			gradient = function.gradient(point);
+			System.out.println("4");
 			
 			previousItrations.add(new PointAndGradientSubstractions(VectorUtilities.substractVectors(point, previousPoint), VectorUtilities.substractVectors(gradient, previousGradient)));
 			if (previousItrations.size()>numberOfPreviousIterationsToMemorize)
@@ -91,7 +98,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		
 		calculated = true;
 	}
-
+	
 	@Override
 	public double getValue()
 	{
@@ -165,7 +172,22 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 
 	
 
-	
+
+	private static String prVector(double[] vec)
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		boolean firstIteration = true;
+		for (double d : vec)
+		{
+			if (firstIteration) {firstIteration=false;}
+			else {sb.append(" ");}
+			sb.append(String.format("%-5.3f",d));
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+
 	
 	private final int numberOfPreviousIterationsToMemorize; // m
 	private final double convergence;

@@ -85,8 +85,21 @@ public class CrfForwardBackward<K,G>
 		calculateAlphaForward();
 		calculateBetaBackward();
 		
-		sanityCheckDouble(finalAlpha);
-		sanityCheckDouble(finalBeta);
+		if (Double.isInfinite(finalAlpha))
+		{
+			logger.error("finalAlpha is infinite");
+		}
+//		else
+//		{
+//			logger.error("OK finalAlpha is OK");
+//		}
+		if (Double.isInfinite(finalBeta))
+		{
+			logger.error("finalBeta is infinite");
+		}
+		
+		//sanityCheckDouble(finalAlpha);
+		//sanityCheckDouble(finalBeta);
 		if (!roughlyEqual(finalAlpha, finalBeta))
 		{
 			String errorMessage = "The calculated final-alpha and final-beta, both correspond to Z(x) (the normalization factor) differ.\n"
@@ -104,7 +117,11 @@ public class CrfForwardBackward<K,G>
 		}
 
 		calculateAlphaForward();
-		sanityCheckDouble(finalAlpha);
+		//sanityCheckDouble(finalAlpha);
+//		if (Double.isInfinite(finalAlpha))
+//		{
+//			logger.error("Normalization factor infinite.");
+//		}
 		onlyNormalizationFactorCalculated = true;
 	}
 	
@@ -150,7 +167,7 @@ public class CrfForwardBackward<K,G>
 					boolean __valueForPreviousTagOK = !Double.isInfinite(valueForPreviousTag);
 					if (!__valueForPreviousTagOK)
 					{
-						logger.error("valueForPreviousTag is infinite");
+						//logger.error("valueForPreviousTag is infinite");
 					}
 					
 					boolean __previousOK = true;
@@ -162,7 +179,7 @@ public class CrfForwardBackward<K,G>
 						
 						if (__valueForPreviousTagOK && __previousOK && Double.isInfinite(valueForPreviousTag))
 						{
-							logger.error( String.format("valueForPreviousTag became infinite.\n\tvalueForPreviousTag was %f. previousAlphaValue = %f.", __backup_valueForPreviousTag, previousAlphaValue) );
+							//logger.error( String.format("valueForPreviousTag became infinite.\n\tvalueForPreviousTag was %f. previousAlphaValue = %f.", __backup_valueForPreviousTag, previousAlphaValue) );
 						}
 					}
 					

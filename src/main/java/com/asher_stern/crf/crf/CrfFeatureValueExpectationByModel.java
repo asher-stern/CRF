@@ -107,6 +107,10 @@ public class CrfFeatureValueExpectationByModel<K, G>
 									alpha_forward_previousValue = forwardBackward.getAlpha_forward()[tokenIndex-1].get(previousTag);
 								}
 								double beta_backward_value = forwardBackward.getBeta_backward().get(tokenIndex).get(currentTag);
+								if (Double.isInfinite(alpha_forward_previousValue) || Double.isInfinite(beta_backward_value))
+								{
+									logger.error("alpha or beta are infinite.");
+								}
 								//double psi_probabilityForGivenIndexAndTags = CrfUtilities.oneTokenFormula(model,sentenceTokens,tokenIndex,currentTag,previousTag,activeFeatures);
 								double psi_probabilityForGivenIndexAndTags = allTokensFormula.getOneTokenFormula(tokenIndex,currentTag,previousTag);
 								probabilityUnderModel = (alpha_forward_previousValue*psi_probabilityForGivenIndexAndTags*beta_backward_value)/normalizationFactor;

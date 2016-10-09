@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.asher_stern.crf.function.optimization.LbfgsMinimizer;
 import com.asher_stern.crf.postagging.data.TrainTestPosTagCorpus;
 import com.asher_stern.crf.postagging.data.penn.PennCorpus;
 import com.asher_stern.crf.postagging.evaluation.AccuracyEvaluator;
@@ -41,7 +42,9 @@ public class TrainAndEvaluate
 	 */
 	public static void main(String[] args)
 	{
-		Log4jInit.init(Level.DEBUG);
+		//Log4jInit.init(Level.DEBUG);
+		Log4jInit.init(Level.WARN);
+		Logger.getLogger(LbfgsMinimizer.class).setLevel(Level.DEBUG);
 		try
 		{
 			int testSize = 0;

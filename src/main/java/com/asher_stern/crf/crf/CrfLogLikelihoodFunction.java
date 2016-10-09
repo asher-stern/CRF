@@ -19,12 +19,12 @@ import com.asher_stern.crf.utilities.TaggedToken;
  * The "likelihood" of a sequence of tags for a given sentence is the probability of that sequence of tags to occur (to exist)
  * for that sentence.
  * This probability is:
- * \Sum{j=0}^{sentence-length-1}(e^( \Sum_{i=0}^{number-of-features}(\theta_i*f_i(j,g,g')) )) / Z(x)
+ * \Sum{j=0}^{sentence-length-1}(e^( \Sum_{i=0}^{number-of-features-1}(\theta_i*f_i(j,g,g')) )) / Z(x)
  * where \theta_i is parameter number i (these are the parameters that are learned during training - these parameters form
  * the input vector "point" of this function), f_i is feature number i, g is the tag of token number j, and g' is the tag of
  * token number j-1. Z(x) is the normalization factor.
  * <P>
- * The log-likelihood is \Sum_{sentence \in corpus}log( \Sum{j=0}^{sentence-length-1}(e^( \Sum_{i=0}^{number-of-features}(\theta_i*f_i(j,g,g')) )) / Z(x) ).
+ * The log-likelihood is \Sum_{sentence \in corpus}log( \Sum{j=0}^{sentence-length-1}(e^( \Sum_{i=0}^{number-of-features-1}(\theta_i*f_i(j,g,g')) )) / Z(x) ).
  * <BR>
  * The log is in the natural basis (e) (It is actually ln).
  * 
@@ -76,14 +76,22 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		double regularization = useRegularization?calculateRegularizationFactor(point):0.0;
 		logger.debug("Calculating sum weighted features");
 		double sumWeightedFeatures = calculateSumWeightedFeatures(model);
+		if (Double.isInfinite(sumWeightedFeatures)) {logger.error("sumWeightedFeatures is infinite");}
 		logger.debug("Calculating sum log normalizations");
 		double sumOfLogNormalizations = calculateSumOfLogNormalizations(model);
+		if (Double.isInfinite(sumOfLogNormalizations)) {logger.error("sumOfLogNormalizations is infinite");}
 		
 		// Note: log(x/y) = log(x)-log(y). Thus, log (e^x/y) = x - log(y).
 		// In our case we need log(e^(sum_weighted_features_for_sentence)/Normalization) = sum_weighted_features_for_sentence - log(Normalization.)
 		// And we sum the above over the whole corpus (i.e., over all the sentences).
 		double ret = sumWeightedFeatures - sumOfLogNormalizations - regularization;
 		logger.debug("Calculating value - done.");
+		if (Double.isInfinite(ret))
+		{
+			logger.error("value is infinite.");
+			if (Double.NEGATIVE_INFINITY==ret) {logger.error("value is negative infinity");}
+			if (Double.POSITIVE_INFINITY==ret) {logger.error("value is positive infinity");}
+		}
 		return ret;
 	}
 	
