@@ -25,6 +25,9 @@ public class LineSearchUtilities
 	 * Returns the (value of the) derivation of f(x+\alpha*d), where both x and d are considered constant vectors, and
 	 * the only variable is \alpha. So f(x+\alpha*d) is a function of single variable, and the derivation is derivation
 	 * by the variable \alpha.
+	 * <br>
+	 * The derivation is: f'(x+\alpha*d)*d
+	 * 
 	 * @return the value of the derivation of f(x+\alpha*d) for the given \alpha.
 	 */
 	public static double derivationForAlpha(DerivableFunction function, double[] point, double[] direction, double alpha)
