@@ -32,6 +32,8 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 	{
 		final double valueForAlphaZero = valueForAlpha(function, point, direction, 0);
 		final double derivationForAlphaZero = derivationForAlpha(function, point, direction, 0);
+		InfinityChecker.check(valueForAlphaZero, derivationForAlphaZero); // If we get infinity here, the initialAlpha is also invalid.
+		// In the rest of this function, infinity will cause the while condition to be false, and the function will return with some reasonable alpha.
 		
 		if (derivationForAlphaZero>=0.0) throw new CrfException("Tried to perform a line search, in a point and direction in which the function does not decrease.");
 		
@@ -46,7 +48,7 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 			{
 				previousAlpha = alpha;
 				alpha = previousAlpha/beta_rateOfAlpha;
-				//if (logger.isDebugEnabled()) {logger.debug(String.format("Armijo (increase): alpha = %-3.8f", alpha));}
+				if (Double.isInfinite(sigma_convergenceCoefficient*alpha*derivationForAlphaZero)) {break;}
 			}
 			while( (valueForAlpha(function, point, direction, alpha)-valueForAlphaZero) < sigma_convergenceCoefficient*alpha*derivationForAlphaZero);
 			ret = previousAlpha;
@@ -61,20 +63,14 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 					alpha = 0.0;
 					break;
 				}
-				//if (logger.isDebugEnabled()) {logger.debug(String.format("Armijo (shrink): alpha = %-3.8f", alpha));}
+				if (Double.isInfinite(sigma_convergenceCoefficient*alpha*derivationForAlphaZero)) {break;}
 			}
-			while (!( (valueForAlpha(function, point, direction, alpha)-valueForAlphaZero) < sigma_convergenceCoefficient*alpha*derivationForAlphaZero));
+			while ( (valueForAlpha(function, point, direction, alpha)-valueForAlphaZero) >= sigma_convergenceCoefficient*alpha*derivationForAlphaZero);
 			ret = alpha;
 		}
 		
 		return ret;
 	}
-	
-//	private boolean sanityCheck(F function, double[] point, double[] direction)
-//	{
-//		return (derivationForAlpha(function, point, direction, 0)<0.0);
-//	}
-	
 	
 	private final double beta_rateOfAlpha = DEFAULT_BETA_RATE_OF_ALPHA;
 	private final double sigma_convergenceCoefficient = DEFAULT_SIGMA_CONVERGENCE_COEFFICIENT;

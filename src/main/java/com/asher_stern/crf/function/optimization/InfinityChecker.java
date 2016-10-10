@@ -13,10 +13,16 @@ package com.asher_stern.crf.function.optimization;
  */
 public final class InfinityChecker
 {
+	/**
+	 * Throws {@link InfinityException} if one of the given values is either infinity or NaN
+	 */
 	public static final NestedInfinityChecker check(double... values)
 	{
 		return NestedInfinityChecker.INSTANCE.check(values);
 	}
+	/**
+	 * Throws {@link InfinityException} if one of the elements in one of the given vectors is either infinity or NaN
+	 */
 	public static final NestedInfinityChecker check(double[]... values)
 	{
 		return NestedInfinityChecker.INSTANCE.check(values);
