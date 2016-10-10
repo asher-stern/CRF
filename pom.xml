@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>com.github.asher-stern</groupId>
 	<artifactId>CRF</artifactId>
 	<version>1.0.1</version>
 	<packaging>jar</packaging>
-	
+
 	<name>CRF</name>
 	<description>Implementation of linear-chain Conditional Random Fields (CRF) in pure Java</description>
 	<url>https://github.com/asher-stern/CRF</url>
@@ -26,7 +26,7 @@
 		<developerConnection>scm:git:ssh://github.com:asher-stern/CRF.git</developerConnection>
 		<url>https://github.com/asher-stern/CRF</url>
 	</scm>
-	
+
 
 	<developers>
 		<developer>
@@ -34,7 +34,7 @@
 			<email>astern7@gmail.com</email>
 		</developer>
 	</developers>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -52,7 +52,7 @@
 	</distributionManagement>
 
 
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -141,11 +141,22 @@
 
 
 	<dependencies>
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
+
+
 
 </project>

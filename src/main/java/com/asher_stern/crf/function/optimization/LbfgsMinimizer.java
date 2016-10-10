@@ -69,7 +69,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			previousValue = value;
 			double[] previousPoint = point;
 			double[] previousGradient = gradient;
-			
+
 			boolean infinityChecksOK = true;
 			try
 			{
@@ -83,11 +83,11 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			{
 				infinityChecksOK = false;
 				logger.warn("Some values were calculated as Infinity. Make a fallback to gradient-descent for a single step. Will try again LBFGS in the next step.");
-				GradientDescentOptimizer.singleStepUpdate(point, gradient, GradientDescentOptimizer.DEFAULT_RATE);
+				GradientDescentOptimizer.singleStepUpdate(function.size(), point, gradient, GradientDescentOptimizer.DEFAULT_RATE);
 			}
 			value = function.value(point);
 			gradient = function.gradient(point);
-			
+
 			if (infinityChecksOK)
 			{
 				previousItrations.add(new PointAndGradientSubstractions(VectorUtilities.substractVectors(point, previousPoint), VectorUtilities.substractVectors(gradient, previousGradient)));
@@ -97,13 +97,12 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 				}
 				if (previousItrations.size()>numberOfPreviousIterationsToMemorize) {throw new CrfException("BUG");}
 			}
-			
+
 			if (value>previousValue) {logger.error("LBFGS: value > previous value");}
 			++forLogger_iterationIndex;
 			if (logger.isInfoEnabled()) {logger.info("LBFGS iteration "+forLogger_iterationIndex+": value = "+String.format("%-3.3f", value));}
 		}
 		while(Math.abs(previousValue-value)>convergence);
-		
 		calculated = true;
 	}
 
@@ -183,8 +182,6 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 
 	
 
-	
-	
 	private final int numberOfPreviousIterationsToMemorize; // m
 	private final double convergence;
 	

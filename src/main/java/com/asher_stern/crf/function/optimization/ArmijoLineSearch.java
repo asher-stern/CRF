@@ -30,8 +30,8 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 	@Override
 	public double findRate(final F function, final double[] point, final double[] direction)
 	{
-		final double valueForAlphaZero = valueForAlpha(function, point, direction, 0);
-		final double derivationForAlphaZero = derivationForAlpha(function, point, direction, 0);
+		final double valueForAlphaZero = valueForAlpha(function, point, direction, 0.0);
+		final double derivationForAlphaZero = derivationForAlpha(function, point, direction, 0.0);
 		InfinityChecker.check(valueForAlphaZero, derivationForAlphaZero); // If we get infinity here, the initialAlpha is also invalid.
 		// In the rest of this function, infinity will cause the while condition to be false, and the function will return with some reasonable alpha.
 		
