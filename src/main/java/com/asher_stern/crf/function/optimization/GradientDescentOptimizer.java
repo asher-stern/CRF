@@ -67,10 +67,7 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 			oldValue = value;
 			double[] gradient = function.gradient(point);
 			double actualRate = lineSearch.findRate(function, point, VectorUtilities.multiplyByScalar(-1.0, gradient));
-			for (int i=0;i<size;++i)
-			{
-				point[i] += actualRate*(-gradient[i]);
-			}
+			singleStepUpdate(point, gradient, actualRate);
 			value = function.value(point);
 			if (logger.isDebugEnabled())
 			{
@@ -96,6 +93,15 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 	{
 		if (!calculated) throw new CrfException("Not calculated");
 		return point;
+	}
+	
+	
+	public static final void singleStepUpdate(final double[] point, final double[] gradient, final double rate)
+	{
+		for (int i=0;i<point.length;++i)
+		{
+			point[i] += rate*(-gradient[i]);
+		}
 	}
 	
 	@SuppressWarnings("unused")

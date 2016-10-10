@@ -36,7 +36,11 @@ public final class InfinityChecker
 			{
 				if (Double.isInfinite(value))
 				{
-					throw new InfinityException(true, false);
+					throw new InfinityException(true, false, false);
+				}
+				if (Double.isNaN(value))
+				{
+					throw new InfinityException(true, false, true);
 				}
 			}
 			return INSTANCE;
@@ -50,7 +54,11 @@ public final class InfinityChecker
 				{
 					if (Double.isInfinite(d))
 					{
-						throw new InfinityException(false, true);
+						throw new InfinityException(false, true, false);
+					}
+					if (Double.isNaN(d))
+					{
+						throw new InfinityException(false, true, true);
 					}
 				}
 			}

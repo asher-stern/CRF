@@ -12,29 +12,36 @@ package com.asher_stern.crf.function.optimization;
 @SuppressWarnings("serial")
 public class InfinityException extends RuntimeException
 {
-	public InfinityException(boolean value, boolean gradient)
+	public InfinityException(boolean value, boolean vector, boolean nan)
 	{
-		super(createMessage(value,gradient));
+		super(createMessage(value,vector, nan));
 		this.value = value;
-		this.gradient = gradient;
+		this.vector = vector;
+		this.nan = nan;
 	}
 	
 	public boolean isValue()
 	{
 		return value;
 	}
-	public boolean isGradient()
+	public boolean isVector()
 	{
-		return gradient;
+		return vector;
 	}
-	
-	private static final String createMessage(boolean value, boolean gradient)
+	public boolean isNan()
 	{
-		if (value) return "value is infinity";
-		else if (gradient) return "gradient is infinity";
+		return nan;
+	}
+
+	private static final String createMessage(boolean value, boolean vector, boolean nan)
+	{
+		String problem = nan?"NaN":"infinity";
+		if (value) return "value is "+problem;
+		else if (vector) return "vector is "+problem;
 		else return null;
 	}
 
 	private final boolean value;
-	private final boolean gradient;
+	private final boolean vector;
+	private final boolean nan;
 }

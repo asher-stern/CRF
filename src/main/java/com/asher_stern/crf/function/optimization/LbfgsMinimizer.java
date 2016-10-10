@@ -70,18 +70,33 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			double[] previousPoint = point;
 			double[] previousGradient = gradient;
 			
-			double[] direction = VectorUtilities.multiplyByScalar(-1.0, twoLoopRecursion(point));
-			double alpha_rate = lineSearch.findRate(function, point, direction);
-			point = VectorUtilities.addVectors(point, VectorUtilities.multiplyByScalar(alpha_rate, direction));
+			boolean infinityChecksOK = true;
+			try
+			{
+				InfinityChecker.check(gradient);
+				double[] direction = VectorUtilities.multiplyByScalar(-1.0, twoLoopRecursion(point));
+				double alpha_rate = lineSearch.findRate(function, point, direction);
+				InfinityChecker.check(direction).check(alpha_rate);
+				point = VectorUtilities.addVectors(point, VectorUtilities.multiplyByScalar(alpha_rate, direction));
+			}
+			catch(InfinityException e)
+			{
+				infinityChecksOK = false;
+				logger.error("Some values were calculated as Infinity. Make a fallback to gradient-descent for a single step. Will try again LBFGS in the next step.");
+				GradientDescentOptimizer.singleStepUpdate(point, gradient, GradientDescentOptimizer.DEFAULT_RATE);
+			}
 			value = function.value(point);
 			gradient = function.gradient(point);
 			
-			previousItrations.add(new PointAndGradientSubstractions(VectorUtilities.substractVectors(point, previousPoint), VectorUtilities.substractVectors(gradient, previousGradient)));
-			if (previousItrations.size()>numberOfPreviousIterationsToMemorize)
+			if (infinityChecksOK)
 			{
-				previousItrations.removeLast();
+				previousItrations.add(new PointAndGradientSubstractions(VectorUtilities.substractVectors(point, previousPoint), VectorUtilities.substractVectors(gradient, previousGradient)));
+				if (previousItrations.size()>numberOfPreviousIterationsToMemorize)
+				{
+					previousItrations.removeLast();
+				}
+				if (previousItrations.size()>numberOfPreviousIterationsToMemorize) {throw new CrfException("BUG");}
 			}
-			if (previousItrations.size()>numberOfPreviousIterationsToMemorize) {throw new CrfException("BUG");}
 			
 			if (value>previousValue) {logger.error("LBFGS: value > previous value");}
 			++forLogger_iterationIndex;
@@ -113,7 +128,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		ArrayList<Double> rhoList = new ArrayList<Double>(previousItrations.size());
 		ArrayList<Double> alphaList = new ArrayList<Double>(previousItrations.size());
 		
-		double[] q = function.gradient(point);
+		double[] q = function.gradient(point); // Infinity check of this gradient has been performed by the caller.
 		for (PointAndGradientSubstractions substractions : previousItrations)
 		{
 			double rho = 1.0/VectorUtilities.product(substractions.getGradientSubstraction(), substractions.getPointSubstraction());
@@ -122,9 +137,11 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			alphaList.add(alpha);
 			
 			q = VectorUtilities.substractVectors(q, VectorUtilities.multiplyByScalar(alpha, substractions.getGradientSubstraction()) );
+			InfinityChecker.check(rho, alpha).check(q);
 		}
 		
 		double[] r = calculateInitial_r_forTwoLoopRecursion(q);
+		InfinityChecker.check(r);
 
 		ListIterator<PointAndGradientSubstractions> previousIterationsIterator = previousItrations.listIterator(previousItrations.size());
 		ListIterator<Double> rhoIterator = rhoList.listIterator(rhoList.size());
@@ -135,8 +152,9 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			double rho = rhoIterator.previous();
 			double alpha = alphaIterator.previous();
 			
-			double betta = rho * VectorUtilities.product(substractions.getGradientSubstraction(), r);
-			r = VectorUtilities.addVectors( r, VectorUtilities.multiplyByScalar(alpha-betta, substractions.getPointSubstraction()) );
+			double beta = rho * VectorUtilities.product(substractions.getGradientSubstraction(), r);
+			r = VectorUtilities.addVectors( r, VectorUtilities.multiplyByScalar(alpha-beta, substractions.getPointSubstraction()) );
+			InfinityChecker.check(beta).check(r);
 		}
 		if ((previousIterationsIterator.hasPrevious()||rhoIterator.hasPrevious()||alphaIterator.hasPrevious())) {throw new CrfException("BUG");}
 		
