@@ -103,7 +103,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		CrfEmpiricalFeatureValueDistributionInCorpus<K,G> empiricalFeatureValue = new CrfEmpiricalFeatureValueDistributionInCorpus<K,G>(corpus.iterator(),model.getFeatures());
 		empiricalFeatureValue.calculate();
 		
-		logger.debug("Calculating expected feature values by models");
+		logger.debug("Calculating expected feature values by model");
 		CrfFeatureValueExpectationByModel<K, G> featureValueExpectationsByModel = new CrfFeatureValueExpectationByModel<K, G>(corpus.iterator(),model);
 		featureValueExpectationsByModel.calculate();
 		

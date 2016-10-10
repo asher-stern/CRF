@@ -68,8 +68,8 @@ public class TrainAndEvaluate
 		this.testSize = testSize;
 		this.loadSaveDirectoryName = loadSaveDirectoryName;
 		
-		System.out.println("trainSize = " + trainSize);
-		System.out.println("testSize = " + testSize);
+		logger.info("trainSize = " + trainSize);
+		logger.info("testSize = " + testSize);
 	}
 
 
