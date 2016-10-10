@@ -82,7 +82,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			catch(InfinityException e)
 			{
 				infinityChecksOK = false;
-				logger.error("Some values were calculated as Infinity. Make a fallback to gradient-descent for a single step. Will try again LBFGS in the next step.");
+				logger.warn("Some values were calculated as Infinity. Make a fallback to gradient-descent for a single step. Will try again LBFGS in the next step.");
 				GradientDescentOptimizer.singleStepUpdate(point, gradient, GradientDescentOptimizer.DEFAULT_RATE);
 			}
 			value = function.value(point);
