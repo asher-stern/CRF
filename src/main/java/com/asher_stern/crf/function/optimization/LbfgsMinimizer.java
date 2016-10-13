@@ -35,12 +35,14 @@ import com.asher_stern.crf.utilities.VectorUtilities;
  */
 public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 {
-	public static final int DEFAULT_NUMBER_OF_PREVIOUS_ITERATIONS_TO_MEMORIZE = 20;
-	public static final double DEFAULT_CONVERGENCE = 0.001;
+	public static final int DEFAULT_NUMBER_OF_PREVIOUS_ITERATIONS_TO_MEMORIZE = 100;
+	public static final double DEFAULT_VALUE_CONVERGENCE = 0.001; // No longer used. It was used earlier in the wrong convergence criterion.
+	public static final double DEFAULT_GRADIENT_CONVERGENCE = 0.01;
+	//public static final double DEFAULT_GRADIENT_CONVERGENCE_SQUARE = DEFAULT_GRADIENT_CONVERGENCE*DEFAULT_GRADIENT_CONVERGENCE;
 
 	public LbfgsMinimizer(DerivableFunction function)
 	{
-		this(function,DEFAULT_NUMBER_OF_PREVIOUS_ITERATIONS_TO_MEMORIZE,DEFAULT_CONVERGENCE);
+		this(function,DEFAULT_NUMBER_OF_PREVIOUS_ITERATIONS_TO_MEMORIZE, DEFAULT_GRADIENT_CONVERGENCE);
 	}
 
 	public LbfgsMinimizer(DerivableFunction function, int numberOfPreviousIterationsToMemorize, double convergence)
@@ -49,6 +51,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		super(new DerivableFunctionWithLastCache(function));
 		this.numberOfPreviousIterationsToMemorize = numberOfPreviousIterationsToMemorize;
 		this.convergence = convergence;
+		this.convergenceSquare = this.convergence*this.convergence;
 	}
 	
 	public void setDebugInfo(DebugInfo debugInfo)
@@ -69,12 +72,15 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		double[] gradient = function.gradient(point);
 		double previousValue = value;
 		int forLogger_iterationIndex=0;
-		do
+		while (VectorUtilities.euclideanNormSquare(VectorUtilities.changeInfinityToDoubleMax(gradient))>convergenceSquare)
+//		do
 		{
+			if (logger.isDebugEnabled()) {logger.debug(String.format("Gradient norm square = %-10.7f", VectorUtilities.euclideanNormSquare(VectorUtilities.changeInfinityToDoubleMax(gradient)) ));}
 			previousValue = value;
 			double[] previousPoint = point;
 			double[] previousGradient = gradient;
 
+			// 1. Update point (which is the vector "x").
 			boolean infinityChecksOK = true;
 			try
 			{
@@ -90,6 +96,8 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 				logger.warn("Some values were calculated as Infinity. Make a fallback to gradient-descent for a single step. Will try again LBFGS in the next step.");
 				GradientDescentOptimizer.singleStepUpdate(function.size(), point, gradient, GradientDescentOptimizer.DEFAULT_RATE);
 			}
+			
+			// 2. Prepare next iteration
 			value = function.value(point);
 			gradient = function.gradient(point);
 
@@ -104,8 +112,8 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			}
 
 			
+			// 3. Print log messages
 			++forLogger_iterationIndex;
-			// printouts
 			if (value>previousValue) {logger.error("LBFGS: value > previous value");}
 			if (logger.isInfoEnabled()) {logger.info("LBFGS iteration "+forLogger_iterationIndex+": value = "+String.format("%-3.3f", value));}
 			if ( (debugInfo!=null) && (logger.isInfoEnabled()) )
@@ -113,7 +121,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 				logger.info(debugInfo.info(point));
 			}
 		}
-		while(Math.abs(previousValue-value)>convergence);
+//		while(Math.abs(previousValue-value)>convergence);
 		calculated = true;
 	}
 
@@ -203,6 +211,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 	// input
 	private final int numberOfPreviousIterationsToMemorize; // m
 	private final double convergence;
+	private final double convergenceSquare;
 	
 	private DebugInfo debugInfo = null;
 	

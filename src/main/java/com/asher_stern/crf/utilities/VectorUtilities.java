@@ -75,4 +75,41 @@ public class VectorUtilities
 		}
 		return ret;
 	}
+	
+	public static double euclideanNormSquare(double[] vector)
+	{
+		return product(vector, vector);
+	}
+	
+	public static double euclideanNorm(double[] vector)
+	{
+		return Math.sqrt(euclideanNormSquare(vector));
+	}
+	
+	
+	/**
+	 * Changes every infinity value in the array to Double.MAX_VALUE (or -Double.MAX_VALUE for negative infinity).
+	 * @param array a given array. 
+	 */
+	public static final double[] changeInfinityToDoubleMax(final double[] array)
+	{
+		double[] ret = new double[array.length];
+		for (int i=0; i<array.length; ++i)
+		{
+			if (Double.POSITIVE_INFINITY==array[i])
+			{
+				ret[i] = Double.MAX_VALUE;
+			}
+			else if (Double.NEGATIVE_INFINITY==array[i])
+			{
+				ret[i] = -Double.MAX_VALUE;
+			}
+			else
+			{
+				ret[i] = array[i];
+			}
+		}
+		return ret;
+	}
+
 }
