@@ -50,6 +50,11 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		this.numberOfPreviousIterationsToMemorize = numberOfPreviousIterationsToMemorize;
 		this.convergence = convergence;
 	}
+	
+	public void setDebugInfo(DebugInfo debugInfo)
+	{
+		this.debugInfo = debugInfo;
+	}
 
 	@Override
 	public void find()
@@ -98,9 +103,15 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 				if (previousItrations.size()>numberOfPreviousIterationsToMemorize) {throw new CrfException("BUG");}
 			}
 
-			if (value>previousValue) {logger.error("LBFGS: value > previous value");}
+			
 			++forLogger_iterationIndex;
+			// printouts
+			if (value>previousValue) {logger.error("LBFGS: value > previous value");}
 			if (logger.isInfoEnabled()) {logger.info("LBFGS iteration "+forLogger_iterationIndex+": value = "+String.format("%-3.3f", value));}
+			if ( (debugInfo!=null) && (logger.isInfoEnabled()) )
+			{
+				logger.info(debugInfo.info(point));
+			}
 		}
 		while(Math.abs(previousValue-value)>convergence);
 		calculated = true;
@@ -118,6 +129,13 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 	{
 		if (!calculated) {throw new CrfException("Not calculated.");}
 		return point;
+	}
+	
+	
+	
+	public static interface DebugInfo
+	{
+		public String info(double[] point);
 	}
 	
 	
@@ -182,15 +200,21 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 
 	
 
+	// input
 	private final int numberOfPreviousIterationsToMemorize; // m
 	private final double convergence;
 	
-	private LinkedList<PointAndGradientSubstractions> previousItrations; // newest is pushed to the beginning.
+	private DebugInfo debugInfo = null;
 	
+	// internals
+	private LinkedList<PointAndGradientSubstractions> previousItrations; // newest is pushed to the beginning.
+	private boolean calculated = false;
+	
+	// output
 	private double[] point = null;
 	private double value = 0.0;
 	
-	private boolean calculated = false;
+	
 	
 
 
