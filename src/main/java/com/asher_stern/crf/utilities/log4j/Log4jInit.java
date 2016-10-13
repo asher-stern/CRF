@@ -4,6 +4,7 @@ import java.util.Enumeration;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -30,6 +31,7 @@ public class Log4jInit
 			{
 				if (!alreadyInitialized)
 				{
+					final Layout layout = new VerySimpleLayout(); // new PatternLayout("%p [%t] %m%n");
 					BasicConfigurator.configure();
 					Logger.getRootLogger().setLevel(level);
 					
@@ -37,7 +39,7 @@ public class Log4jInit
 					while (enumAppenders.hasMoreElements())
 					{
 						Appender appender = (Appender) enumAppenders.nextElement();
-						appender.setLayout(new VerySimpleLayout());
+						appender.setLayout(layout);
 					}
 					
 					alreadyInitialized = true;

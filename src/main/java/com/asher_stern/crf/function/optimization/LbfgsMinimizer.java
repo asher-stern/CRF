@@ -35,10 +35,8 @@ import com.asher_stern.crf.utilities.VectorUtilities;
  */
 public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 {
-	public static final int DEFAULT_NUMBER_OF_PREVIOUS_ITERATIONS_TO_MEMORIZE = 100;
-	public static final double DEFAULT_VALUE_CONVERGENCE = 0.001; // No longer used. It was used earlier in the wrong convergence criterion.
+	public static final int DEFAULT_NUMBER_OF_PREVIOUS_ITERATIONS_TO_MEMORIZE = 20;
 	public static final double DEFAULT_GRADIENT_CONVERGENCE = 0.01;
-	//public static final double DEFAULT_GRADIENT_CONVERGENCE_SQUARE = DEFAULT_GRADIENT_CONVERGENCE*DEFAULT_GRADIENT_CONVERGENCE;
 
 	public LbfgsMinimizer(DerivableFunction function)
 	{
@@ -73,7 +71,6 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		double previousValue = value;
 		int forLogger_iterationIndex=0;
 		while (VectorUtilities.euclideanNormSquare(VectorUtilities.changeInfinityToDoubleMax(gradient))>convergenceSquare)
-//		do
 		{
 			if (logger.isDebugEnabled()) {logger.debug(String.format("Gradient norm square = %-10.7f", VectorUtilities.euclideanNormSquare(VectorUtilities.changeInfinityToDoubleMax(gradient)) ));}
 			previousValue = value;
@@ -106,7 +103,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 				previousItrations.add(new PointAndGradientSubstractions(VectorUtilities.substractVectors(point, previousPoint), VectorUtilities.substractVectors(gradient, previousGradient)));
 				if (previousItrations.size()>numberOfPreviousIterationsToMemorize)
 				{
-					previousItrations.removeLast();
+					previousItrations.removeFirst();
 				}
 				if (previousItrations.size()>numberOfPreviousIterationsToMemorize) {throw new CrfException("BUG");}
 			}
@@ -121,7 +118,6 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 				logger.info(debugInfo.info(point));
 			}
 		}
-//		while(Math.abs(previousValue-value)>convergence);
 		calculated = true;
 	}
 

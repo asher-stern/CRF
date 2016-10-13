@@ -3,7 +3,13 @@ package com.asher_stern.crf.crf;
 import static com.asher_stern.crf.crf.CrfUtilities.safeAdd;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
@@ -155,18 +161,38 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	
 	private double calculateSumOfLogNormalizations(CrfModel<K, G> model)
 	{
+		ExecutorService executor = Executors.newWorkStealingPool();
+		List<Future<Double>> futures = new LinkedList<>();
 		double sum = 0.0;
-		for (List<? extends TaggedToken<K, G> > sentence : corpus)
+		for (final List<? extends TaggedToken<K, G> > sentence : corpus)
 		{
-			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
-			CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = CrfRememberActiveFeatures.findForSentence(features, crfTags, sentenceAsArray);
-			CrfForwardBackward<K, G> forwardBackward = new CrfForwardBackward<K, G>(model,sentenceAsArray,activeFeaturesForSentence);
-			//forwardBackward.calculateForwardAndBackward();
-			forwardBackward.calculateOnlyNormalizationFactor();
-			
-			double normalizationFactor = forwardBackward.getCalculatedNormalizationFactor();
-			double logNormalizationFactor = Math.log(normalizationFactor);
-			sum = safeAdd(sum, logNormalizationFactor);
+			futures.add(executor.submit(new Callable<Double>()
+			{
+				@Override
+				public Double call() throws Exception
+				{
+					K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
+					CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = CrfRememberActiveFeatures.findForSentence(features, crfTags, sentenceAsArray);
+					CrfForwardBackward<K, G> forwardBackward = new CrfForwardBackward<K, G>(model,sentenceAsArray,activeFeaturesForSentence);
+					//forwardBackward.calculateForwardAndBackward();
+					forwardBackward.calculateOnlyNormalizationFactor();
+					
+					double normalizationFactor = forwardBackward.getCalculatedNormalizationFactor();
+					double logNormalizationFactor = Math.log(normalizationFactor);
+					return logNormalizationFactor;
+				}
+			}));
+		}
+		for (Future<Double> future : futures)
+		{
+			try
+			{
+				sum = safeAdd(sum, future.get());
+			}
+			catch (InterruptedException | ExecutionException e)
+			{
+				throw new CrfException(e);
+			}
 		}
 		
 		return sum;

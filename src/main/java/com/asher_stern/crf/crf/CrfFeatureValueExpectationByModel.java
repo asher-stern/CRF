@@ -3,11 +3,17 @@ package com.asher_stern.crf.crf;
 import static com.asher_stern.crf.crf.CrfUtilities.safeAdd;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
+import com.asher_stern.crf.utilities.CrfException;
 import com.asher_stern.crf.utilities.TaggedToken;
 
 /**
@@ -42,10 +48,32 @@ public class CrfFeatureValueExpectationByModel<K, G>
 		featureValueExpectation = new double[model.getFeatures().getFilteredFeatures().length];
 		for (int i=0;i<featureValueExpectation.length;++i) {featureValueExpectation[i]=0.0;} // Explicit initialization to zero, just to be on the safe side.
 		
+		ExecutorService executor = Executors.newWorkStealingPool();
+		List<Future<?>> futures = new LinkedList<>();
+		
 		while (corpusIterator.hasNext())
 		{
-			List<? extends TaggedToken<K, G>> sentence = corpusIterator.next();
-			addValueForSentence(sentence);
+			final List<? extends TaggedToken<K, G>> sentence = corpusIterator.next();
+			futures.add(executor.submit(
+					new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							addValueForSentence(sentence);
+						}
+					}));
+		}
+		for (Future<?> future: futures)
+		{
+			try
+			{
+				future.get();
+			}
+			catch (InterruptedException | ExecutionException e)
+			{
+				throw new CrfException(e);
+			}
 		}
 	}
 	
@@ -114,7 +142,10 @@ public class CrfFeatureValueExpectationByModel<K, G>
 
 							double addToExpectation = featureValue*probabilityUnderModel;
 
-							featureValueExpectation[featureIndex] = safeAdd(featureValueExpectation[featureIndex], addToExpectation);
+							synchronized(locker)
+							{
+								featureValueExpectation[featureIndex] = safeAdd(featureValueExpectation[featureIndex], addToExpectation);
+							}
 						}
 					} // end for-each feature
 				} // end for-each previous-tag
@@ -129,6 +160,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	private final Iterator<? extends List<? extends TaggedToken<K, G>>> corpusIterator;
 	private final CrfModel<K, G> model;
 	
+	private final Object locker = new Object();
 	private double[] featureValueExpectation;
 	
 	@SuppressWarnings("unused")
