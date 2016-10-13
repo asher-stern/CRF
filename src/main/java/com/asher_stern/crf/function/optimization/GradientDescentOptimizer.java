@@ -98,10 +98,27 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 	
 	public static final void singleStepUpdate(final int size, final double[] point, final double[] gradient, final double rate)
 	{
+		changeInfinityToDoubleMax(gradient);
 		// size must be equal to point.length 
 		for (int i=0;i<size;++i)
 		{
 			point[i] += rate*(-gradient[i]);
+		}
+	}
+	
+	
+	private static final void changeInfinityToDoubleMax(double[] array)
+	{
+		for (int i=0; i<array.length; ++i)
+		{
+			if (Double.POSITIVE_INFINITY==array[i])
+			{
+				array[i] = Double.MAX_VALUE;
+			}
+			else if (Double.NEGATIVE_INFINITY==array[i])
+			{
+				array[i] = -Double.MAX_VALUE;
+			}
 		}
 	}
 	

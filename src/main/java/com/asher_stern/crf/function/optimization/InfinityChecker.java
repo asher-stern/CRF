@@ -20,6 +20,7 @@ public final class InfinityChecker
 	{
 		return NestedInfinityChecker.INSTANCE.check(values);
 	}
+	
 	/**
 	 * Throws {@link InfinityException} if one of the elements in one of the given vectors is either infinity or NaN
 	 */
@@ -27,7 +28,28 @@ public final class InfinityChecker
 	{
 		return NestedInfinityChecker.INSTANCE.check(values);
 	}
+
+	/**
+	 * Throws {@link InfinityException} if the given value is either infinity or NaN.
+	 * @return the given value.
+	 */
+	public static final double checked(double value)
+	{
+		NestedInfinityChecker.checkValue(value);
+		return value;
+	}
 	
+	/**
+	 * Throws {@link InfinityException} if one of the given values in the given vector is either infinity or NaN.
+	 * @return the given vector.
+	 */
+	public static final double[] checked(double[] vector)
+	{
+		NestedInfinityChecker.checkVector(vector);
+		return vector;
+	}
+
+
 	
 	
 	
@@ -40,14 +62,7 @@ public final class InfinityChecker
 		{
 			for (double value : values)
 			{
-				if (Double.isInfinite(value))
-				{
-					throw new InfinityException(true, false, false);
-				}
-				if (Double.isNaN(value))
-				{
-					throw new InfinityException(true, false, true);
-				}
+				checkValue(value);
 			}
 			return INSTANCE;
 		}
@@ -56,19 +71,36 @@ public final class InfinityChecker
 		{
 			for (double[] value : values)
 			{
-				for (double d : value)
-				{
-					if (Double.isInfinite(d))
-					{
-						throw new InfinityException(false, true, false);
-					}
-					if (Double.isNaN(d))
-					{
-						throw new InfinityException(false, true, true);
-					}
-				}
+				checkVector(value);
 			}
 			return INSTANCE;
+		}
+		
+		private static final void checkValue(double value)
+		{
+			if (Double.isInfinite(value))
+			{
+				throw new InfinityException(true, false, false);
+			}
+			if (Double.isNaN(value))
+			{
+				throw new InfinityException(true, false, true);
+			}
+		}
+		
+		private static final void checkVector(double[] vector)
+		{
+			for (double d : vector)
+			{
+				if (Double.isInfinite(d))
+				{
+					throw new InfinityException(false, true, false);
+				}
+				if (Double.isNaN(d))
+				{
+					throw new InfinityException(false, true, true);
+				}
+			}
 		}
 		
 		protected NestedInfinityChecker(){}

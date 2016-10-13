@@ -77,7 +77,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 				double[] direction = VectorUtilities.multiplyByScalar(-1.0, twoLoopRecursion(point));
 				double alpha_rate = lineSearch.findRate(function, point, direction);
 				InfinityChecker.check(direction).check(alpha_rate);
-				point = VectorUtilities.addVectors(point, VectorUtilities.multiplyByScalar(alpha_rate, direction));
+				point = VectorUtilities.addVectors(point, InfinityChecker.checked(VectorUtilities.multiplyByScalar(alpha_rate, direction)));
 			}
 			catch(InfinityException e)
 			{
