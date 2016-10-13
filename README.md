@@ -39,7 +39,7 @@ To use this project as a library in another Maven project, add the following to 
 <dependency>
     <groupId>com.github.asher-stern</groupId>
     <artifactId>CRF</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
