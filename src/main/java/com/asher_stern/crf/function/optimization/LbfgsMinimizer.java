@@ -74,8 +74,8 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		{
 			if (logger.isDebugEnabled()) {logger.debug(String.format("Gradient norm square = %-10.7f", VectorUtilities.euclideanNormSquare(VectorUtilities.changeInfinityToDoubleMax(gradient)) ));}
 			previousValue = value;
-			double[] previousPoint = point;
-			double[] previousGradient = gradient;
+			double[] previousPoint = VectorUtilities.copy(point);
+			double[] previousGradient = VectorUtilities.copy(gradient);
 
 			// 1. Update point (which is the vector "x").
 			boolean infinityChecksOK = true;
@@ -91,6 +91,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			{
 				infinityChecksOK = false;
 				logger.warn("Some values were calculated as Infinity. Make a fallback to gradient-descent for a single step. Will try again LBFGS in the next step.");
+				if (logger.isDebugEnabled()) logger.debug("Infinity exception stack trace is:", e);
 				GradientDescentOptimizer.singleStepUpdate(function.size(), point, gradient, GradientDescentOptimizer.DEFAULT_RATE);
 			}
 			

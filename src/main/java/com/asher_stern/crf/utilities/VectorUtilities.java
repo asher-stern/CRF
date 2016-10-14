@@ -104,10 +104,24 @@ public class VectorUtilities
 			{
 				ret[i] = -Double.MAX_VALUE;
 			}
+			else if (Double.isNaN(array[i]))
+			{
+				ret[i] = 0.0;
+			}
 			else
 			{
 				ret[i] = array[i];
 			}
+		}
+		return ret;
+	}
+	
+	public static final double[] copy(final double[] vector)
+	{
+		double[] ret = new double[vector.length];
+		for (int i=0; i<vector.length; ++i)
+		{
+			ret[i] = vector[i];
 		}
 		return ret;
 	}

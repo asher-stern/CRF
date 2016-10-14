@@ -138,9 +138,11 @@ public class CrfFeatureValueExpectationByModel<K, G>
 								//double psi_probabilityForGivenIndexAndTags = CrfUtilities.oneTokenFormula(model,sentenceTokens,tokenIndex,currentTag,previousTag,activeFeatures);
 								double psi_probabilityForGivenIndexAndTags = allTokensFormula.getOneTokenFormula(tokenIndex,currentTag,previousTag);
 								probabilityUnderModel = (alpha_forward_previousValue*psi_probabilityForGivenIndexAndTags*beta_backward_value)/normalizationFactor;
+								if (Double.isNaN(probabilityUnderModel)) throw new CrfException("NaN: alpha_forward_previousValue="+alpha_forward_previousValue+", psi_probabilityForGivenIndexAndTags="+psi_probabilityForGivenIndexAndTags+", beta_backward_value="+beta_backward_value+", normalizationFactor="+normalizationFactor);
 							}
 
 							double addToExpectation = featureValue*probabilityUnderModel;
+							if (Double.isNaN(addToExpectation)) throw new CrfException("addToExpectation = NaN: featureValue="+featureValue+", probabilityUnderModel="+probabilityUnderModel+", normalizationFactor="+normalizationFactor);
 
 							synchronized(locker)
 							{

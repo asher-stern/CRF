@@ -115,6 +115,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		
 		logger.debug("Creating gradient array.");
 		double[] ret = new double[point.length];
+		
 		for (int parameterIndex=0;parameterIndex<ret.length;++parameterIndex)
 		{
 			double regularizationDerivative = useRegularization?calculateRegularizationDerivative(point[parameterIndex]):0.0;
