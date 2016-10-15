@@ -1,6 +1,7 @@
 package com.asher_stern.crf.crf;
 
-import static com.asher_stern.crf.crf.CrfUtilities.safeAdd;
+
+
 
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +11,7 @@ import com.asher_stern.crf.crf.filters.CrfFeaturesAndFilters;
 import com.asher_stern.crf.crf.filters.CrfFilteredFeature;
 import com.asher_stern.crf.utilities.CrfException;
 import com.asher_stern.crf.utilities.TaggedToken;
-
+import static com.asher_stern.crf.utilities.DoubleUtilities.*;
 
 /**
  * Calculates the sum of all feature-values over the whole corpus.

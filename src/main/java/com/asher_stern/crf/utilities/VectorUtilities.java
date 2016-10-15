@@ -1,5 +1,7 @@
 package com.asher_stern.crf.utilities;
 
+import static com.asher_stern.crf.utilities.DoubleUtilities.*;
+
 /**
  * A collection of linear algebra functions over vectors.
  * 
@@ -21,7 +23,7 @@ public class VectorUtilities
 		double ret = 0.0;
 		for (int i=0;i<rowVector.length;++i)
 		{
-			ret += rowVector[i]*columnVector[i];
+			ret = safeAdd(ret, safeMultiply(rowVector[i], columnVector[i]));
 		}
 		return ret;
 	}
@@ -37,7 +39,7 @@ public class VectorUtilities
 		double[] ret = new double[vector.length];
 		for (int i=0;i<vector.length;++i)
 		{
-			ret[i] = scalar*vector[i];
+			ret[i] = safeMultiply(scalar, vector[i]);
 		}
 		return ret;
 	}
@@ -54,7 +56,7 @@ public class VectorUtilities
 		double[] ret = new double[vector1.length];
 		for (int i=0;i<vector1.length;++i)
 		{
-			ret[i]=vector1[i]+vector2[i];
+			ret[i] = safeAdd(vector1[i], vector2[i]);
 		}
 		return ret;
 	}
@@ -71,7 +73,7 @@ public class VectorUtilities
 		double[] ret = new double[vector1.length];
 		for (int i=0;i<vector1.length;++i)
 		{
-			ret[i] = vector1[i]-vector2[i];
+			ret[i] = safeSubtract(vector1[i], vector2[i]);
 		}
 		return ret;
 	}
@@ -91,6 +93,7 @@ public class VectorUtilities
 	 * Changes every infinity value in the array to Double.MAX_VALUE (or -Double.MAX_VALUE for negative infinity).
 	 * @param array a given array. 
 	 */
+	@Deprecated
 	public static final double[] changeInfinityToDoubleMax(final double[] array)
 	{
 		double[] ret = new double[array.length];

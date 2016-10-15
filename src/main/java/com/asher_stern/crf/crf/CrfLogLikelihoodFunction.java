@@ -1,6 +1,6 @@
 package com.asher_stern.crf.crf;
 
-import static com.asher_stern.crf.crf.CrfUtilities.safeAdd;
+
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,6 +18,7 @@ import com.asher_stern.crf.crf.run.CrfTagsBuilder;
 import com.asher_stern.crf.function.DerivableFunction;
 import com.asher_stern.crf.utilities.CrfException;
 import com.asher_stern.crf.utilities.TaggedToken;
+import static com.asher_stern.crf.utilities.DoubleUtilities.*;
 
 /**
  * The CRF log-likelihood function for the given <B>tagged</B> corpus, under the given model.
