@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.asher_stern.crf.utilities.CrfException;
+import static com.asher_stern.crf.utilities.DoubleUtilities.*;
 
 /**
  * Implementation of the Viterbi algorithm.
@@ -93,7 +94,7 @@ public class CrfInferenceViterbi<K, G>
 					double valueByPrevious = crfFormulaValue;
 					if (index>0)
 					{
-						valueByPrevious = valueByPrevious*delta_viterbiForward[index-1].get(tagOfPrevious);
+						valueByPrevious = safeMultiply(valueByPrevious, delta_viterbiForward[index-1].get(tagOfPrevious));
 					}
 
 					boolean maxSoFarDetected = false;

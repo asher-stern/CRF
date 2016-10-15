@@ -41,6 +41,20 @@ public class DoubleUtilities
 		return ret;
 	}
 	
+	public static double safeDivide(double d1, double d2)
+	{
+		if (Double.isNaN(d1)) {throw new CrfException("Unexpected NaN double variable.");}
+		if (Double.isNaN(d2)) {throw new CrfException("Unexpected NaN double variable.");}
+		
+		double sign = safeSign(d1)*safeSign(d2);
+		double ret = d1/d2;
+		if (Double.isInfinite(ret))
+		{
+			ret = sign*Double.MAX_VALUE;
+		}
+		return ret;
+	}
+	
 	
 	public static double safeSign(double d)
 	{

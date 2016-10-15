@@ -1,5 +1,6 @@
 package com.asher_stern.crf.crf;
 
+import static com.asher_stern.crf.utilities.DoubleUtilities.*;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,7 +15,6 @@ import org.apache.log4j.Logger;
 
 import com.asher_stern.crf.utilities.CrfException;
 import com.asher_stern.crf.utilities.TaggedToken;
-import static com.asher_stern.crf.utilities.DoubleUtilities.*;
 
 /**
  * Calculates, for each feature, the expected sum of its values over the whole corpus.
@@ -137,7 +137,10 @@ public class CrfFeatureValueExpectationByModel<K, G>
 								double beta_backward_value = forwardBackward.getBeta_backward().get(tokenIndex).get(currentTag);
 								//double psi_probabilityForGivenIndexAndTags = CrfUtilities.oneTokenFormula(model,sentenceTokens,tokenIndex,currentTag,previousTag,activeFeatures);
 								double psi_probabilityForGivenIndexAndTags = allTokensFormula.getOneTokenFormula(tokenIndex,currentTag,previousTag);
-								probabilityUnderModel = (alpha_forward_previousValue*psi_probabilityForGivenIndexAndTags*beta_backward_value)/normalizationFactor;
+								
+								
+								//probabilityUnderModel = (alpha_forward_previousValue*psi_probabilityForGivenIndexAndTags*beta_backward_value)/normalizationFactor;
+								probabilityUnderModel = safeDivide(safeMultiply(safeMultiply(alpha_forward_previousValue, psi_probabilityForGivenIndexAndTags),beta_backward_value), normalizationFactor);
 							}
 
 							double addToExpectation = featureValue*probabilityUnderModel;

@@ -2,6 +2,11 @@ package com.asher_stern.crf.crf;
 
 
 
+import static com.asher_stern.crf.utilities.DoubleUtilities.safeAdd;
+import static com.asher_stern.crf.utilities.DoubleUtilities.safeDivide;
+import static com.asher_stern.crf.utilities.DoubleUtilities.safeMultiply;
+import static com.asher_stern.crf.utilities.DoubleUtilities.safeSubtract;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +23,7 @@ import com.asher_stern.crf.crf.run.CrfTagsBuilder;
 import com.asher_stern.crf.function.DerivableFunction;
 import com.asher_stern.crf.utilities.CrfException;
 import com.asher_stern.crf.utilities.TaggedToken;
-import static com.asher_stern.crf.utilities.DoubleUtilities.*;
+import com.asher_stern.crf.utilities.VectorUtilities;
 
 /**
  * The CRF log-likelihood function for the given <B>tagged</B> corpus, under the given model.
@@ -89,7 +94,8 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		// Note: log(x/y) = log(x)-log(y). Thus, log (e^x/y) = x - log(y).
 		// In our case we need log(e^(sum_weighted_features_for_sentence)/Normalization) = sum_weighted_features_for_sentence - log(Normalization.)
 		// And we sum the above over the whole corpus (i.e., over all the sentences).
-		double ret = sumWeightedFeatures - sumOfLogNormalizations - regularization;
+		
+		double ret = safeSubtract(safeSubtract(sumWeightedFeatures, sumOfLogNormalizations), regularization);
 		logger.debug("Calculating value - done.");
 		return ret;
 	}
@@ -119,7 +125,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		for (int parameterIndex=0;parameterIndex<ret.length;++parameterIndex)
 		{
 			double regularizationDerivative = useRegularization?calculateRegularizationDerivative(point[parameterIndex]):0.0;
-			ret[parameterIndex] = empiricalFeatureValue.getEmpiricalFeatureValue()[parameterIndex] - featureValueExpectationsByModel.getFeatureValueExpectation()[parameterIndex] - regularizationDerivative;
+			ret[parameterIndex] = safeSubtract(safeSubtract(empiricalFeatureValue.getEmpiricalFeatureValue()[parameterIndex], featureValueExpectationsByModel.getFeatureValueExpectation()[parameterIndex]), regularizationDerivative);
 		}
 		return ret;
 	}
@@ -178,9 +184,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 					//forwardBackward.calculateForwardAndBackward();
 					forwardBackward.calculateOnlyNormalizationFactor();
 					
-					double normalizationFactor = forwardBackward.getCalculatedNormalizationFactor();
-					double logNormalizationFactor = Math.log(normalizationFactor);
-					return logNormalizationFactor;
+					return Math.log(forwardBackward.getCalculatedNormalizationFactor());
 				}
 			}));
 		}
@@ -201,12 +205,12 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	
 	private double calculateRegularizationFactor(double[] parameters)
 	{
-		return normSquare(parameters)/(2*sigmaSquare_inverseRegularizationFactor);
+		return safeDivide(VectorUtilities.euclideanNormSquare(parameters), safeMultiply(2.0, sigmaSquare_inverseRegularizationFactor));
 	}
 	
 	private double calculateRegularizationDerivative(double parameter)
 	{
-		return parameter/sigmaSquare_inverseRegularizationFactor;
+		return safeDivide(parameter, sigmaSquare_inverseRegularizationFactor);
 	}
 
 	
@@ -221,27 +225,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		return new CrfModel<K, G>(crfTags,features,parameters);
 	}
 	
-	private double normSquare(double[] vector)
-	{
-		double ret = 0.0;
-		for (double component : vector)
-		{
-			ret = safeAdd(ret, component*component);
-		}
-		return ret;
-	}
 	
-//	private void buildActiveFeaturesWholeCorpus()
-//	{
-//		activeFeaturesWholeCorpus = new LinkedList<CrfRememberActiveFeatures<K,G>>();
-//		for (List<? extends TaggedToken<K, G> > sentence : corpus)
-//		{
-//			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
-//			CrfRememberActiveFeatures<K,G> activeFeaturesOfSentence = CrfRememberActiveFeatures.findForSentence(features,tags, sentenceAsArray);
-//			activeFeaturesWholeCorpus.add(activeFeaturesOfSentence);
-//		}
-//		logger.info(RuntimeUtilities.getUsedMemory());
-//	}
 
 	/**
 	 * A corpus -- a list of tagged sequences.
