@@ -1,6 +1,7 @@
 package com.asher_stern.crf.function.optimization;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -91,6 +92,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			{
 				infinityChecksOK = false;
 				logger.warn("Some values were calculated as Infinity. Make a fallback to gradient-descent for a single step. Will try again LBFGS in the next step.");
+				point = Arrays.copyOf(point, point.length);
 				GradientDescentOptimizer.singleStepUpdate(function.size(), point, gradient, GradientDescentOptimizer.DEFAULT_RATE);
 			}
 			
