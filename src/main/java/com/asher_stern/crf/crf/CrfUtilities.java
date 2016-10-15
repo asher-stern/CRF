@@ -156,7 +156,7 @@ public class CrfUtilities
 				featureValue = feature.getFeature().value(sentence,tokenIndex,currentTag,previousTag);
 			}
 			
-			double weightedValue = model.getParameters().get(index)*featureValue;
+			double weightedValue = safeMultiply(model.getParameters().get(index), featureValue);
 			sum = safeAdd(sum, weightedValue);
 		}
 		return sum;
@@ -198,7 +198,9 @@ public class CrfUtilities
 	 */
 	public static <K,G> double oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag,Set<Integer> knownActiveFeatureIndexes)
 	{
-		return Math.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,knownActiveFeatureIndexes));
+		return infinityToMaxDouble(
+				Math.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,knownActiveFeatureIndexes))
+				);
 	}
 	
 	
@@ -230,6 +232,15 @@ public class CrfUtilities
 	 */
 	public static double relativeDifference(double value1, double value2)
 	{
+		// First, handle edge cases.
+		if (Double.isNaN(value1)) {throw new CrfException("Unexpected NaN double value.");}
+		if (Double.isNaN(value2)) {throw new CrfException("Unexpected NaN double value.");}
+		value1 = infinityToMaxDouble(value1);
+		value2 = infinityToMaxDouble(value2);
+		if (value1==(-0.0)) {value1=0.0;}
+		if (value2==(-0.0)) {value2=0.0;}
+		if ( (value1==0.0) && (value2==0.0) ) {return 1.0;}
+		
 		double smaller;
 		double larger;
 		if (value1<value2)
@@ -242,7 +253,10 @@ public class CrfUtilities
 			smaller = Math.abs(value2);
 			larger = Math.abs(value1);
 		}
-		return larger/smaller;
+		
+		double ret = infinityToMaxDouble(larger/smaller);
+		if (Double.isNaN(ret)) {throw new CrfException("Unexpected NaN double value.");}
+		return ret;
 	}
 	
 	/**
@@ -260,7 +274,7 @@ public class CrfUtilities
 	public static boolean roughlyEqual(double value1, double value2)
 	{
 		boolean ret = true;
-		if ( ( (value1<0.0) || (value2<0.0) ) &&  ( (value1>=0.0) || (value2>=0.0) ) )
+		if ( ( (value1<0.0) || (value2<0.0) ) &&  ( (value1>=0.0) || (value2>=0.0) ) ) // If they doen't have the same sign
 		{
 			double gap = Math.abs(value1-value2);
 			if (gap>ROUGHLY_EQUAL_DISTANCE_FROM_ZERO)

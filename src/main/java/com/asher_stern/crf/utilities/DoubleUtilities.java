@@ -17,14 +17,7 @@ public class DoubleUtilities
 		
 		double ret = d1+d2;
 		if (Double.isNaN(ret)) {throw new CrfException("Unexpected NaN double variable.");}
-		if (Double.POSITIVE_INFINITY==ret)
-		{
-			ret = Double.MAX_VALUE;
-		}
-		else if (Double.NEGATIVE_INFINITY==ret)
-		{
-			ret = -Double.MAX_VALUE;
-		}
+		ret = infinityToMaxDouble(ret);
 		return ret;
 	}
 	
@@ -48,11 +41,28 @@ public class DoubleUtilities
 		return ret;
 	}
 	
+	
 	public static double safeSign(double d)
 	{
 		if (Double.isNaN(d)) {throw new CrfException("Unexpected NaN double variable.");}
 		double sign = Math.signum(d);
 		if (sign == (-0.0)) {sign = 0.0;}
 		return sign;
+	}
+	
+	public static double infinityToMaxDouble(double d)
+	{
+		if (Double.POSITIVE_INFINITY==d)
+		{
+			return Double.MAX_VALUE;
+		}
+		else if (Double.NEGATIVE_INFINITY==d)
+		{
+			return -Double.MAX_VALUE;
+		}
+		else
+		{
+			return d;
+		}
 	}
 }

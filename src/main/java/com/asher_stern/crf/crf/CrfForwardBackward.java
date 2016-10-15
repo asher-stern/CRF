@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import com.asher_stern.crf.utilities.ArbitraryRangeArray;
 import com.asher_stern.crf.utilities.CrfException;
 
+import static com.asher_stern.crf.utilities.DoubleUtilities.*;
+
 /**
  * Calculates the probability of a sequence of <B>tokens</B>.
  * <BR>
@@ -144,9 +146,9 @@ public class CrfForwardBackward<K,G>
 					if (index>0)
 					{
 						double previousAlphaValue = alpha_forward[index-1].get(previousTag);
-						valueForPreviousTag = valueForPreviousTag*previousAlphaValue;
+						valueForPreviousTag = safeMultiply(valueForPreviousTag, previousAlphaValue);
 					}
-					sumOverPreviousTags += valueForPreviousTag;
+					sumOverPreviousTags = safeAdd(sumOverPreviousTags, valueForPreviousTag);
 				}
 				alpha_forwardThisToken.put(tag, sumOverPreviousTags);
 			}
@@ -158,7 +160,7 @@ public class CrfForwardBackward<K,G>
 		Map<G,Double> alphaLast = alpha_forward[sentence.length-1];
 		for (G tag : alphaLast.keySet())
 		{
-			finalAlpha += alphaLast.get(tag);
+			finalAlpha = safeAdd(finalAlpha, alphaLast.get(tag));
 		}
 	}
 	
@@ -187,8 +189,8 @@ public class CrfForwardBackward<K,G>
 				{
 					//double valueCurrentTokenCrfFormula = CrfUtilities.oneTokenFormula(model,sentence,index+1,nextTag,tag);
 					double valueCurrentTokenCrfFormula = allTokensFormula.getOneTokenFormula(index+1,nextTag,tag);
-					double valueForNextTag = valueCurrentTokenCrfFormula*beta_backward.get(index+1).get(nextTag);
-					sum += valueForNextTag;
+					double valueForNextTag = safeMultiply(valueCurrentTokenCrfFormula, beta_backward.get(index+1).get(nextTag));
+					sum = safeAdd(sum, valueForNextTag);
 				}
 				betaCurrentToken.put(tag,sum);
 			}
