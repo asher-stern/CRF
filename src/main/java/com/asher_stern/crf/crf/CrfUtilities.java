@@ -221,26 +221,44 @@ public class CrfUtilities
 		return ret;
 	}
 	
-	/**
-	 * Return variable+valueToAdd.
-	 * The user, instead of writing variable += valueToAdd, writes variable = safeAdd(variable,valueToAdd).
-	 * This function is required in order to be on the safe side,
-	 * in detecting whether a limitation of the "double" type caused unexpected results.
-	 *  
-	 * @param variable
-	 * @param valueToAdd
-	 * @return variable+valueToAdd.
-	 */
-	public static double safeAdd(double variable, final double valueToAdd)
+	public static double safeAdd(double d1, final double d2)
 	{
-		final double oldValue = variable;
-		variable += valueToAdd;
-		if ( ( (valueToAdd<0.0) && (oldValue<variable) ) || ( (valueToAdd>0.0) && (oldValue>variable) ) )
+		if (Double.isNaN(d1)) {throw new CrfException("Unexpected NaN double variable.");}
+		if (Double.isNaN(d2)) {throw new CrfException("Unexpected NaN double variable.");}
+		
+		double ret = d1+d2;
+		if (Double.isNaN(ret)) {throw new CrfException("Unexpected NaN double variable.");}
+		if (Double.POSITIVE_INFINITY==ret)
 		{
-			throw new CrfException("Error: adding value to \"double\" variable yielded unexpected results. This seems like a limitation of double."
-					+ "variable was: "+String.format("%-3.3f", oldValue)+", value to add was: "+String.format("%-3.3f", valueToAdd));
+			ret = Double.MAX_VALUE;
 		}
-		return variable;
+		else if (Double.NEGATIVE_INFINITY==ret)
+		{
+			ret = -Double.MAX_VALUE;
+		}
+		return ret;
+	}
+	
+	public static double safeMultiply(double d1, double d2)
+	{
+		if (Double.isNaN(d1)) {throw new CrfException("Unexpected NaN double variable.");}
+		if (Double.isNaN(d2)) {throw new CrfException("Unexpected NaN double variable.");}
+		
+		double sign = safeSign(d1)*safeSign(d2);
+		double ret = d1*d2;
+		if (Double.isInfinite(ret))
+		{
+			ret = sign*Double.MAX_VALUE;
+		}
+		return ret;
+	}
+	
+	public static double safeSign(double d)
+	{
+		if (Double.isNaN(d)) {throw new CrfException("Unexpected NaN double variable.");}
+		double sign = Math.signum(d);
+		if (sign == (-0.0)) {sign = 0.0;}
+		return sign;
 	}
 	
 	/**
