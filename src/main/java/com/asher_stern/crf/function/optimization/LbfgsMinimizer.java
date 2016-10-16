@@ -1,6 +1,7 @@
 package com.asher_stern.crf.function.optimization;
 
 import java.util.ArrayList;
+import static com.asher_stern.crf.utilities.DoubleUtilities.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -71,44 +72,29 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		double[] gradient = function.gradient(point);
 		double previousValue = value;
 		int forLogger_iterationIndex=0;
-		while (VectorUtilities.euclideanNormSquare(VectorUtilities.changeInfinityToDoubleMax(gradient))>convergenceSquare)
+		while (VectorUtilities.euclideanNormSquare(gradient)>convergenceSquare)
 		{
-			if (logger.isDebugEnabled()) {logger.debug(String.format("Gradient norm square = %-10.7f", VectorUtilities.euclideanNormSquare(VectorUtilities.changeInfinityToDoubleMax(gradient)) ));}
+			if (logger.isDebugEnabled()) {logger.debug(String.format("Gradient norm square = %-10.7f", VectorUtilities.euclideanNormSquare(gradient) ));}
 			previousValue = value;
 			double[] previousPoint = Arrays.copyOf(point, point.length);
 			double[] previousGradient = Arrays.copyOf(gradient, gradient.length);
 
 			// 1. Update point (which is the vector "x").
-			boolean infinityChecksOK = true;
-			try
-			{
-				InfinityChecker.check(gradient);
-				double[] direction = VectorUtilities.multiplyByScalar(-1.0, twoLoopRecursion(point));
-				double alpha_rate = lineSearch.findRate(function, point, direction);
-				InfinityChecker.check(direction).check(alpha_rate);
-				point = VectorUtilities.addVectors(point, InfinityChecker.checked(VectorUtilities.multiplyByScalar(alpha_rate, direction)));
-			}
-			catch(InfinityException e)
-			{
-				infinityChecksOK = false;
-				logger.warn("Some values were calculated as Infinity. Make a fallback to gradient-descent for a single step. Will try again LBFGS in the next step.");
-				point = Arrays.copyOf(point, point.length);
-				GradientDescentOptimizer.singleStepUpdate(function.size(), point, gradient, GradientDescentOptimizer.DEFAULT_RATE);
-			}
+			
+			double[] direction = VectorUtilities.multiplyByScalar(-1.0, twoLoopRecursion(point));
+			double alpha_rate = lineSearch.findRate(function, point, direction);
+			point = VectorUtilities.addVectors(point, VectorUtilities.multiplyByScalar(alpha_rate, direction));
 			
 			// 2. Prepare next iteration
 			value = function.value(point);
 			gradient = function.gradient(point);
 
-			if (infinityChecksOK)
+			previousItrations.add(new PointAndGradientSubstractions(VectorUtilities.subtractVectors(point, previousPoint), VectorUtilities.subtractVectors(gradient, previousGradient)));
+			if (previousItrations.size()>numberOfPreviousIterationsToMemorize)
 			{
-				previousItrations.add(new PointAndGradientSubstractions(VectorUtilities.substractVectors(point, previousPoint), VectorUtilities.substractVectors(gradient, previousGradient)));
-				if (previousItrations.size()>numberOfPreviousIterationsToMemorize)
-				{
-					previousItrations.removeFirst();
-				}
-				if (previousItrations.size()>numberOfPreviousIterationsToMemorize) {throw new CrfException("BUG");}
+				previousItrations.removeFirst();
 			}
+			if (previousItrations.size()>numberOfPreviousIterationsToMemorize) {throw new CrfException("BUG");}
 
 			
 			// 3. Print log messages
@@ -154,17 +140,15 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		double[] q = function.gradient(point); // Infinity check of this gradient has been performed by the caller.
 		for (PointAndGradientSubstractions substractions : previousItrations)
 		{
-			double rho = 1.0/VectorUtilities.product(substractions.getGradientSubstraction(), substractions.getPointSubstraction());
+			double rho = safeDivide(1.0, VectorUtilities.product(substractions.getGradientSubstraction(), substractions.getPointSubstraction()));
 			rhoList.add(rho);
-			double alpha = rho*VectorUtilities.product(substractions.getPointSubstraction(), q);
+			double alpha = safeMultiply(rho, VectorUtilities.product(substractions.getPointSubstraction(), q));
 			alphaList.add(alpha);
 			
-			q = VectorUtilities.substractVectors(q, VectorUtilities.multiplyByScalar(alpha, substractions.getGradientSubstraction()) );
-			InfinityChecker.check(rho, alpha).check(q);
+			q = VectorUtilities.subtractVectors(q, VectorUtilities.multiplyByScalar(alpha, substractions.getGradientSubstraction()) );
 		}
 		
 		double[] r = calculateInitial_r_forTwoLoopRecursion(q);
-		InfinityChecker.check(r);
 
 		ListIterator<PointAndGradientSubstractions> previousIterationsIterator = previousItrations.listIterator(previousItrations.size());
 		ListIterator<Double> rhoIterator = rhoList.listIterator(rhoList.size());
@@ -175,9 +159,8 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			double rho = rhoIterator.previous();
 			double alpha = alphaIterator.previous();
 			
-			double beta = rho * VectorUtilities.product(substractions.getGradientSubstraction(), r);
+			double beta = safeMultiply(rho, VectorUtilities.product(substractions.getGradientSubstraction(), r));
 			r = VectorUtilities.addVectors( r, VectorUtilities.multiplyByScalar(alpha-beta, substractions.getPointSubstraction()) );
-			InfinityChecker.check(beta).check(r);
 		}
 		if ((previousIterationsIterator.hasPrevious()||rhoIterator.hasPrevious()||alphaIterator.hasPrevious())) {throw new CrfException("BUG");}
 		
@@ -191,12 +174,11 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		if (previousItrations.size()>=1)
 		{
 			PointAndGradientSubstractions lastSubstraction = previousItrations.get(0);
-			gamma =
+			gamma = safeDivide(
 					VectorUtilities.product(lastSubstraction.getPointSubstraction(), lastSubstraction.getGradientSubstraction())
-					/
-					VectorUtilities.product(lastSubstraction.getGradientSubstraction(), lastSubstraction.getGradientSubstraction());
-			
-			
+					,
+					VectorUtilities.product(lastSubstraction.getGradientSubstraction(), lastSubstraction.getGradientSubstraction())
+					);
 		}
 		
 		double[] r = VectorUtilities.multiplyByScalar(gamma, q);

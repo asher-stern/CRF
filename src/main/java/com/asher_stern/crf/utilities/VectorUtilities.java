@@ -67,7 +67,7 @@ public class VectorUtilities
 	 * @param vector2
 	 * @return
 	 */
-	public static double[] substractVectors(double[] vector1, double[] vector2)
+	public static double[] subtractVectors(double[] vector1, double[] vector2)
 	{
 		if (vector1.length!=vector2.length) throw new CrfException("Cannot substract vectors of difference sizes.");
 		double[] ret = new double[vector1.length];
