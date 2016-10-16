@@ -41,6 +41,16 @@ public class DoubleUtilities
 		return ret;
 	}
 	
+	public static double safeMultiply(double d1, double d2, double...ds)
+	{
+		double ret = safeMultiply(d1, d2);
+		for (double d : ds)
+		{
+			ret = safeMultiply(ret, d);
+		}
+		return ret;
+	}
+	
 	public static double safeDivide(double d1, double d2)
 	{
 		if (Double.isNaN(d1)) {throw new CrfException("Unexpected NaN double variable.");}

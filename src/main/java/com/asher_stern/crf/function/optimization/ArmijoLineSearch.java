@@ -2,6 +2,9 @@ package com.asher_stern.crf.function.optimization;
 
 import static com.asher_stern.crf.function.optimization.LineSearchUtilities.derivationForAlpha;
 import static com.asher_stern.crf.function.optimization.LineSearchUtilities.valueForAlpha;
+import static com.asher_stern.crf.utilities.DoubleUtilities.safeDivide;
+import static com.asher_stern.crf.utilities.DoubleUtilities.safeMultiply;
+import static com.asher_stern.crf.utilities.DoubleUtilities.safeSubtract;
 
 import com.asher_stern.crf.function.DerivableFunction;
 import com.asher_stern.crf.utilities.CrfException;
@@ -32,8 +35,6 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 	{
 		final double valueForAlphaZero = valueForAlpha(function, point, direction, 0.0);
 		final double derivationForAlphaZero = derivationForAlpha(function, point, direction, 0.0);
-		InfinityChecker.check(valueForAlphaZero, derivationForAlphaZero); // If we get infinity here, the initialAlpha is also invalid.
-		// In the rest of this function, infinity will cause the while condition to be false, and the function will return with some reasonable alpha.
 		
 		if (derivationForAlphaZero>=0.0) throw new CrfException("Tried to perform a line search, in a point and direction in which the function does not decrease.");
 		
@@ -41,31 +42,31 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 		
 		double alpha = initialAlpha;
 		
-		if ( (valueForAlpha(function, point, direction, alpha)-valueForAlphaZero) < sigma_convergenceCoefficient*alpha*derivationForAlphaZero)
+		
+		
+		if (safeSubtract(valueForAlpha(function, point, direction, alpha), valueForAlphaZero) < safeMultiply(sigma_convergenceCoefficient, alpha, derivationForAlphaZero))
 		{
 			double previousAlpha = alpha;
 			do
 			{
 				previousAlpha = alpha;
-				alpha = previousAlpha/beta_rateOfAlpha;
-				if (Double.isInfinite(sigma_convergenceCoefficient*alpha*derivationForAlphaZero)) {break;}
+				alpha = safeDivide(previousAlpha, beta_rateOfAlpha);
 			}
-			while( (valueForAlpha(function, point, direction, alpha)-valueForAlphaZero) < sigma_convergenceCoefficient*alpha*derivationForAlphaZero);
+			while( safeSubtract(valueForAlpha(function, point, direction, alpha),valueForAlphaZero) < safeMultiply(sigma_convergenceCoefficient, alpha, derivationForAlphaZero));
 			ret = previousAlpha;
 		}
 		else
 		{
 			do
 			{
-				alpha = beta_rateOfAlpha*alpha;
+				safeMultiply(beta_rateOfAlpha, alpha);
 				if (alpha<=MINIMUM_ALLOWED_ALPHA_VALUE_SO_SHOULD_BE_ZERO)
 				{
 					alpha = 0.0;
 					break;
 				}
-				if (Double.isInfinite(sigma_convergenceCoefficient*alpha*derivationForAlphaZero)) {break;}
 			}
-			while ( (valueForAlpha(function, point, direction, alpha)-valueForAlphaZero) >= sigma_convergenceCoefficient*alpha*derivationForAlphaZero);
+			while ( safeSubtract(valueForAlpha(function, point, direction, alpha), valueForAlphaZero) >= safeMultiply(sigma_convergenceCoefficient, alpha, derivationForAlphaZero));
 			ret = alpha;
 		}
 		
