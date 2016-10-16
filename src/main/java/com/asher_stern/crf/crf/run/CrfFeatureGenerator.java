@@ -17,7 +17,7 @@ import com.asher_stern.crf.utilities.TaggedToken;
  */
 public abstract class CrfFeatureGenerator<K,G>
 {
-	public CrfFeatureGenerator(Iterable<? extends List<? extends TaggedToken<K, G> >> corpus, Set<String> tags)
+	public CrfFeatureGenerator(Iterable<? extends List<? extends TaggedToken<K, G> >> corpus, Set<G> tags)
 	{
 		super();
 		this.corpus = corpus;
@@ -38,5 +38,5 @@ public abstract class CrfFeatureGenerator<K,G>
 	
 	
 	protected final Iterable<? extends List<? extends TaggedToken<K, G> >> corpus;
-	protected final Set<String> tags;
+	protected final Set<G> tags;
 }
