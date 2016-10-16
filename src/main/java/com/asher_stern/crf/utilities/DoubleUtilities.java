@@ -33,7 +33,7 @@ public class DoubleUtilities
 		if (Double.isNaN(d2)) {throw new CrfException("Unexpected NaN double variable.");}
 		
 		double sign = safeSign(d1)*safeSign(d2);
-		double ret = d1*d2;
+		double ret = infinityToMaxDouble(d1)*infinityToMaxDouble(d2);
 		if (Double.isInfinite(ret))
 		{
 			ret = sign*Double.MAX_VALUE;
@@ -46,8 +46,9 @@ public class DoubleUtilities
 		if (Double.isNaN(d1)) {throw new CrfException("Unexpected NaN double variable.");}
 		if (Double.isNaN(d2)) {throw new CrfException("Unexpected NaN double variable.");}
 		
+		
 		double sign = safeSign(d1)*safeSign(d2);
-		double ret = d1/d2;
+		double ret = infinityToMaxDouble(d1)/infinityToMaxDouble(d2);
 		if (Double.isInfinite(ret))
 		{
 			ret = sign*Double.MAX_VALUE;

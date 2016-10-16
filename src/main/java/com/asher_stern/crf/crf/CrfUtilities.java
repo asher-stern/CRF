@@ -254,7 +254,7 @@ public class CrfUtilities
 			larger = Math.abs(value1);
 		}
 		
-		double ret = infinityToMaxDouble(larger/smaller);
+		double ret = safeDivide(larger, smaller);
 		if (Double.isNaN(ret)) {throw new CrfException("Unexpected NaN double value.");}
 		return ret;
 	}
