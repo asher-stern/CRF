@@ -75,8 +75,8 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		{
 			if (logger.isDebugEnabled()) {logger.debug(String.format("Gradient norm square = %-10.7f", VectorUtilities.euclideanNormSquare(VectorUtilities.changeInfinityToDoubleMax(gradient)) ));}
 			previousValue = value;
-			double[] previousPoint = point;
-			double[] previousGradient = gradient;
+			double[] previousPoint = Arrays.copyOf(point, point.length);
+			double[] previousGradient = Arrays.copyOf(gradient, gradient.length);
 
 			// 1. Update point (which is the vector "x").
 			boolean infinityChecksOK = true;
