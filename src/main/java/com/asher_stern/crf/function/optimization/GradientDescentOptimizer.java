@@ -1,5 +1,9 @@
 package com.asher_stern.crf.function.optimization;
 
+import static com.asher_stern.crf.utilities.DoubleUtilities.infinityToMaxDouble;
+import static com.asher_stern.crf.utilities.DoubleUtilities.safeAdd;
+import static com.asher_stern.crf.utilities.DoubleUtilities.safeMultiply;
+
 import org.apache.log4j.Logger;
 
 import com.asher_stern.crf.function.DerivableFunction;
@@ -60,6 +64,7 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 		for (int i=0;i<size;++i){point[i]=0.0;}
 		
 		value = function.value(point);
+		value = infinityToMaxDouble(value);
 		double oldValue = value;
 		int debug_iterationIndex=0;
 		do
@@ -69,6 +74,7 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 			double actualRate = lineSearch.findRate(function, point, VectorUtilities.multiplyByScalar(-1.0, gradient));
 			singleStepUpdate(size, point, gradient, actualRate);
 			value = function.value(point);
+			value = infinityToMaxDouble(value);
 			if (logger.isDebugEnabled())
 			{
 				logger.debug(StringUtilities.arrayOfDoubleToString(point)+" = "+String.format("%-3.3f",value));
@@ -98,11 +104,10 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 	
 	public static final void singleStepUpdate(final int size, final double[] point, double[] gradient, final double rate)
 	{
-		gradient = VectorUtilities.changeInfinityToDoubleMax(gradient);
 		// size must be equal to point.length 
 		for (int i=0;i<size;++i)
 		{
-			point[i] += rate*(-gradient[i]);
+			point[i] = safeAdd(point[i], safeMultiply(rate, -gradient[i]));
 		}
 	}
 	
