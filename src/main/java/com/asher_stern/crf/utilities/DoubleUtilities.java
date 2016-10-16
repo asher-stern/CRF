@@ -21,9 +21,9 @@ public class DoubleUtilities
 		return ret;
 	}
 	
-	public static double safeSubtract(double d1, final double d2)
+	public static double safeSubtract(double d1, double d2)
 	{
-		d1 = -d1;
+		d2 = -d2;
 		return safeAdd(d1, d2);
 	}
 	
