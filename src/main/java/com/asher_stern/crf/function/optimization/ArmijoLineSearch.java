@@ -59,7 +59,7 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 		{
 			do
 			{
-				safeMultiply(beta_rateOfAlpha, alpha);
+				alpha = safeMultiply(beta_rateOfAlpha, alpha);
 				if (alpha<=MINIMUM_ALLOWED_ALPHA_VALUE_SO_SHOULD_BE_ZERO)
 				{
 					alpha = 0.0;
