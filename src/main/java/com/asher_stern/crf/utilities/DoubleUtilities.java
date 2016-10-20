@@ -23,8 +23,13 @@ public class DoubleUtilities
 	
 	public static double safeSubtract(double d1, double d2)
 	{
-		d2 = -d2;
-		return safeAdd(d1, d2);
+		if (Double.isNaN(d1)) {throw new CrfException("Unexpected NaN double variable.");}
+		if (Double.isNaN(d2)) {throw new CrfException("Unexpected NaN double variable.");}
+		
+		double ret = d1-d2;
+		if (Double.isNaN(ret)) {throw new CrfException("Unexpected NaN double variable.");}
+		ret = infinityToMaxDouble(ret);
+		return ret;
 	}
 	
 	public static double safeMultiply(double d1, double d2)
