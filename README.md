@@ -1,3 +1,10 @@
+
+Bug
+===
+**Note: There are still issues with infinity values. The software might not work properly.**
+
+Fix in progress...
+
 About
 =====
 
