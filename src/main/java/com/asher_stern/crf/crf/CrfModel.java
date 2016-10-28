@@ -1,6 +1,7 @@
 package com.asher_stern.crf.crf;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.asher_stern.crf.crf.filters.CrfFeaturesAndFilters;
@@ -18,7 +19,7 @@ public class CrfModel<K,G> implements Serializable // K = token, G = tag
 {
 	private static final long serialVersionUID = -5703467522848303660L;
 	
-	public CrfModel(CrfTags<G> crfTags, CrfFeaturesAndFilters<K, G> features, ArrayList<Double> parameters)
+	public CrfModel(CrfTags<G> crfTags, CrfFeaturesAndFilters<K, G> features, ArrayList<BigDecimal> parameters)
 	{
 		super();
 		this.crfTags = crfTags;
@@ -36,7 +37,7 @@ public class CrfModel<K,G> implements Serializable // K = token, G = tag
 	{
 		return features;
 	}
-	public ArrayList<Double> getParameters()
+	public ArrayList<BigDecimal> getParameters()
 	{
 		return parameters;
 	}
@@ -45,5 +46,5 @@ public class CrfModel<K,G> implements Serializable // K = token, G = tag
 
 	private final CrfTags<G> crfTags;
 	private final CrfFeaturesAndFilters<K, G> features;
-	private final ArrayList<Double> parameters;
+	private final ArrayList<BigDecimal> parameters;
 }

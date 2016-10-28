@@ -17,9 +17,23 @@ public class DoubleUtilities
 	
 	public static final BigDecimal DOUBLE_MAX = big(Double.MAX_VALUE);
 	
+	public static final BigDecimal BIG_DECIMAL_E = big(Math.E);
+	
 	public static BigDecimal big(double d)
 	{
 		return new BigDecimal(d, MC);
+	}
+	
+	public static BigDecimal log(BigDecimal d)
+	{
+		if (d.compareTo(DOUBLE_MAX)<=0)
+		{
+			return big(Math.log(d.doubleValue()));
+		}
+		else
+		{
+			return safeAdd(BigDecimal.ONE, log(safeDivide(d, BIG_DECIMAL_E)));
+		}
 	}
 	
 	public static BigDecimal safeAdd(final BigDecimal d1, final BigDecimal d2)

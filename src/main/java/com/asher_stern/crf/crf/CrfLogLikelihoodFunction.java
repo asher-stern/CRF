@@ -2,11 +2,9 @@ package com.asher_stern.crf.crf;
 
 
 
-import static com.asher_stern.crf.utilities.DoubleUtilities.safeAdd;
-import static com.asher_stern.crf.utilities.DoubleUtilities.safeDivide;
-import static com.asher_stern.crf.utilities.DoubleUtilities.safeMultiply;
-import static com.asher_stern.crf.utilities.DoubleUtilities.safeSubtract;
+import static com.asher_stern.crf.utilities.DoubleUtilities.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +20,7 @@ import com.asher_stern.crf.crf.filters.CrfFeaturesAndFilters;
 import com.asher_stern.crf.crf.run.CrfTagsBuilder;
 import com.asher_stern.crf.function.DerivableFunction;
 import com.asher_stern.crf.utilities.CrfException;
+import com.asher_stern.crf.utilities.DoubleUtilities;
 import com.asher_stern.crf.utilities.TaggedToken;
 import com.asher_stern.crf.utilities.VectorUtilities;
 
@@ -71,7 +70,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		this.crfTags = crfTags;
 		this.features = features;
 		this.useRegularization = useRegularization;
-		this.sigmaSquare_inverseRegularizationFactor = sigmaSquare_inverseRegularizationFactor;
+		this.sigmaSquare_inverseRegularizationFactor = big(sigmaSquare_inverseRegularizationFactor);
 	}
 
 
@@ -80,22 +79,22 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	 * @see org.postagging.function.Function#value(double[])
 	 */
 	@Override
-	public double value(double[] point)
+	public BigDecimal value(BigDecimal[] point)
 	{
 		logger.debug("Calculating value");
 		
 		CrfModel<K, G> model = createModel(point);
-		double regularization = useRegularization?calculateRegularizationFactor(point):0.0;
+		BigDecimal regularization = useRegularization?calculateRegularizationFactor(point):BigDecimal.ZERO;
 		logger.debug("Calculating sum weighted features");
-		double sumWeightedFeatures = calculateSumWeightedFeatures(model);
+		BigDecimal sumWeightedFeatures = calculateSumWeightedFeatures(model);
 		logger.debug("Calculating sum log normalizations");
-		double sumOfLogNormalizations = calculateSumOfLogNormalizations(model);
+		BigDecimal sumOfLogNormalizations = calculateSumOfLogNormalizations(model);
 		
 		// Note: log(x/y) = log(x)-log(y). Thus, log (e^x/y) = x - log(y).
 		// In our case we need log(e^(sum_weighted_features_for_sentence)/Normalization) = sum_weighted_features_for_sentence - log(Normalization.)
 		// And we sum the above over the whole corpus (i.e., over all the sentences).
 		
-		double ret = safeSubtract(safeSubtract(sumWeightedFeatures, sumOfLogNormalizations), regularization);
+		BigDecimal ret = safeSubtract(safeSubtract(sumWeightedFeatures, sumOfLogNormalizations), regularization);
 		logger.debug("Calculating value - done.");
 		return ret;
 	}
@@ -106,7 +105,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	 * @see org.postagging.function.DerivableFunction#gradient(double[])
 	 */
 	@Override
-	public double[] gradient(double[] point)
+	public BigDecimal[] gradient(BigDecimal[] point)
 	{
 		logger.debug("Calculating gradient");
 		
@@ -121,10 +120,10 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		featureValueExpectationsByModel.calculate();
 		
 		logger.debug("Creating gradient array.");
-		double[] ret = new double[point.length];
+		BigDecimal[] ret = new BigDecimal[point.length];
 		for (int parameterIndex=0;parameterIndex<ret.length;++parameterIndex)
 		{
-			double regularizationDerivative = useRegularization?calculateRegularizationDerivative(point[parameterIndex]):0.0;
+			BigDecimal regularizationDerivative = useRegularization?calculateRegularizationDerivative(point[parameterIndex]):BigDecimal.ZERO;
 			ret[parameterIndex] = safeSubtract(safeSubtract(empiricalFeatureValue.getEmpiricalFeatureValue()[parameterIndex], featureValueExpectationsByModel.getFeatureValueExpectation()[parameterIndex]), regularizationDerivative);
 		}
 		return ret;
@@ -144,9 +143,9 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	
 	
 	
-	private double calculateSumWeightedFeatures(CrfModel<K, G> model)
+	private BigDecimal calculateSumWeightedFeatures(CrfModel<K, G> model)
 	{
-		double sumWeightedFeatures = 0.0;
+		BigDecimal sumWeightedFeatures = BigDecimal.ZERO;
 		for (List<? extends TaggedToken<K, G> > sentence : corpus)
 		{
 			K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
@@ -154,7 +153,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 			int tokenIndex=0;
 			for (TaggedToken<K, G> taggedToken : sentence)
 			{
-				double sumForThisToken = CrfUtilities.oneTokenSumWeightedFeatures(model,sentenceAsArray,tokenIndex,taggedToken.getTag(),previousTag);
+				BigDecimal sumForThisToken = CrfUtilities.oneTokenSumWeightedFeatures(model,sentenceAsArray,tokenIndex,taggedToken.getTag(),previousTag);
 				sumWeightedFeatures = safeAdd(sumWeightedFeatures, sumForThisToken);
 				
 				previousTag = taggedToken.getTag();
@@ -166,17 +165,17 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		return sumWeightedFeatures;
 	}
 	
-	private double calculateSumOfLogNormalizations(CrfModel<K, G> model)
+	private BigDecimal calculateSumOfLogNormalizations(CrfModel<K, G> model)
 	{
 		ExecutorService executor = Executors.newWorkStealingPool();
-		List<Future<Double>> futures = new LinkedList<>();
-		double sum = 0.0;
+		List<Future<BigDecimal>> futures = new LinkedList<>();
+		BigDecimal sum = BigDecimal.ZERO;
 		for (final List<? extends TaggedToken<K, G> > sentence : corpus)
 		{
-			futures.add(executor.submit(new Callable<Double>()
+			futures.add(executor.submit(new Callable<BigDecimal>()
 			{
 				@Override
-				public Double call() throws Exception
+				public BigDecimal call() throws Exception
 				{
 					K[] sentenceAsArray = CrfUtilities.extractSentence(sentence);
 					CrfRememberActiveFeatures<K, G> activeFeaturesForSentence = CrfRememberActiveFeatures.findForSentence(features, crfTags, sentenceAsArray);
@@ -184,11 +183,11 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 					//forwardBackward.calculateForwardAndBackward();
 					forwardBackward.calculateOnlyNormalizationFactor();
 					
-					return Math.log(forwardBackward.getCalculatedNormalizationFactor());
+					return DoubleUtilities.log(forwardBackward.getCalculatedNormalizationFactor());
 				}
 			}));
 		}
-		for (Future<Double> future : futures)
+		for (Future<BigDecimal> future : futures)
 		{
 			try
 			{
@@ -203,22 +202,22 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 		return sum;
 	}
 	
-	private double calculateRegularizationFactor(double[] parameters)
+	private BigDecimal calculateRegularizationFactor(BigDecimal[] parameters)
 	{
-		return safeDivide(VectorUtilities.euclideanNormSquare(parameters), safeMultiply(2.0, sigmaSquare_inverseRegularizationFactor));
+		return safeDivide(VectorUtilities.euclideanNormSquare(parameters), safeMultiply(big(2.0), sigmaSquare_inverseRegularizationFactor));
 	}
 	
-	private double calculateRegularizationDerivative(double parameter)
+	private BigDecimal calculateRegularizationDerivative(BigDecimal parameter)
 	{
 		return safeDivide(parameter, sigmaSquare_inverseRegularizationFactor);
 	}
 
 	
-	private CrfModel<K, G> createModel(double[] point)
+	private CrfModel<K, G> createModel(BigDecimal[] point)
 	{
 		if (point.length!=features.getFilteredFeatures().length) {throw new CrfException("Number of parameters differs from number of features.");}
-		ArrayList<Double> parameters = new ArrayList<Double>(point.length);
-		for (double parameter : point)
+		ArrayList<BigDecimal> parameters = new ArrayList<BigDecimal>(point.length);
+		for (BigDecimal parameter : point)
 		{
 			parameters.add(parameter);
 		}
@@ -235,7 +234,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 	private final CrfTags<G> crfTags;
 	private final CrfFeaturesAndFilters<K, G> features;
 	private final boolean useRegularization;
-	private final double sigmaSquare_inverseRegularizationFactor;
+	private final BigDecimal sigmaSquare_inverseRegularizationFactor;
 	
 	private static final Logger logger = Logger.getLogger(CrfLogLikelihoodFunction.class);
 }
