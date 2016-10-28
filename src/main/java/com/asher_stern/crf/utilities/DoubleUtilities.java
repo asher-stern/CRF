@@ -1,5 +1,8 @@
 package com.asher_stern.crf.utilities;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+
 /**
  * 
  *
@@ -10,6 +13,41 @@ package com.asher_stern.crf.utilities;
  */
 public class DoubleUtilities
 {
+	public static final MathContext MC = MathContext.DECIMAL128;
+	
+	public static BigDecimal safeAdd(final BigDecimal d1, final BigDecimal d2)
+	{
+		return d1.add(d2, MC);
+	}
+	
+	public static BigDecimal safeSubtract(final BigDecimal d1, final BigDecimal d2)
+	{
+		return d1.subtract(d2, MC);
+	}
+	
+	public static BigDecimal safeMultiply(final BigDecimal d1, final BigDecimal d2)
+	{
+		return d1.multiply(d2, MC);
+	}
+	
+	public static BigDecimal safeMultiply(final BigDecimal d1, final BigDecimal d2, BigDecimal...ds)
+	{
+		BigDecimal ret = safeMultiply(d1, d2);
+		for (BigDecimal d : ds)
+		{
+			ret = safeMultiply(ret, d);
+		}
+		return ret;
+	}
+	
+	public static BigDecimal safeDivide(final BigDecimal d1, final BigDecimal d2)
+	{
+		return d1.divide(d2, MC);
+	}
+	
+	
+	
+	
 	public static double safeAdd(double d1, final double d2)
 	{
 		if (Double.isNaN(d1)) {throw new CrfException("Unexpected NaN double variable.");}
