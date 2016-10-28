@@ -1,5 +1,6 @@
 package com.asher_stern.crf.crf;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +31,7 @@ public class CrfPsi_FormulaAllTokens<K,G>
 		this.model = model;
 		this.sentence = sentence;
 		this.activeFeaturesForSentence = activeFeaturesForSentence;
-		this.allPsiValues = (Map<G, Map<G, Double>>[]) new Map[sentence.length];
+		this.allPsiValues = (Map<G, Map<G, BigDecimal>>[]) new Map[sentence.length];
 	}
 	
 	
@@ -44,7 +45,7 @@ public class CrfPsi_FormulaAllTokens<K,G>
 				for (G previousTag : possiblePreviousTags)
 				{
 					Set<Integer> activeFeatures = activeFeaturesForSentence.getOneTokenActiveFeatures(tokenIndex, currentTag, previousTag);
-					double value = CrfUtilities.oneTokenFormula(model,sentence,tokenIndex,currentTag,previousTag,activeFeatures);
+					BigDecimal value = CrfUtilities.oneTokenFormula(model,sentence,tokenIndex,currentTag,previousTag,activeFeatures);
 					put(tokenIndex,currentTag,previousTag,value);
 				}
 			}
@@ -52,7 +53,7 @@ public class CrfPsi_FormulaAllTokens<K,G>
 	}
 
 
-	public double getOneTokenFormula(int tokenIndex, G currentTag, G previousTag)
+	public BigDecimal getOneTokenFormula(int tokenIndex, G currentTag, G previousTag)
 	{
 		return allPsiValues[tokenIndex].get(currentTag).get(previousTag);
 	}
@@ -61,19 +62,19 @@ public class CrfPsi_FormulaAllTokens<K,G>
 	
 	
 	
-	private void put(int tokenIndex, G currentTag, G previousTag, double value)
+	private void put(int tokenIndex, G currentTag, G previousTag, BigDecimal value)
 	{
-		Map<G, Map<G, Double>> mapForToken = allPsiValues[tokenIndex];
+		Map<G, Map<G, BigDecimal>> mapForToken = allPsiValues[tokenIndex];
 		if (null==mapForToken)
 		{
-			mapForToken = new LinkedHashMap<G, Map<G,Double>>();
+			mapForToken = new LinkedHashMap<G, Map<G,BigDecimal>>();
 			allPsiValues[tokenIndex] = mapForToken;
 		}
 		
-		Map<G, Double> mapForCurrentTag = mapForToken.get(currentTag);
+		Map<G, BigDecimal> mapForCurrentTag = mapForToken.get(currentTag);
 		if (null==mapForCurrentTag)
 		{
-			mapForCurrentTag = new LinkedHashMap<G, Double>();
+			mapForCurrentTag = new LinkedHashMap<G, BigDecimal>();
 			mapForToken.put(currentTag, mapForCurrentTag);
 		}
 		
@@ -85,5 +86,5 @@ public class CrfPsi_FormulaAllTokens<K,G>
 	private final K[] sentence;
 	private final CrfRememberActiveFeatures<K, G> activeFeaturesForSentence;
 	
-	private Map<G, Map<G, Double>>[] allPsiValues;
+	private Map<G, Map<G, BigDecimal>>[] allPsiValues;
 }

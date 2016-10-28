@@ -1,5 +1,7 @@
 package com.asher_stern.crf.utilities;
 
+import java.math.BigDecimal;
+
 import org.apache.log4j.Logger;
 
 import com.asher_stern.crf.function.DerivableFunction;
@@ -24,7 +26,7 @@ public class DerivableFunctionWithLastCache extends DerivableFunction
 	}
 
 	@Override
-	public double value(double[] point)
+	public BigDecimal value(BigDecimal[] point)
 	{
 		double ret = 0.0;
 		DoubleArrayWrapper wrappedPoint = new DoubleArrayWrapper(point);
