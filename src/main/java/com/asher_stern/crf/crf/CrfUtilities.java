@@ -1,6 +1,7 @@
 package com.asher_stern.crf.crf;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,6 +14,7 @@ import com.asher_stern.crf.crf.filters.CrfFeaturesAndFilters;
 import com.asher_stern.crf.crf.filters.CrfFilteredFeature;
 import com.asher_stern.crf.crf.filters.Filter;
 import com.asher_stern.crf.utilities.CrfException;
+import com.asher_stern.crf.utilities.DoubleUtilities;
 import com.asher_stern.crf.utilities.TaggedToken;
 
 import static com.asher_stern.crf.utilities.DoubleUtilities.*;
@@ -26,8 +28,8 @@ import static com.asher_stern.crf.utilities.DoubleUtilities.*;
  */
 public class CrfUtilities
 {
-	public static final double ROUGHLY_EQUAL_DISTANCE_FROM_ZERO = 0.001;
-	public static final double ROUGHLY_EQUAL_DEVIATION_FROM_ONE = 0.01;
+	public static final BigDecimal ROUGHLY_EQUAL_DISTANCE_FROM_ZERO = big(0.001);
+	public static final BigDecimal ROUGHLY_EQUAL_DEVIATION_FROM_ONE = big(0.01);
 
 	
 	/**
@@ -118,7 +120,7 @@ public class CrfUtilities
 	 * @param previousTag tag of the token in tokenIndex-1
 	 * @return \Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}
 	 */
-	public static <K,G> double oneTokenSumWeightedFeatures(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
+	public static <K,G> BigDecimal oneTokenSumWeightedFeatures(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
 	{
 		Set<Integer> activeFeatureIndexes = getActiveFeatureIndexes(model.getFeatures(),sentence,tokenIndex,currentTag,previousTag);
 		return oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,activeFeatureIndexes);
@@ -140,23 +142,23 @@ public class CrfUtilities
 	 * @param knownActiveFeatureIndexes a set of features for which <b>it is not known</b> that they return zero for (x,j,s,s').
 	 * @return \Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}
 	 */
-	public static <K,G> double oneTokenSumWeightedFeatures(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag, Set<Integer> knownActiveFeatureIndexes)
+	public static <K,G> BigDecimal oneTokenSumWeightedFeatures(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag, Set<Integer> knownActiveFeatureIndexes)
 	{
-		double sum = 0.0;
+		BigDecimal sum = BigDecimal.ZERO;
 		for (int index : knownActiveFeatureIndexes)
 		{
 			CrfFilteredFeature<K, G> feature = model.getFeatures().getFilteredFeatures()[index];
-			double featureValue = 0.0;
+			BigDecimal featureValue = BigDecimal.ZERO;
 			if (feature.isWhenNotFilteredIsAlwaysOne())
 			{
-				featureValue = 1.0;
+				featureValue = BigDecimal.ONE;
 			}
 			else
 			{
-				featureValue = feature.getFeature().value(sentence,tokenIndex,currentTag,previousTag);
+				featureValue = big(feature.getFeature().value(sentence,tokenIndex,currentTag,previousTag));
 			}
 			
-			double weightedValue = safeMultiply(model.getParameters().get(index), featureValue);
+			BigDecimal weightedValue = safeMultiply(model.getParameters().get(index), featureValue);
 			sum = safeAdd(sum, weightedValue);
 		}
 		return sum;
@@ -174,7 +176,7 @@ public class CrfUtilities
 	 * @param previousTag tag of the token in tokenIndex-1
 	 * @return e^{\Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}}
 	 */
-	public static <K,G> double oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
+	public static <K,G> BigDecimal oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag)
 	{
 		Set<Integer> activeFeatureIndexes = getActiveFeatureIndexes(model.getFeatures(),sentence,tokenIndex,currentTag,previousTag);
 		return oneTokenFormula(model,sentence,tokenIndex,currentTag,previousTag,activeFeatureIndexes);
@@ -196,11 +198,9 @@ public class CrfUtilities
 	 * @param knownActiveFeatureIndexes a set of features for which <b>it is not known</b> that they return zero for (x,j,s,s').
 	 * @return e^{\Sum_{i=0}^{k-1}{\theta_i*f_i(x,j,s,s')}}
 	 */
-	public static <K,G> double oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag,Set<Integer> knownActiveFeatureIndexes)
+	public static <K,G> BigDecimal oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag,Set<Integer> knownActiveFeatureIndexes)
 	{
-		return infinityToMaxDouble(
-				Math.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,knownActiveFeatureIndexes))
-				);
+		return  DoubleUtilities.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,knownActiveFeatureIndexes));
 	}
 	
 	
@@ -230,32 +230,27 @@ public class CrfUtilities
 	/**
 	 * If |value1|>|value2| returns |value1|/|value2|. Otherwise returns |value2|/|value1|.
 	 */
-	public static double relativeDifference(double value1, double value2)
+	public static BigDecimal relativeDifference(BigDecimal value1, BigDecimal value2)
 	{
-		// First, handle edge cases.
-		if (Double.isNaN(value1)) {throw new CrfException("Unexpected NaN double value.");}
-		if (Double.isNaN(value2)) {throw new CrfException("Unexpected NaN double value.");}
-		value1 = infinityToMaxDouble(value1);
-		value2 = infinityToMaxDouble(value2);
-		if (value1==(-0.0)) {value1=0.0;}
-		if (value2==(-0.0)) {value2=0.0;}
-		if ( (value1==0.0) && (value2==0.0) ) {return 1.0;}
+		if (value1.equals(value2))  {return BigDecimal.ONE;}
 		
-		double smaller;
-		double larger;
-		if (value1<value2)
+		value1 = value1.abs();
+		value2 = value2.abs();
+		
+		BigDecimal smaller;
+		BigDecimal larger;
+		if (value1.compareTo(value2)<0)
 		{
-			smaller = Math.abs(value1);
-			larger = Math.abs(value2);
+			smaller = value1;
+			larger = value2;
 		}
 		else
 		{
-			smaller = Math.abs(value2);
-			larger = Math.abs(value1);
+			smaller = value2;
+			larger = value1;
 		}
 		
-		double ret = safeDivide(larger, smaller);
-		if (Double.isNaN(ret)) {throw new CrfException("Unexpected NaN double value.");}
+		BigDecimal ret = safeDivide(larger, smaller);
 		return ret;
 	}
 	
@@ -271,20 +266,21 @@ public class CrfUtilities
 	 * @param value2
 	 * @return
 	 */
-	public static boolean roughlyEqual(double value1, double value2)
+	public static boolean roughlyEqual(BigDecimal value1, BigDecimal value2)
 	{
 		boolean ret = true;
-		if ( ( (value1<0.0) || (value2<0.0) ) &&  ( (value1>=0.0) || (value2>=0.0) ) ) // If they doen't have the same sign
+		if ( ( (value1.compareTo(BigDecimal.ZERO) < 0) || (value2.compareTo(BigDecimal.ZERO) < 0) ) &&  ( (value1.compareTo(BigDecimal.ZERO)>=0) || (value2.compareTo(BigDecimal.ZERO)>=0) ) ) // If they doen't have the same sign
 		{
-			double gap = Math.abs(value1-value2);
-			if (gap>ROUGHLY_EQUAL_DISTANCE_FROM_ZERO)
+			
+			BigDecimal gap = safeSubtract(value1, value2).abs();
+			if (gap.compareTo(ROUGHLY_EQUAL_DISTANCE_FROM_ZERO) > 0)
 			{
 				ret = false;
 			}
 		}
 		else
 		{
-			if ((relativeDifference(value1,value2)-1.0)>ROUGHLY_EQUAL_DEVIATION_FROM_ONE)
+			if ( safeSubtract(relativeDifference(value1,value2),BigDecimal.ONE).compareTo(ROUGHLY_EQUAL_DEVIATION_FROM_ONE) > 0)
 			{
 				ret = false;
 			}

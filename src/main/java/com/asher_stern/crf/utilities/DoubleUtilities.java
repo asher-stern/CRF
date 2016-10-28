@@ -18,6 +18,7 @@ public class DoubleUtilities
 	public static final BigDecimal DOUBLE_MAX = big(Double.MAX_VALUE);
 	
 	public static final BigDecimal BIG_DECIMAL_E = big(Math.E);
+	public static final BigDecimal BIG_DECIMAL_TWO = new BigDecimal("2.0", MC);
 	
 	public static BigDecimal big(double d)
 	{
@@ -33,6 +34,20 @@ public class DoubleUtilities
 		else
 		{
 			return safeAdd(BigDecimal.ONE, log(safeDivide(d, BIG_DECIMAL_E)));
+		}
+	}
+	
+	public static BigDecimal exp(BigDecimal d)
+	{
+		if (d.compareTo(DOUBLE_MAX)<=0)
+		{
+			return big(Math.exp(d.doubleValue()));
+		}
+		else
+		{
+			BigDecimal half = safeDivide(d, BIG_DECIMAL_TWO);
+			BigDecimal halfExp = exp(half);
+			return safeMultiply(halfExp, halfExp);
 		}
 	}
 	
