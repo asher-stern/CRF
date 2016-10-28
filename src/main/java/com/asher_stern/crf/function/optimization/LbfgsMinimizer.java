@@ -1,5 +1,6 @@
 package com.asher_stern.crf.function.optimization;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import static com.asher_stern.crf.utilities.DoubleUtilities.*;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.asher_stern.crf.function.DerivableFunction;
 import com.asher_stern.crf.utilities.CrfException;
 import com.asher_stern.crf.utilities.DerivableFunctionWithLastCache;
+import com.asher_stern.crf.utilities.StringUtilities;
 import com.asher_stern.crf.utilities.VectorUtilities;
 
 /**
@@ -38,20 +40,20 @@ import com.asher_stern.crf.utilities.VectorUtilities;
 public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 {
 	public static final int DEFAULT_NUMBER_OF_PREVIOUS_ITERATIONS_TO_MEMORIZE = 20;
-	public static final double DEFAULT_GRADIENT_CONVERGENCE = 0.01;
+	public static final BigDecimal DEFAULT_GRADIENT_CONVERGENCE = big(0.01);
 
 	public LbfgsMinimizer(DerivableFunction function)
 	{
 		this(function,DEFAULT_NUMBER_OF_PREVIOUS_ITERATIONS_TO_MEMORIZE, DEFAULT_GRADIENT_CONVERGENCE);
 	}
 
-	public LbfgsMinimizer(DerivableFunction function, int numberOfPreviousIterationsToMemorize, double convergence)
+	public LbfgsMinimizer(DerivableFunction function, int numberOfPreviousIterationsToMemorize, BigDecimal convergence)
 	{
 //		super(function);
 		super(new DerivableFunctionWithLastCache(function));
 		this.numberOfPreviousIterationsToMemorize = numberOfPreviousIterationsToMemorize;
 		this.convergence = convergence;
-		this.convergenceSquare = this.convergence*this.convergence;
+		this.convergenceSquare = safeMultiply(this.convergence,this.convergence);
 	}
 	
 	public void setDebugInfo(DebugInfo debugInfo)
@@ -65,24 +67,24 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		previousItrations = new LinkedList<PointAndGradientSubstractions>();
 		LineSearch<DerivableFunction> lineSearch = new ArmijoLineSearch<DerivableFunction>();
 		
-		point = new double[function.size()];
-		for (int i=0;i<point.length;++i) {point[i]=0.0;}
+		point = new BigDecimal[function.size()];
+		for (int i=0;i<point.length;++i) {point[i]=BigDecimal.ZERO;}
 		value = function.value(point);
-		if (logger.isInfoEnabled()) {logger.info("LBFGS: initial value = "+String.format("%-3.3f", value));}
-		double[] gradient = function.gradient(point);
-		double previousValue = value;
+		if (logger.isInfoEnabled()) {logger.info("LBFGS: initial value = "+StringUtilities.bigDecimalToString(value));}
+		BigDecimal[] gradient = function.gradient(point);
+		BigDecimal previousValue = value;
 		int forLogger_iterationIndex=0;
-		while (VectorUtilities.euclideanNormSquare(gradient)>convergenceSquare)
+		while (VectorUtilities.euclideanNormSquare(gradient).compareTo(convergenceSquare)>0)
 		{
-			if (logger.isDebugEnabled()) {logger.debug(String.format("Gradient norm square = %-10.7f", VectorUtilities.euclideanNormSquare(gradient) ));}
+			if (logger.isDebugEnabled()) {logger.debug(String.format("Gradient norm square = %-10.7f", StringUtilities.bigDecimalToString(VectorUtilities.euclideanNormSquare(gradient)) ));}
 			previousValue = value;
-			double[] previousPoint = Arrays.copyOf(point, point.length);
-			double[] previousGradient = Arrays.copyOf(gradient, gradient.length);
+			BigDecimal[] previousPoint = Arrays.copyOf(point, point.length);
+			BigDecimal[] previousGradient = Arrays.copyOf(gradient, gradient.length);
 
 			// 1. Update point (which is the vector "x").
 			
-			double[] direction = VectorUtilities.multiplyByScalar(-1.0, twoLoopRecursion(point));
-			double alpha_rate = lineSearch.findRate(function, point, direction);
+			BigDecimal[] direction = VectorUtilities.multiplyByScalar(BigDecimal.ONE.negate(), twoLoopRecursion(point));
+			BigDecimal alpha_rate = lineSearch.findRate(function, point, direction);
 			point = VectorUtilities.addVectors(point, VectorUtilities.multiplyByScalar(alpha_rate, direction));
 			
 			// 2. Prepare next iteration
@@ -99,8 +101,8 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 			
 			// 3. Print log messages
 			++forLogger_iterationIndex;
-			if (value>previousValue) {logger.error("LBFGS: value > previous value");}
-			if (logger.isInfoEnabled()) {logger.info("LBFGS iteration "+forLogger_iterationIndex+": value = "+String.format("%-3.3f", value));}
+			if (value.compareTo(previousValue)>0) {logger.error("LBFGS: value > previous value");}
+			if (logger.isInfoEnabled()) {logger.info("LBFGS iteration "+forLogger_iterationIndex+": value = "+StringUtilities.bigDecimalToString(value)  );}
 			if ( (debugInfo!=null) && (logger.isInfoEnabled()) )
 			{
 				logger.info(debugInfo.info(point));
@@ -110,14 +112,14 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 	}
 
 	@Override
-	public double getValue()
+	public BigDecimal getValue()
 	{
 		if (!calculated) {throw new CrfException("Not calculated.");}
 		return value;
 	}
 
 	@Override
-	public double[] getPoint()
+	public BigDecimal[] getPoint()
 	{
 		if (!calculated) {throw new CrfException("Not calculated.");}
 		return point;
@@ -127,40 +129,40 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 	
 	public static interface DebugInfo
 	{
-		public String info(double[] point);
+		public String info(BigDecimal[] point);
 	}
 	
 	
 	
-	private double[] twoLoopRecursion(double[] point)
+	private BigDecimal[] twoLoopRecursion(BigDecimal[] point)
 	{
-		ArrayList<Double> rhoList = new ArrayList<Double>(previousItrations.size());
-		ArrayList<Double> alphaList = new ArrayList<Double>(previousItrations.size());
+		ArrayList<BigDecimal> rhoList = new ArrayList<BigDecimal>(previousItrations.size());
+		ArrayList<BigDecimal> alphaList = new ArrayList<BigDecimal>(previousItrations.size());
 		
-		double[] q = function.gradient(point); // Infinity check of this gradient has been performed by the caller.
+		BigDecimal[] q = function.gradient(point);
 		for (PointAndGradientSubstractions substractions : previousItrations)
 		{
-			double rho = safeDivide(1.0, VectorUtilities.product(substractions.getGradientSubstraction(), substractions.getPointSubstraction()));
+			BigDecimal rho = safeDivide(BigDecimal.ONE, VectorUtilities.product(substractions.getGradientSubstraction(), substractions.getPointSubstraction()));
 			rhoList.add(rho);
-			double alpha = safeMultiply(rho, VectorUtilities.product(substractions.getPointSubstraction(), q));
+			BigDecimal alpha = safeMultiply(rho, VectorUtilities.product(substractions.getPointSubstraction(), q));
 			alphaList.add(alpha);
 			
 			q = VectorUtilities.subtractVectors(q, VectorUtilities.multiplyByScalar(alpha, substractions.getGradientSubstraction()) );
 		}
 		
-		double[] r = calculateInitial_r_forTwoLoopRecursion(q);
+		BigDecimal[] r = calculateInitial_r_forTwoLoopRecursion(q);
 
 		ListIterator<PointAndGradientSubstractions> previousIterationsIterator = previousItrations.listIterator(previousItrations.size());
-		ListIterator<Double> rhoIterator = rhoList.listIterator(rhoList.size());
-		ListIterator<Double> alphaIterator = alphaList.listIterator(alphaList.size());
+		ListIterator<BigDecimal> rhoIterator = rhoList.listIterator(rhoList.size());
+		ListIterator<BigDecimal> alphaIterator = alphaList.listIterator(alphaList.size());
 		while (previousIterationsIterator.hasPrevious()&&rhoIterator.hasPrevious()&&alphaIterator.hasPrevious())
 		{
 			PointAndGradientSubstractions substractions = previousIterationsIterator.previous();
-			double rho = rhoIterator.previous();
-			double alpha = alphaIterator.previous();
+			BigDecimal rho = rhoIterator.previous();
+			BigDecimal alpha = alphaIterator.previous();
 			
-			double beta = safeMultiply(rho, VectorUtilities.product(substractions.getGradientSubstraction(), r));
-			r = VectorUtilities.addVectors( r, VectorUtilities.multiplyByScalar(alpha-beta, substractions.getPointSubstraction()) );
+			BigDecimal beta = safeMultiply(rho, VectorUtilities.product(substractions.getGradientSubstraction(), r));
+			r = VectorUtilities.addVectors( r, VectorUtilities.multiplyByScalar(safeSubtract(alpha,beta) , substractions.getPointSubstraction()) );
 		}
 		if ((previousIterationsIterator.hasPrevious()||rhoIterator.hasPrevious()||alphaIterator.hasPrevious())) {throw new CrfException("BUG");}
 		
@@ -168,9 +170,9 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 	}
 	
 	
-	private double[] calculateInitial_r_forTwoLoopRecursion(double[] q)
+	private BigDecimal[] calculateInitial_r_forTwoLoopRecursion(BigDecimal[] q)
 	{
-		double gamma = 1.0;
+		BigDecimal gamma = BigDecimal.ONE;
 		if (previousItrations.size()>=1)
 		{
 			PointAndGradientSubstractions lastSubstraction = previousItrations.get(0);
@@ -181,7 +183,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 					);
 		}
 		
-		double[] r = VectorUtilities.multiplyByScalar(gamma, q);
+		BigDecimal[] r = VectorUtilities.multiplyByScalar(gamma, q);
 		return r;
 	}
 	
@@ -190,8 +192,8 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 
 	// input
 	private final int numberOfPreviousIterationsToMemorize; // m
-	private final double convergence;
-	private final double convergenceSquare;
+	private final BigDecimal convergence;
+	private final BigDecimal convergenceSquare;
 	
 	private DebugInfo debugInfo = null;
 	
@@ -200,8 +202,8 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 	private boolean calculated = false;
 	
 	// output
-	private double[] point = null;
-	private double value = 0.0;
+	private BigDecimal[] point = null;
+	private BigDecimal value = BigDecimal.ZERO;
 	
 	
 	

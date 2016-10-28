@@ -1,5 +1,7 @@
 package com.asher_stern.crf.function.optimization;
 
+import java.math.BigDecimal;
+
 /**
  * Encapsulates the substraction of two given points, and the substraction of the gradient calculated for them (for a given
  * function).
@@ -12,7 +14,7 @@ package com.asher_stern.crf.function.optimization;
  */
 public class PointAndGradientSubstractions
 {
-	public PointAndGradientSubstractions(double[] pointSubstraction, double[] gradientSubstraction)
+	public PointAndGradientSubstractions(BigDecimal[] pointSubstraction, BigDecimal[] gradientSubstraction)
 	{
 		super();
 		this.pointSubstraction = pointSubstraction;
@@ -21,18 +23,18 @@ public class PointAndGradientSubstractions
 	
 	
 	
-	public double[] getPointSubstraction()
+	public BigDecimal[] getPointSubstraction()
 	{
 		return pointSubstraction;
 	}
-	public double[] getGradientSubstraction()
+	public BigDecimal[] getGradientSubstraction()
 	{
 		return gradientSubstraction;
 	}
 
 
 
-	private final double[] pointSubstraction;
-	private final double[] gradientSubstraction;
+	private final BigDecimal[] pointSubstraction;
+	private final BigDecimal[] gradientSubstraction;
 
 }

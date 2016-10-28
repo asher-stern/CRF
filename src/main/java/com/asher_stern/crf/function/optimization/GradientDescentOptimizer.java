@@ -1,8 +1,11 @@
 package com.asher_stern.crf.function.optimization;
 
-import static com.asher_stern.crf.utilities.DoubleUtilities.infinityToMaxDouble;
+import static com.asher_stern.crf.utilities.DoubleUtilities.big;
 import static com.asher_stern.crf.utilities.DoubleUtilities.safeAdd;
 import static com.asher_stern.crf.utilities.DoubleUtilities.safeMultiply;
+import static com.asher_stern.crf.utilities.DoubleUtilities.safeSubtract;
+
+import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 
@@ -22,8 +25,8 @@ import com.asher_stern.crf.utilities.VectorUtilities;
  */
 public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 {
-	public static final double DEFAULT_RATE = 0.01;
-	public static final double DEFAULT_CONVERGENCE_THRESHOLD = 0.0001;
+	public static final BigDecimal DEFAULT_RATE = big(0.01);
+	public static final BigDecimal DEFAULT_CONVERGENCE_THRESHOLD = big(0.0001);
 	
 	/**
 	 * Constructor with default convergence threshold. See {@link GradientDescentOptimizer#GradientDescentOptimizer(DerivableFunction, double, double)}.
@@ -45,7 +48,7 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 	 * optimizer and the real optimum (i.e., the optimizer might return a result which is only "close enough" to the optimum,
 	 * while being slightly different from the real optimum).
 	 */
-	public GradientDescentOptimizer(DerivableFunction function,double rate,double convergenceThreshold)
+	public GradientDescentOptimizer(DerivableFunction function,BigDecimal rate,BigDecimal convergenceThreshold)
 	{
 		super(function);
 		this.rate = rate;
@@ -60,28 +63,26 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 		LineSearch<DerivableFunction> lineSearch = new ArmijoLineSearch<DerivableFunction>();
 		
 		int size = function.size();
-		point = new double[size];
-		for (int i=0;i<size;++i){point[i]=0.0;}
+		point = new BigDecimal[size];
+		for (int i=0;i<size;++i){point[i]=BigDecimal.ZERO;}
 		
 		value = function.value(point);
-		value = infinityToMaxDouble(value);
-		double oldValue = value;
+		BigDecimal oldValue = value;
 		int debug_iterationIndex=0;
 		do
 		{
 			oldValue = value;
-			double[] gradient = function.gradient(point);
-			double actualRate = lineSearch.findRate(function, point, VectorUtilities.multiplyByScalar(-1.0, gradient));
+			BigDecimal[] gradient = function.gradient(point);
+			BigDecimal actualRate = lineSearch.findRate(function, point, VectorUtilities.multiplyByScalar(BigDecimal.ONE.negate(), gradient));
 			singleStepUpdate(size, point, gradient, actualRate);
 			value = function.value(point);
-			value = infinityToMaxDouble(value);
 			if (logger.isDebugEnabled())
 			{
-				logger.debug(StringUtilities.arrayOfDoubleToString(point)+" = "+String.format("%-3.3f",value));
+				logger.debug(StringUtilities.arrayOfBigDecimalToString(point)+" = "+String.format("%-3.3f",value));
 			}
 			++debug_iterationIndex;
 		}
-		while(Math.abs(oldValue-value)>convergenceThreshold);
+		while(safeSubtract(oldValue,value).abs().compareTo(convergenceThreshold) > 0);
 		if (logger.isDebugEnabled()){logger.debug("Gradient-descent: number of iterations: "+debug_iterationIndex);}
 		calculated = true;
 		
@@ -89,37 +90,37 @@ public class GradientDescentOptimizer extends Minimizer<DerivableFunction>
 	
 	
 	@Override
-	public double getValue()
+	public BigDecimal getValue()
 	{
 		if (!calculated) throw new CrfException("Not calculated");
 		return value;
 	}
 	@Override
-	public double[] getPoint()
+	public BigDecimal[] getPoint()
 	{
 		if (!calculated) throw new CrfException("Not calculated");
 		return point;
 	}
 	
 	
-	public static final void singleStepUpdate(final int size, final double[] point, double[] gradient, final double rate)
+	public static final void singleStepUpdate(final int size, final BigDecimal[] point, BigDecimal[] gradient, final BigDecimal rate)
 	{
 		// size must be equal to point.length 
 		for (int i=0;i<size;++i)
 		{
-			point[i] = safeAdd(point[i], safeMultiply(rate, -gradient[i]));
+			point[i] = safeAdd(point[i], safeMultiply(rate, gradient[i].negate()));
 		}
 	}
 	
 	
 	
 	@SuppressWarnings("unused")
-	private final double rate;
-	private final double convergenceThreshold;
+	private final BigDecimal rate;
+	private final BigDecimal convergenceThreshold;
 	
 	private boolean calculated = false;
-	private double value;
-	private double[] point;
+	private BigDecimal value;
+	private BigDecimal[] point;
 	
 	
 	private static final Logger logger = Logger.getLogger(GradientDescentOptimizer.class);

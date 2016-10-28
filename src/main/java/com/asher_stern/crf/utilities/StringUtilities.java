@@ -1,5 +1,6 @@
 package com.asher_stern.crf.utilities;
 
+import java.math.BigDecimal;
 
 /**
  * A collection of static functions for handling strings.
@@ -29,6 +30,35 @@ public class StringUtilities
 		
 		return sb.toString();
 	}
+
+	
+	public static String arrayOfBigDecimalToString(BigDecimal[] array)
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		boolean firstIteration = true;
+		for (int i=0;i<array.length;++i)
+		{
+			if (firstIteration){firstIteration=false;} else{sb.append(",");}
+			sb.append(bigDecimalToString(array[i]));
+		}
+		sb.append("]");
+		
+		return sb.toString();
+	}
+	
+	public static String bigDecimalToString(BigDecimal d)
+	{
+		if (d.compareTo(DoubleUtilities.DOUBLE_MAX)<=0)
+		{
+			return String.format("%-3.3f", d.doubleValue());
+		}
+		else
+		{
+			return d.toString();
+		}
+	}
+
 	
 	/**
 	 * Provides a string representation for the given array.

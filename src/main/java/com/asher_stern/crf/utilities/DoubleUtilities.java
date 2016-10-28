@@ -15,6 +15,13 @@ public class DoubleUtilities
 {
 	public static final MathContext MC = MathContext.DECIMAL128;
 	
+	public static final BigDecimal DOUBLE_MAX = big(Double.MAX_VALUE);
+	
+	public static BigDecimal big(double d)
+	{
+		return new BigDecimal(d, MC);
+	}
+	
 	public static BigDecimal safeAdd(final BigDecimal d1, final BigDecimal d2)
 	{
 		return d1.add(d2, MC);

@@ -6,8 +6,11 @@ import static com.asher_stern.crf.utilities.DoubleUtilities.safeDivide;
 import static com.asher_stern.crf.utilities.DoubleUtilities.safeMultiply;
 import static com.asher_stern.crf.utilities.DoubleUtilities.safeSubtract;
 
+import java.math.BigDecimal;
+
 import com.asher_stern.crf.function.DerivableFunction;
 import com.asher_stern.crf.utilities.CrfException;
+import com.asher_stern.crf.utilities.DoubleUtilities;
 
 /**
  * The Armijo line search is a relatively efficient inexact line search method.
@@ -24,35 +27,35 @@ import com.asher_stern.crf.utilities.CrfException;
  */
 public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch<F>
 {
-	public static final double DEFAULT_BETA_RATE_OF_ALPHA = 0.2;
-	public static final double DEFAULT_SIGMA_CONVERGENCE_COEFFICIENT = 0.3;
-	public static final double DEFAULT_INITIAL_ALPHA = 1.0; // = 0.01;
+	public static final BigDecimal DEFAULT_BETA_RATE_OF_ALPHA = new BigDecimal(0.2, DoubleUtilities.MC);
+	public static final BigDecimal DEFAULT_SIGMA_CONVERGENCE_COEFFICIENT = new BigDecimal(0.3, DoubleUtilities.MC);
+	public static final BigDecimal DEFAULT_INITIAL_ALPHA = new BigDecimal(1.0, DoubleUtilities.MC); // = 0.01;
 	
-	public static final double MINIMUM_ALLOWED_ALPHA_VALUE_SO_SHOULD_BE_ZERO = 0.000001;
+	public static final BigDecimal MINIMUM_ALLOWED_ALPHA_VALUE_SO_SHOULD_BE_ZERO = new BigDecimal(0.000001, DoubleUtilities.MC);
 
 	@Override
-	public double findRate(final F function, final double[] point, final double[] direction)
+	public BigDecimal findRate(final F function, final BigDecimal[] point, final BigDecimal[] direction)
 	{
-		final double valueForAlphaZero = valueForAlpha(function, point, direction, 0.0);
-		final double derivationForAlphaZero = derivationForAlpha(function, point, direction, 0.0);
+		final BigDecimal valueForAlphaZero = valueForAlpha(function, point, direction, BigDecimal.ZERO);
+		final BigDecimal derivationForAlphaZero = derivationForAlpha(function, point, direction, BigDecimal.ZERO);
 		
-		if (derivationForAlphaZero>=0.0) throw new CrfException("Tried to perform a line search, in a point and direction in which the function does not decrease.");
+		if (derivationForAlphaZero.compareTo(BigDecimal.ZERO) >=0) throw new CrfException("Tried to perform a line search, in a point and direction in which the function does not decrease.");
 		
-		double ret = 0.0;
+		BigDecimal ret = BigDecimal.ZERO;
 		
-		double alpha = initialAlpha;
+		BigDecimal alpha = initialAlpha;
 		
 		
 		
-		if (safeSubtract(valueForAlpha(function, point, direction, alpha), valueForAlphaZero) < safeMultiply(sigma_convergenceCoefficient, alpha, derivationForAlphaZero))
+		if (safeSubtract(valueForAlpha(function, point, direction, alpha), valueForAlphaZero).compareTo(safeMultiply(sigma_convergenceCoefficient, alpha, derivationForAlphaZero))<0)
 		{
-			double previousAlpha = alpha;
+			BigDecimal previousAlpha = alpha;
 			do
 			{
 				previousAlpha = alpha;
 				alpha = safeDivide(previousAlpha, beta_rateOfAlpha);
 			}
-			while( safeSubtract(valueForAlpha(function, point, direction, alpha),valueForAlphaZero) < safeMultiply(sigma_convergenceCoefficient, alpha, derivationForAlphaZero));
+			while( safeSubtract(valueForAlpha(function, point, direction, alpha),valueForAlphaZero).compareTo(safeMultiply(sigma_convergenceCoefficient, alpha, derivationForAlphaZero))<0);
 			ret = previousAlpha;
 		}
 		else
@@ -60,20 +63,20 @@ public class ArmijoLineSearch<F extends DerivableFunction> implements LineSearch
 			do
 			{
 				alpha = safeMultiply(beta_rateOfAlpha, alpha);
-				if (alpha<=MINIMUM_ALLOWED_ALPHA_VALUE_SO_SHOULD_BE_ZERO)
+				if (alpha.compareTo(MINIMUM_ALLOWED_ALPHA_VALUE_SO_SHOULD_BE_ZERO) <= 0)
 				{
-					alpha = 0.0;
+					alpha = BigDecimal.ZERO;
 					break;
 				}
 			}
-			while ( safeSubtract(valueForAlpha(function, point, direction, alpha), valueForAlphaZero) >= safeMultiply(sigma_convergenceCoefficient, alpha, derivationForAlphaZero));
+			while ( safeSubtract(valueForAlpha(function, point, direction, alpha), valueForAlphaZero).compareTo(safeMultiply(sigma_convergenceCoefficient, alpha, derivationForAlphaZero)) >= 0);
 			ret = alpha;
 		}
 		
 		return ret;
 	}
 	
-	private final double beta_rateOfAlpha = DEFAULT_BETA_RATE_OF_ALPHA;
-	private final double sigma_convergenceCoefficient = DEFAULT_SIGMA_CONVERGENCE_COEFFICIENT;
-	private final double initialAlpha = DEFAULT_INITIAL_ALPHA;
+	private final BigDecimal beta_rateOfAlpha = DEFAULT_BETA_RATE_OF_ALPHA;
+	private final BigDecimal sigma_convergenceCoefficient = DEFAULT_SIGMA_CONVERGENCE_COEFFICIENT;
+	private final BigDecimal initialAlpha = DEFAULT_INITIAL_ALPHA;
 }

@@ -1,5 +1,7 @@
 package com.asher_stern.crf.function;
 
+import java.math.BigDecimal;
+
 /**
  * A multivariate function. A function f(x), where x is a vector, and the function returns a scalar.
  * 
@@ -14,7 +16,7 @@ public abstract class Function
 	 * @param point the "point" is x -- the input for the function.
 	 * @return the value of f(x)
 	 */
-	public abstract double value(double[] point);
+	public abstract BigDecimal value(BigDecimal[] point);
 	
 	/**
 	 * The size (dimension) of the input vector (x).

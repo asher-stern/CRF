@@ -1,5 +1,7 @@
 package com.asher_stern.crf.function.optimization;
 
+import java.math.BigDecimal;
+
 import com.asher_stern.crf.function.Function;
 
 /**
@@ -26,5 +28,5 @@ public interface LineSearch<F extends Function>
 	 * @param direction a vector, of the same dimension of x (point), termed above "d" for which we want to find the \alpha.
 	 * @return the \alpha -- the rate which minimizes (or nearly minimizes) the value of f(x+\alpha*d).
 	 */
-	public double findRate(F function, double[] point, double[] direction);
+	public BigDecimal findRate(F function, BigDecimal[] point, BigDecimal[] direction);
 }

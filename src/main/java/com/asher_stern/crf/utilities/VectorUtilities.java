@@ -2,6 +2,8 @@ package com.asher_stern.crf.utilities;
 
 import static com.asher_stern.crf.utilities.DoubleUtilities.*;
 
+import java.math.BigDecimal;
+
 /**
  * A collection of linear algebra functions over vectors.
  * 
@@ -17,10 +19,10 @@ public class VectorUtilities
 	 * @param columnVector
 	 * @return
 	 */
-	public static double product(double[] rowVector, double[] columnVector)
+	public static BigDecimal product(BigDecimal[] rowVector, BigDecimal[] columnVector)
 	{
 		if (rowVector.length!=columnVector.length) throw new CrfException("Cannot multiply vector of different sizes.");
-		double ret = 0.0;
+		BigDecimal ret = BigDecimal.ZERO;
 		for (int i=0;i<rowVector.length;++i)
 		{
 			ret = safeAdd(ret, safeMultiply(rowVector[i], columnVector[i]));
@@ -34,9 +36,9 @@ public class VectorUtilities
 	 * @param vector
 	 * @return
 	 */
-	public static double[] multiplyByScalar(double scalar, double[] vector)
+	public static BigDecimal[] multiplyByScalar(BigDecimal scalar, BigDecimal[] vector)
 	{
-		double[] ret = new double[vector.length];
+		BigDecimal[] ret = new BigDecimal[vector.length];
 		for (int i=0;i<vector.length;++i)
 		{
 			ret[i] = safeMultiply(scalar, vector[i]);
@@ -50,10 +52,10 @@ public class VectorUtilities
 	 * @param vector2
 	 * @return
 	 */
-	public static double[] addVectors(double[] vector1, double[] vector2)
+	public static BigDecimal[] addVectors(BigDecimal[] vector1, BigDecimal[] vector2)
 	{
 		if (vector1.length!=vector2.length) throw new CrfException("Cannot add two vectors of different sizes.");
-		double[] ret = new double[vector1.length];
+		BigDecimal[] ret = new BigDecimal[vector1.length];
 		for (int i=0;i<vector1.length;++i)
 		{
 			ret[i] = safeAdd(vector1[i], vector2[i]);
@@ -67,10 +69,10 @@ public class VectorUtilities
 	 * @param vector2
 	 * @return
 	 */
-	public static double[] subtractVectors(double[] vector1, double[] vector2)
+	public static BigDecimal[] subtractVectors(BigDecimal[] vector1, BigDecimal[] vector2)
 	{
 		if (vector1.length!=vector2.length) throw new CrfException("Cannot substract vectors of difference sizes.");
-		double[] ret = new double[vector1.length];
+		BigDecimal[] ret = new BigDecimal[vector1.length];
 		for (int i=0;i<vector1.length;++i)
 		{
 			ret[i] = safeSubtract(vector1[i], vector2[i]);
@@ -78,15 +80,15 @@ public class VectorUtilities
 		return ret;
 	}
 	
-	public static double euclideanNormSquare(double[] vector)
+	public static BigDecimal euclideanNormSquare(BigDecimal[] vector)
 	{
 		return product(vector, vector);
 	}
 	
-	public static double euclideanNorm(double[] vector)
-	{
-		return Math.sqrt(euclideanNormSquare(vector));
-	}
+//	public static double euclideanNorm(double[] vector)
+//	{
+//		return Math.sqrt(euclideanNormSquare(vector));
+//	}
 	
 	
 	/**

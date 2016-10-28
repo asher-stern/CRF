@@ -2,6 +2,8 @@ package com.asher_stern.crf.function.optimization;
 
 import static com.asher_stern.crf.utilities.VectorUtilities.*;
 
+import java.math.BigDecimal;
+
 import com.asher_stern.crf.function.DerivableFunction;
 
 /**
@@ -16,7 +18,7 @@ public class LineSearchUtilities
 	/**
 	 * Returns f(x+\alpha*d), where "x" is the given point, "d" is the given direction, and "\alpha" is some scalar.
 	 */
-	public static double valueForAlpha(DerivableFunction function, double[] point, double[] direction, double alpha)
+	public static BigDecimal valueForAlpha(DerivableFunction function, BigDecimal[] point, BigDecimal[] direction, BigDecimal alpha)
 	{
 		return function.value(addVectors(point, multiplyByScalar(alpha, direction)));
 	}
@@ -30,7 +32,7 @@ public class LineSearchUtilities
 	 * 
 	 * @return the value of the derivation of f(x+\alpha*d) for the given \alpha.
 	 */
-	public static double derivationForAlpha(DerivableFunction function, double[] point, double[] direction, double alpha)
+	public static BigDecimal derivationForAlpha(DerivableFunction function, BigDecimal[] point, BigDecimal[] direction, BigDecimal alpha)
 	{
 		return product(
 				function.gradient( addVectors(point, multiplyByScalar(alpha, direction) ) ),

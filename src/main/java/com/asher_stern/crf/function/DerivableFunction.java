@@ -1,5 +1,7 @@
 package com.asher_stern.crf.function;
 
+import java.math.BigDecimal;
+
 /**
  * A multivariate function, which is differentiable.<BR>
  * We know how to calculate all of its partial derivatives.
@@ -24,5 +26,5 @@ public abstract class DerivableFunction extends Function
 	 * @param point the point is "x", the input for the function, for which the user needs the gradient.
 	 * @return the gradient of the function in the given point.
 	 */
-	public abstract double[] gradient(double[] point);
+	public abstract BigDecimal[] gradient(BigDecimal[] point);
 }

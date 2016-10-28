@@ -1,5 +1,7 @@
 package com.asher_stern.crf.function.optimization;
 
+import java.math.BigDecimal;
+
 import com.asher_stern.crf.function.Function;
 
 /**
@@ -26,13 +28,13 @@ public abstract class Minimizer<F extends Function>
 	 * Returns f(x), where x is the vector found by the function {@link #find()}.
 	 * @return f(x), where x is the vector found by the function {@link #find()}.
 	 */
-	public abstract double getValue();
+	public abstract BigDecimal getValue();
 	
 	/**
 	 * Returns "x" -- the vector found by the function {@link #find()}.
 	 * @return "x" -- the vector found by the function {@link #find()}.
 	 */
-	public abstract double[] getPoint();
+	public abstract BigDecimal[] getPoint();
 
 	/**
 	 * The function for which it is required to find the point in which it gets its minimum.

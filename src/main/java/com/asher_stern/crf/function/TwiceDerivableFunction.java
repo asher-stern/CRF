@@ -1,5 +1,7 @@
 package com.asher_stern.crf.function;
 
+import java.math.BigDecimal;
+
 /**
  * A multivariate differentiable function for which we know how to calculate the second derivative for every pair of variables.
  * See {@link Function} and {@link DerivableFunction} about the function and the gradient (which is the first derivative).
@@ -31,5 +33,5 @@ public abstract class TwiceDerivableFunction extends DerivableFunction
 	 * @param point "point" is "x" -- the input for the function.
 	 * @return the Hessian matrix -- the matrix of partial second derivations.
 	 */
-	public abstract double[][] hessian(double[] point);
+	public abstract BigDecimal[][] hessian(BigDecimal[] point);
 }

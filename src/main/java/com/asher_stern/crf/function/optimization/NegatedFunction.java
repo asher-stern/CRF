@@ -1,5 +1,7 @@
 package com.asher_stern.crf.function.optimization;
 
+import java.math.BigDecimal;
+
 import com.asher_stern.crf.function.DerivableFunction;
 import com.asher_stern.crf.function.Function;
 import com.asher_stern.crf.function.TwiceDerivableFunction;
@@ -40,16 +42,17 @@ public class NegatedFunction extends TwiceDerivableFunction
 	}
 
 	@Override
-	public double value(double[] point)
+	public BigDecimal value(BigDecimal[] point)
 	{
-		if (function!=null){return -function.value(point);}
-		else if (derivableFunction!=null){return -derivableFunction.value(point);}
-		else if (twiceDerivableFunction!=null){return -twiceDerivableFunction.value(point);}
+		
+		if (function!=null){return function.value(point).negate();}
+		else if (derivableFunction!=null){return derivableFunction.value(point).negate();}
+		else if (twiceDerivableFunction!=null){return twiceDerivableFunction.value(point).negate();}
 		else throw new CrfException("BUG");
 	}
 
 	@Override
-	public double[] gradient(double[] point)
+	public BigDecimal[] gradient(BigDecimal[] point)
 	{
 		if (derivableFunction!=null){return negate(derivableFunction.gradient(point));}
 		else if (twiceDerivableFunction!=null){return negate(twiceDerivableFunction.gradient(point));}
@@ -57,17 +60,17 @@ public class NegatedFunction extends TwiceDerivableFunction
 	}
 
 	@Override
-	public double[][] hessian(double[] point)
+	public BigDecimal[][] hessian(BigDecimal[] point)
 	{
 		if (twiceDerivableFunction!=null)
 		{
-			double[][] ret = new double[theSize][theSize];
-			double[][] originalHessian = twiceDerivableFunction.hessian(point);
+			BigDecimal[][] ret = new BigDecimal[theSize][theSize];
+			BigDecimal[][] originalHessian = twiceDerivableFunction.hessian(point);
 			for (int i=0;i<theSize;++i)
 			{
 				for (int j=0;j<theSize;++j)
 				{
-					ret[i][j] = -originalHessian[i][j];
+					ret[i][j] = originalHessian[i][j].negate();
 				}
 			}
 			return ret;
@@ -89,12 +92,12 @@ public class NegatedFunction extends TwiceDerivableFunction
 		else throw new CrfException("BUG");
 	}
 	
-	private double[] negate(double[] array)
+	private BigDecimal[] negate(BigDecimal[] array)
 	{
-		double[] ret = new double[array.length];
+		BigDecimal[] ret = new BigDecimal[array.length];
 		for (int i=0;i<array.length;++i)
 		{
-			ret[i] = -array[i];
+			ret[i] = array[i].negate();
 		}
 		return ret;
 	}
