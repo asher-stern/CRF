@@ -1,5 +1,6 @@
 package com.asher_stern.crf.crf.run;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -64,10 +65,10 @@ public class CrfTrainer<K,G>
 			lbfgsOptimizer.setDebugInfo(new CrfDebugInfo(corpus));
 		}
 		lbfgsOptimizer.find();
-		double[] parameters = lbfgsOptimizer.getPoint();
+		BigDecimal[] parameters = lbfgsOptimizer.getPoint();
 		if (parameters.length!=features.getFilteredFeatures().length) {throw new CrfException("Number of parameters, returned by LBFGS optimizer, differs from number of features.");}
 		
-		ArrayList<Double> parametersAsList = arrayDoubleToList(parameters);
+		ArrayList<BigDecimal> parametersAsList = arrayBigDecimalToList(parameters);
 		
 		learnedModel = new CrfModel<K, G>(crfTags,features,parametersAsList);
 		logger.info("Training of CRF - done.");
@@ -99,10 +100,21 @@ public class CrfTrainer<K,G>
 	
 	
 	
+	@SuppressWarnings("unused")
 	private static ArrayList<Double> arrayDoubleToList(double[] array)
 	{
 		ArrayList<Double> ret = new ArrayList<Double>(array.length);
 		for (double d : array)
+		{
+			ret.add(d);
+		}
+		return ret;
+	}
+
+	private static ArrayList<BigDecimal> arrayBigDecimalToList(BigDecimal[] array)
+	{
+		ArrayList<BigDecimal> ret = new ArrayList<BigDecimal>(array.length);
+		for (BigDecimal d : array)
 		{
 			ret.add(d);
 		}
@@ -128,9 +140,9 @@ public class CrfTrainer<K,G>
 		}
 
 		@Override
-		public String info(double[] point)
+		public String info(BigDecimal[] point)
 		{
-			ArrayList<Double> parametersAsList = arrayDoubleToList(point);
+			ArrayList<BigDecimal> parametersAsList = arrayBigDecimalToList(point);
 			CrfModel<K, G> crfModel = new CrfModel<K, G>(crfTags,features,parametersAsList);
 			CrfInferencePerformer<K, G> crfInferencePerformer = new CrfInferencePerformer<K, G>(crfModel);
 			

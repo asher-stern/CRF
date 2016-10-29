@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,9 +18,10 @@ import com.asher_stern.crf.crf.CrfModel;
 import com.asher_stern.crf.crf.filters.CrfFilteredFeature;
 import com.asher_stern.crf.crf.run.CrfTrainer;
 import com.asher_stern.crf.postagging.postaggers.PosTaggerTrainer;
-import com.asher_stern.crf.utilities.AbsoluteValueComparator;
+import com.asher_stern.crf.utilities.AbsoluteBigDecimalValueComparator;
 import com.asher_stern.crf.utilities.CrfException;
 import com.asher_stern.crf.utilities.PosTaggerUtilities;
+import com.asher_stern.crf.utilities.StringUtilities;
 import com.asher_stern.crf.utilities.TaggedToken;
 
 
@@ -100,19 +102,19 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<List<? extends List
 			writer.println("This is a human readable model file, provided for convenience only. It is NOT used by the system at all. Changing, and even deleting this file has no effect on the system, and the loaded pos-tagger.");
 			
 			CrfFilteredFeature<String, String>[] features = crfModel.getFeatures().getFilteredFeatures();
-			ArrayList<Double> parameters = crfModel.getParameters();
+			ArrayList<BigDecimal> parameters = crfModel.getParameters();
 			if (features.length!=parameters.size())
 			{
 				throw new CrfException("features.length!=parameters.size()");
 			}
 
-			Map<Integer,Double> parametersMap = PosTaggerUtilities.listToMap(parameters);
-			List<Integer> sortedIndexes = PosTaggerUtilities.sortByValue(parametersMap, Collections.reverseOrder(new AbsoluteValueComparator()));
+			Map<Integer,BigDecimal> parametersMap = PosTaggerUtilities.listToMap(parameters);
+			List<Integer> sortedIndexes = PosTaggerUtilities.sortByValue(parametersMap, Collections.reverseOrder(new AbsoluteBigDecimalValueComparator()));
 			
 			for (int index : sortedIndexes)
 			{
-				double parameter = parametersMap.get(index);
-				writer.printf("%-10.5f\t\t%s\n",parameter,features[index].getFeature().toString());
+				BigDecimal parameter = parametersMap.get(index);
+				writer.printf("%s\t\t%s\n", StringUtilities.bigDecimalToString(parameter), features[index].getFeature().toString());
 			}
 		}
 		catch (FileNotFoundException e)
