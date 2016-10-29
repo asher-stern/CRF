@@ -2,6 +2,7 @@ package com.asher_stern.crf.crf;
 
 import static com.asher_stern.crf.utilities.DoubleUtilities.*;
 
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,8 +46,8 @@ public class CrfFeatureValueExpectationByModel<K, G>
 
 	public void calculate()
 	{
-		featureValueExpectation = new double[model.getFeatures().getFilteredFeatures().length];
-		for (int i=0;i<featureValueExpectation.length;++i) {featureValueExpectation[i]=0.0;} // Explicit initialization to zero, just to be on the safe side.
+		featureValueExpectation = new BigDecimal[model.getFeatures().getFilteredFeatures().length];
+		for (int i=0;i<featureValueExpectation.length;++i) {featureValueExpectation[i]=BigDecimal.ZERO;} // Explicit initialization to zero, just to be on the safe side.
 		
 		ExecutorService executor = Executors.newWorkStealingPool();
 		List<Future<?>> futures = new LinkedList<>();
@@ -78,7 +79,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	}
 	
 	
-	public double[] getFeatureValueExpectation()
+	public BigDecimal[] getFeatureValueExpectation()
 	{
 		return featureValueExpectation;
 	}
@@ -99,7 +100,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 		forwardBackward.setAllTokensFormulaValues(allTokensFormula);
 		forwardBackward.calculateForwardAndBackward();
 
-		final double normalizationFactor = forwardBackward.getCalculatedNormalizationFactor();
+		final BigDecimal normalizationFactor = forwardBackward.getCalculatedNormalizationFactor();
 		
 		for (int tokenIndex=0;tokenIndex<sentenceTokens.length;++tokenIndex)
 		{
@@ -122,28 +123,28 @@ public class CrfFeatureValueExpectationByModel<K, G>
 							featureValue = model.getFeatures().getFilteredFeatures()[featureIndex].getFeature().value(sentenceTokens,tokenIndex,currentTag,previousTag);
 						}
 
-						Double probabilityUnderModel = null;
+						BigDecimal probabilityUnderModel = null;
 
 						if (featureValue!=0.0)
 						{
 							// Calculate probabilityUnderModel
 							if (null==probabilityUnderModel)
 							{
-								double alpha_forward_previousValue = 1.0;
+								BigDecimal alpha_forward_previousValue = BigDecimal.ONE;
 								if (tokenIndex>0)
 								{
 									alpha_forward_previousValue = forwardBackward.getAlpha_forward()[tokenIndex-1].get(previousTag);
 								}
-								double beta_backward_value = forwardBackward.getBeta_backward().get(tokenIndex).get(currentTag);
+								BigDecimal beta_backward_value = forwardBackward.getBeta_backward().get(tokenIndex).get(currentTag);
 								//double psi_probabilityForGivenIndexAndTags = CrfUtilities.oneTokenFormula(model,sentenceTokens,tokenIndex,currentTag,previousTag,activeFeatures);
-								double psi_probabilityForGivenIndexAndTags = allTokensFormula.getOneTokenFormula(tokenIndex,currentTag,previousTag);
+								BigDecimal psi_probabilityForGivenIndexAndTags = allTokensFormula.getOneTokenFormula(tokenIndex,currentTag,previousTag);
 								
 								
 								//probabilityUnderModel = (alpha_forward_previousValue*psi_probabilityForGivenIndexAndTags*beta_backward_value)/normalizationFactor;
 								probabilityUnderModel = safeDivide(safeMultiply(safeMultiply(alpha_forward_previousValue, psi_probabilityForGivenIndexAndTags),beta_backward_value), normalizationFactor);
 							}
 
-							double addToExpectation = featureValue*probabilityUnderModel;
+							BigDecimal addToExpectation = safeMultiply(big(featureValue), probabilityUnderModel);
 
 							synchronized(locker)
 							{
@@ -164,7 +165,7 @@ public class CrfFeatureValueExpectationByModel<K, G>
 	private final CrfModel<K, G> model;
 	
 	private final Object locker = new Object();
-	private double[] featureValueExpectation;
+	private BigDecimal[] featureValueExpectation;
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(CrfFeatureValueExpectationByModel.class);

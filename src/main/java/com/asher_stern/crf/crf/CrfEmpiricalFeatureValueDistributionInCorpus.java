@@ -1,8 +1,6 @@
 package com.asher_stern.crf.crf;
 
-
-
-
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -37,8 +35,8 @@ public class CrfEmpiricalFeatureValueDistributionInCorpus<K,G>
 
 	public void calculate()
 	{
-		empiricalFeatureValue = new double[features.getFilteredFeatures().length];
-		for (int i=0;i<empiricalFeatureValue.length;++i) {empiricalFeatureValue[i]=0.0;}
+		empiricalFeatureValue = new BigDecimal[features.getFilteredFeatures().length];
+		for (int i=0;i<empiricalFeatureValue.length;++i) {empiricalFeatureValue[i]=BigDecimal.ZERO;}
 		
 		while (corpusIterator.hasNext())
 		{
@@ -61,7 +59,7 @@ public class CrfEmpiricalFeatureValueDistributionInCorpus<K,G>
 					{
 						featureValue = filteredFeature.getFeature().value(sentenceAsArray,tokenIndex,token.getTag(),previousTag);
 					}
-					empiricalFeatureValue[index] = safeAdd(empiricalFeatureValue[index], featureValue);
+					empiricalFeatureValue[index] = safeAdd(empiricalFeatureValue[index], big(featureValue));
 				}
 				
 				++tokenIndex;
@@ -73,7 +71,7 @@ public class CrfEmpiricalFeatureValueDistributionInCorpus<K,G>
 	
 	
 
-	public double[] getEmpiricalFeatureValue()
+	public BigDecimal[] getEmpiricalFeatureValue()
 	{
 		if (null==empiricalFeatureValue) {throw new CrfException("Not calculated.");}
 		return empiricalFeatureValue;
@@ -84,5 +82,5 @@ public class CrfEmpiricalFeatureValueDistributionInCorpus<K,G>
 	private final Iterator<? extends List<? extends TaggedToken<K, G>>> corpusIterator;
 	private final CrfFeaturesAndFilters<K, G> features;
 
-	private double[] empiricalFeatureValue = null;
+	private BigDecimal[] empiricalFeatureValue = null;
 }
