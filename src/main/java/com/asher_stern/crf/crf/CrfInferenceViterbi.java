@@ -1,6 +1,7 @@
 package com.asher_stern.crf.crf;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -73,25 +74,25 @@ public class CrfInferenceViterbi<K, G>
 	@SuppressWarnings("unchecked")
 	private void calculateViterbi()
 	{
-		delta_viterbiForward = (LinkedHashMap<G, Double>[]) new LinkedHashMap[sentence.length];
+		delta_viterbiForward = (LinkedHashMap<G, BigDecimal>[]) new LinkedHashMap[sentence.length];
 		argmaxTags = (LinkedHashMap<G, G>[]) new LinkedHashMap[sentence.length];
 		for (int i=0;i<argmaxTags.length;++i){argmaxTags[i]=null;}
 		
 		for (int index=0;index<sentence.length;++index)
 		{
-			Map<G, Double> delta_viterbiForwardCurrentToken = new LinkedHashMap<G, Double>();
+			Map<G, BigDecimal> delta_viterbiForwardCurrentToken = new LinkedHashMap<G, BigDecimal>();
 			argmaxTags[index] = new LinkedHashMap<G, G>();
 			for (G tag : model.getCrfTags().getTags())
 			{
 				Set<G> tagsOfPrevious = null; // The set of tags that can be assigned to token index-1.
 				if (0==index) {tagsOfPrevious=Collections.singleton(null);}
 				else {tagsOfPrevious=delta_viterbiForward[index-1].keySet();}
-				Double maxValueByPrevious = null;
+				BigDecimal maxValueByPrevious = null;
 				G tagOfPreviousWithMaxValue = null;
 				for (G tagOfPrevious : tagsOfPrevious)
 				{
-					double crfFormulaValue = CrfUtilities.oneTokenFormula(model,sentence,index,tag,tagOfPrevious);
-					double valueByPrevious = crfFormulaValue;
+					BigDecimal crfFormulaValue = CrfUtilities.oneTokenFormula(model,sentence,index,tag,tagOfPrevious);
+					BigDecimal valueByPrevious = crfFormulaValue;
 					if (index>0)
 					{
 						valueByPrevious = safeMultiply(valueByPrevious, delta_viterbiForward[index-1].get(tagOfPrevious));
@@ -99,7 +100,7 @@ public class CrfInferenceViterbi<K, G>
 
 					boolean maxSoFarDetected = false;
 					if (null==maxValueByPrevious) {maxSoFarDetected=true;}
-					else if (maxValueByPrevious<valueByPrevious) {maxSoFarDetected=true;}
+					else if (maxValueByPrevious.compareTo(valueByPrevious) < 0) {maxSoFarDetected=true;}
 					
 					if (maxSoFarDetected)
 					{
@@ -134,17 +135,17 @@ public class CrfInferenceViterbi<K, G>
 
 	
 	
-	private G getArgMax(Map<G, Double> delta_oneTokenViterbiForward)
+	private G getArgMax(Map<G, BigDecimal> delta_oneTokenViterbiForward)
 	{
-		Double maxValueForLastToken = null;
+		BigDecimal maxValueForLastToken = null;
 		G tagWithMaxValueForLastToken = null;
 		for (G tag : model.getCrfTags().getTags())
 		{
-			double value = delta_oneTokenViterbiForward.get(tag);
+			BigDecimal value = delta_oneTokenViterbiForward.get(tag);
 			
 			boolean maxDetected = false;
 			if (null==maxValueForLastToken) {maxDetected=true;}
-			else if (value>maxValueForLastToken) {maxDetected=true;}
+			else if (value.compareTo(maxValueForLastToken) > 0) {maxDetected=true;}
 			
 			if (maxDetected)
 			{
@@ -164,7 +165,7 @@ public class CrfInferenceViterbi<K, G>
 	 * This is \delta_j(g). delta_viterbiForward[j].get(g) is the probability of the most
 	 * probable sequence of tags from 0 to j, where the tag for token j is g.
 	 */
-	private Map<G, Double>[] delta_viterbiForward = null; // the map must permit null keys
+	private Map<G, BigDecimal>[] delta_viterbiForward = null; // the map must permit null keys
 	
 	/**
 	 * argmaxTags[j].get(g) is the tag g', which is the tag for token j-1 in the most probable sequence of tags from 0 to j

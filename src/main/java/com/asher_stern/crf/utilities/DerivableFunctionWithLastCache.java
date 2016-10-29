@@ -28,12 +28,12 @@ public class DerivableFunctionWithLastCache extends DerivableFunction
 	@Override
 	public BigDecimal value(BigDecimal[] point)
 	{
-		double ret = 0.0;
-		DoubleArrayWrapper wrappedPoint = new DoubleArrayWrapper(point);
-		Double fromCache = valueCache.get(wrappedPoint);
+		BigDecimal ret = BigDecimal.ZERO;
+		BigDecimalArrayWrapper wrappedPoint = new BigDecimalArrayWrapper(point);
+		BigDecimal fromCache = valueCache.get(wrappedPoint);
 		if (null==fromCache)
 		{
-			double calculatedValue = realFunction.value(point);
+			BigDecimal calculatedValue = realFunction.value(point);
 			valueCache.put(wrappedPoint,calculatedValue);
 			ret = calculatedValue;
 		}
@@ -46,14 +46,14 @@ public class DerivableFunctionWithLastCache extends DerivableFunction
 	}
 
 	@Override
-	public double[] gradient(double[] point)
+	public BigDecimal[] gradient(BigDecimal[] point)
 	{
-		double[] ret = null;
-		DoubleArrayWrapper wrappedPoint = new DoubleArrayWrapper(point);
-		double[] fromCache = gradientCache.get(wrappedPoint);
+		BigDecimal[] ret = null;
+		BigDecimalArrayWrapper wrappedPoint = new BigDecimalArrayWrapper(point);
+		BigDecimal[] fromCache = gradientCache.get(wrappedPoint);
 		if (null==fromCache)
 		{
-			double[] calculatedGradient = realFunction.gradient(point);
+			BigDecimal[] calculatedGradient = realFunction.gradient(point);
 			gradientCache.put(wrappedPoint, calculatedGradient);
 			ret = calculatedGradient;
 		}
@@ -73,8 +73,9 @@ public class DerivableFunctionWithLastCache extends DerivableFunction
 	}
 
 	
-	private final LastCache<DoubleArrayWrapper, Double> valueCache = new LastCache<DoubleArrayWrapper, Double>();
-	private final LastCache<DoubleArrayWrapper, double[]> gradientCache = new LastCache<DoubleArrayWrapper, double[]>();
+	
+	private final LastCache<BigDecimalArrayWrapper, BigDecimal> valueCache = new LastCache<BigDecimalArrayWrapper, BigDecimal>();
+	private final LastCache<BigDecimalArrayWrapper, BigDecimal[]> gradientCache = new LastCache<BigDecimalArrayWrapper, BigDecimal[]>();
 	
 	private final DerivableFunction realFunction;
 	
