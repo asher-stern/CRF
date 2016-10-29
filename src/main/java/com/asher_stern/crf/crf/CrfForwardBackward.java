@@ -2,6 +2,7 @@ package com.asher_stern.crf.crf;
 
 import static com.asher_stern.crf.crf.CrfUtilities.roughlyEqual;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -108,19 +109,19 @@ public class CrfForwardBackward<K,G>
 	
 	
 	
-	public Map<G, Double>[] getAlpha_forward()
+	public Map<G, BigDecimal>[] getAlpha_forward()
 	{
 		if (!calculated) {throw new CrfException("forward-backward not calculated");}
 		return alpha_forward;
 	}
 
-	public ArbitraryRangeArray<LinkedHashMap<G, Double>> getBeta_backward()
+	public ArbitraryRangeArray<LinkedHashMap<G, BigDecimal>> getBeta_backward()
 	{
 		if (!calculated) {throw new CrfException("forward-backward not calculated");}
 		return beta_backward;
 	}
 	
-	public double getCalculatedNormalizationFactor()
+	public BigDecimal getCalculatedNormalizationFactor()
 	{
 		if ( (!calculated) && (!onlyNormalizationFactorCalculated) ) {throw new CrfException("forward-backward not calculated");}
 		return finalAlpha;
@@ -131,21 +132,21 @@ public class CrfForwardBackward<K,G>
 	@SuppressWarnings("unchecked")
 	private void calculateAlphaForward()
 	{
-		alpha_forward = (LinkedHashMap<G, Double>[]) new LinkedHashMap[sentence.length];
+		alpha_forward = (LinkedHashMap<G, BigDecimal>[]) new LinkedHashMap[sentence.length];
 		for (int index=0;index<sentence.length;++index)
 		{
-			Map<G, Double> alpha_forwardThisToken = new LinkedHashMap<G, Double>();
+			Map<G, BigDecimal> alpha_forwardThisToken = new LinkedHashMap<G, BigDecimal>();
 			for (G tag : model.getCrfTags().getTags())
 			{
 				Set<G> previousTags = CrfUtilities.getPreviousTags(sentence, index, tag, model.getCrfTags());
-				double sumOverPreviousTags = 0.0;
+				BigDecimal sumOverPreviousTags = BigDecimal.ZERO;
 				for (G previousTag : previousTags)
 				{
 					//double valueForPreviousTag = CrfUtilities.oneTokenFormula(model,sentence,index,tag,previousTag);
-					double valueForPreviousTag = allTokensFormula.getOneTokenFormula(index,tag,previousTag);
+					BigDecimal valueForPreviousTag = allTokensFormula.getOneTokenFormula(index,tag,previousTag);
 					if (index>0)
 					{
-						double previousAlphaValue = alpha_forward[index-1].get(previousTag);
+						BigDecimal previousAlphaValue = alpha_forward[index-1].get(previousTag);
 						valueForPreviousTag = safeMultiply(valueForPreviousTag, previousAlphaValue);
 					}
 					sumOverPreviousTags = safeAdd(sumOverPreviousTags, valueForPreviousTag);
@@ -156,8 +157,8 @@ public class CrfForwardBackward<K,G>
 		}
 		
 		
-		finalAlpha = 0.0;
-		Map<G,Double> alphaLast = alpha_forward[sentence.length-1];
+		finalAlpha = BigDecimal.ZERO;
+		Map<G,BigDecimal> alphaLast = alpha_forward[sentence.length-1];
 		for (G tag : alphaLast.keySet())
 		{
 			finalAlpha = safeAdd(finalAlpha, alphaLast.get(tag));
@@ -168,28 +169,28 @@ public class CrfForwardBackward<K,G>
 	
 	private void calculateBetaBackward()
 	{
-		beta_backward = new ArbitraryRangeArray<LinkedHashMap<G, Double>>(sentence.length+1, -1); // i.e. [-1,0,1,2,...,sentence.length-1]
-		beta_backward.set(sentence.length-1,new LinkedHashMap<G, Double>());
+		beta_backward = new ArbitraryRangeArray<LinkedHashMap<G, BigDecimal>>(sentence.length+1, -1); // i.e. [-1,0,1,2,...,sentence.length-1]
+		beta_backward.set(sentence.length-1,new LinkedHashMap<G, BigDecimal>());
 		for (G tag : model.getCrfTags().getTags())
 		{
-			beta_backward.get(sentence.length-1).put(tag, 1.0);
+			beta_backward.get(sentence.length-1).put(tag, BigDecimal.ONE);
 		}
 		
 		for (int index=sentence.length-2;index>=(-1);--index)
 		{
-			LinkedHashMap<G, Double> betaCurrentToken = new LinkedHashMap<G, Double>();
+			LinkedHashMap<G, BigDecimal> betaCurrentToken = new LinkedHashMap<G, BigDecimal>();
 			
 			Set<G> currentTokenPossibleTags = null;
 			if (index<0) {currentTokenPossibleTags=Collections.singleton(null);}
 			else {currentTokenPossibleTags = model.getCrfTags().getTags();}
 			for (G tag : currentTokenPossibleTags)
 			{
-				double sum = 0.0;
+				BigDecimal sum = BigDecimal.ZERO;
 				for (G nextTag : model.getCrfTags().getCanFollow().get(tag))
 				{
 					//double valueCurrentTokenCrfFormula = CrfUtilities.oneTokenFormula(model,sentence,index+1,nextTag,tag);
-					double valueCurrentTokenCrfFormula = allTokensFormula.getOneTokenFormula(index+1,nextTag,tag);
-					double valueForNextTag = safeMultiply(valueCurrentTokenCrfFormula, beta_backward.get(index+1).get(nextTag));
+					BigDecimal valueCurrentTokenCrfFormula = allTokensFormula.getOneTokenFormula(index+1,nextTag,tag);
+					BigDecimal valueForNextTag = safeMultiply(valueCurrentTokenCrfFormula, beta_backward.get(index+1).get(nextTag));
 					sum = safeAdd(sum, valueForNextTag);
 				}
 				betaCurrentToken.put(tag,sum);
@@ -208,10 +209,10 @@ public class CrfForwardBackward<K,G>
 	protected final CrfRememberActiveFeatures<K, G> activeFeaturesForSentence;
 
 	private CrfPsi_FormulaAllTokens<K, G> allTokensFormula = null;
-	private Map<G, Double>[] alpha_forward;
-	private ArbitraryRangeArray<LinkedHashMap<G, Double>> beta_backward;
-	private double finalAlpha = 0.0;
-	private double finalBeta = 0.0;
+	private Map<G, BigDecimal>[] alpha_forward;
+	private ArbitraryRangeArray<LinkedHashMap<G, BigDecimal>> beta_backward;
+	private BigDecimal finalAlpha = BigDecimal.ZERO;
+	private BigDecimal finalBeta = BigDecimal.ZERO;
 	
 	private boolean calculated = false;
 	private boolean onlyNormalizationFactorCalculated = false;
