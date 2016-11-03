@@ -3,6 +3,8 @@ package com.asher_stern.crf.utilities;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+import org.apache.log4j.Logger;
+
 /**
  * 
  *
@@ -19,23 +21,57 @@ public class DoubleUtilities
 	
 	public static final BigDecimal BIG_DECIMAL_E = big(Math.E);
 	public static final BigDecimal BIG_DECIMAL_TWO = new BigDecimal("2.0", MC);
+	public static final BigDecimal BIG_DECIMAL_E_TO_512 = BIG_DECIMAL_E.pow(512);
+	public static final BigDecimal BIG_DECIMAL_512 = new BigDecimal("512", MC);
 	
 	public static BigDecimal big(double d)
 	{
 		return new BigDecimal(d, MC);
 	}
 	
+//	public static BigDecimal log(BigDecimal d)
+//	{
+//		return log(d, true);
+//	}
+	
+
 	public static BigDecimal log(BigDecimal d)
 	{
-		if (d.compareTo(DOUBLE_MAX)<=0)
+		long debug_counter = 0;
+		BigDecimal ret = BigDecimal.ZERO;
+		while (d.compareTo(DOUBLE_MAX)>0)
 		{
-			return big(Math.log(d.doubleValue()));
+			ret = safeAdd(ret, BIG_DECIMAL_512);
+			d = safeDivide(d, BIG_DECIMAL_E_TO_512);
+			if (d.compareTo(BigDecimal.ONE)<0) {throw new CrfException("Anomaly");}
+			++debug_counter;
 		}
-		else
-		{
-			return safeAdd(BigDecimal.ONE, log(safeDivide(d, BIG_DECIMAL_E)));
-		}
+		ret = safeAdd(ret, big(Math.log(d.doubleValue())));
+		if ( logger.isDebugEnabled() && (debug_counter>0) ) {logger.debug("log() performed "+debug_counter+" iterations.");}
+		return ret;
 	}
+	
+//	public static BigDecimal logOld(BigDecimal d, boolean debug_rootCall)
+//	{
+//		BigDecimal ret = BigDecimal.ZERO;
+//		
+//		System.out.println("*"+d.toString()+" (scale: "+ d.scale()+ ", ulp: "+d.ulp()+")*");
+//		if (d.compareTo(BigDecimal.ZERO)<=0) {throw new CrfException("Tried to calculate log for a non-positive number.");}
+//		if (d.compareTo(DOUBLE_MAX)<=0)
+//		{
+//			ret = big(Math.log(d.doubleValue()));
+//		}
+//		else
+//		{
+//			BigDecimal next = safeDivide(d, BIG_DECIMAL_E);
+//			System.out.println("d.compareTo(next) = "+d.compareTo(next));
+//			if (d.compareTo(next)<=0) {throw new CrfException("<=");}
+//			ret = safeAdd(BigDecimal.ONE, log(next, false));
+//		}
+//		if (debug_rootCall) {System.out.println("log() done.");}
+//		return ret;
+//	}
+	
 	
 	public static BigDecimal exp(BigDecimal d)
 	{
@@ -169,4 +205,6 @@ public class DoubleUtilities
 			return d;
 		}
 	}
+	
+	private static final Logger logger = Logger.getLogger(DoubleUtilities.class);
 }

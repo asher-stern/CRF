@@ -76,7 +76,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		int forLogger_iterationIndex=0;
 		while (VectorUtilities.euclideanNormSquare(gradient).compareTo(convergenceSquare)>0)
 		{
-			if (logger.isDebugEnabled()) {logger.debug(String.format("Gradient norm square = %-10.7f", StringUtilities.bigDecimalToString(VectorUtilities.euclideanNormSquare(gradient)) ));}
+			if (logger.isDebugEnabled()) {logger.debug(String.format("Gradient norm square = %s", StringUtilities.bigDecimalToString(VectorUtilities.euclideanNormSquare(gradient)) ));}
 			previousValue = value;
 			BigDecimal[] previousPoint = Arrays.copyOf(point, point.length);
 			BigDecimal[] previousGradient = Arrays.copyOf(gradient, gradient.length);

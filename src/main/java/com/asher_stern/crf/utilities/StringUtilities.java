@@ -51,7 +51,7 @@ public class StringUtilities
 	{
 		if (d.compareTo(DoubleUtilities.DOUBLE_MAX)<=0)
 		{
-			return String.format("%-3.3f", d.doubleValue());
+			return String.format("%-3.4f", d.doubleValue());
 		}
 		else
 		{
