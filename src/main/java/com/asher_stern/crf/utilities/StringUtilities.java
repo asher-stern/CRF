@@ -49,7 +49,7 @@ public class StringUtilities
 	
 	public static String bigDecimalToString(BigDecimal d)
 	{
-		if (d.compareTo(DoubleUtilities.DOUBLE_MAX)<=0)
+		if (d.compareTo(ArithmeticUtilities.DOUBLE_MAX)<=0)
 		{
 			return String.format("%-3.4f", d.doubleValue());
 		}

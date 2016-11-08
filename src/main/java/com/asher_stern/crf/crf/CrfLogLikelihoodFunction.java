@@ -2,7 +2,7 @@ package com.asher_stern.crf.crf;
 
 
 
-import static com.asher_stern.crf.utilities.DoubleUtilities.*;
+import static com.asher_stern.crf.utilities.ArithmeticUtilities.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import com.asher_stern.crf.crf.filters.CrfFeaturesAndFilters;
 import com.asher_stern.crf.crf.run.CrfTagsBuilder;
 import com.asher_stern.crf.function.DerivableFunction;
 import com.asher_stern.crf.utilities.CrfException;
-import com.asher_stern.crf.utilities.DoubleUtilities;
+import com.asher_stern.crf.utilities.ArithmeticUtilities;
 import com.asher_stern.crf.utilities.TaggedToken;
 import com.asher_stern.crf.utilities.VectorUtilities;
 
@@ -183,7 +183,7 @@ public class CrfLogLikelihoodFunction<K,G> extends DerivableFunction
 					//forwardBackward.calculateForwardAndBackward();
 					forwardBackward.calculateOnlyNormalizationFactor();
 					
-					return DoubleUtilities.log(forwardBackward.getCalculatedNormalizationFactor());
+					return ArithmeticUtilities.log(forwardBackward.getCalculatedNormalizationFactor());
 				}
 			}));
 		}

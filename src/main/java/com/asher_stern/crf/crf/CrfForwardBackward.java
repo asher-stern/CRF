@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import com.asher_stern.crf.utilities.ArbitraryRangeArray;
 import com.asher_stern.crf.utilities.CrfException;
 
-import static com.asher_stern.crf.utilities.DoubleUtilities.*;
+import static com.asher_stern.crf.utilities.ArithmeticUtilities.*;
 
 /**
  * Calculates the probability of a sequence of <B>tokens</B>.

@@ -1,9 +1,9 @@
 package com.asher_stern.crf.function.optimization;
 
-import static com.asher_stern.crf.utilities.DoubleUtilities.big;
-import static com.asher_stern.crf.utilities.DoubleUtilities.safeAdd;
-import static com.asher_stern.crf.utilities.DoubleUtilities.safeMultiply;
-import static com.asher_stern.crf.utilities.DoubleUtilities.safeSubtract;
+import static com.asher_stern.crf.utilities.ArithmeticUtilities.big;
+import static com.asher_stern.crf.utilities.ArithmeticUtilities.safeAdd;
+import static com.asher_stern.crf.utilities.ArithmeticUtilities.safeMultiply;
+import static com.asher_stern.crf.utilities.ArithmeticUtilities.safeSubtract;
 
 import java.math.BigDecimal;
 

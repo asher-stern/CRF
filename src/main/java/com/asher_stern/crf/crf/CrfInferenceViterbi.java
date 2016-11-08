@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.asher_stern.crf.utilities.CrfException;
-import static com.asher_stern.crf.utilities.DoubleUtilities.*;
+import static com.asher_stern.crf.utilities.ArithmeticUtilities.*;
 
 /**
  * Implementation of the Viterbi algorithm.

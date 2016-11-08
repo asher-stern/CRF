@@ -14,10 +14,10 @@ import com.asher_stern.crf.crf.filters.CrfFeaturesAndFilters;
 import com.asher_stern.crf.crf.filters.CrfFilteredFeature;
 import com.asher_stern.crf.crf.filters.Filter;
 import com.asher_stern.crf.utilities.CrfException;
-import com.asher_stern.crf.utilities.DoubleUtilities;
+import com.asher_stern.crf.utilities.ArithmeticUtilities;
 import com.asher_stern.crf.utilities.TaggedToken;
 
-import static com.asher_stern.crf.utilities.DoubleUtilities.*;
+import static com.asher_stern.crf.utilities.ArithmeticUtilities.*;
 
 /**
  * A collection of static functions needed by CRF.
@@ -201,7 +201,7 @@ public class CrfUtilities
 	public static <K,G> BigDecimal oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag,Set<Integer> knownActiveFeatureIndexes)
 	{
 		
-		return  DoubleUtilities.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,knownActiveFeatureIndexes));
+		return  ArithmeticUtilities.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,knownActiveFeatureIndexes));
 	}
 	
 	

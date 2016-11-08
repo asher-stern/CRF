@@ -3,7 +3,7 @@ package com.asher_stern.crf.function.optimization;
 import java.math.BigDecimal;
 
 import com.asher_stern.crf.function.Function;
-import com.asher_stern.crf.utilities.DoubleUtilities;
+import com.asher_stern.crf.utilities.ArithmeticUtilities;
 
 /**
  * A simple inexact and inaccurate non-efficient line search which merely returns a small
@@ -15,7 +15,7 @@ import com.asher_stern.crf.utilities.DoubleUtilities;
  */
 public class ConstantLineSearch<F extends Function> implements LineSearch<F>
 {
-	public static final BigDecimal DEFAULT_RATE = new BigDecimal(0.01, DoubleUtilities.MC);
+	public static final BigDecimal DEFAULT_RATE = new BigDecimal(0.01, ArithmeticUtilities.MC);
 	
 	public ConstantLineSearch()
 	{

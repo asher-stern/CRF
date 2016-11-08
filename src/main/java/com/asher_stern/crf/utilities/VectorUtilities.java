@@ -1,6 +1,6 @@
 package com.asher_stern.crf.utilities;
 
-import static com.asher_stern.crf.utilities.DoubleUtilities.*;
+import static com.asher_stern.crf.utilities.ArithmeticUtilities.*;
 
 import java.math.BigDecimal;
 

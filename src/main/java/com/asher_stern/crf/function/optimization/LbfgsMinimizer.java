@@ -2,7 +2,7 @@ package com.asher_stern.crf.function.optimization;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import static com.asher_stern.crf.utilities.DoubleUtilities.*;
+import static com.asher_stern.crf.utilities.ArithmeticUtilities.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
