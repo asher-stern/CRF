@@ -200,6 +200,7 @@ public class CrfUtilities
 	 */
 	public static <K,G> BigDecimal oneTokenFormula(CrfModel<K, G> model, K[] sentence, int tokenIndex, G currentTag, G previousTag,Set<Integer> knownActiveFeatureIndexes)
 	{
+		
 		return  DoubleUtilities.exp(oneTokenSumWeightedFeatures(model,sentence,tokenIndex,currentTag,previousTag,knownActiveFeatureIndexes));
 	}
 	

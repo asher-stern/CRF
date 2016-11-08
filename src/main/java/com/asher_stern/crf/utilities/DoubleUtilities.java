@@ -23,6 +23,7 @@ public class DoubleUtilities
 	public static final BigDecimal BIG_DECIMAL_TWO = new BigDecimal("2.0", MC);
 	public static final BigDecimal BIG_DECIMAL_E_TO_512 = BIG_DECIMAL_E.pow(512);
 	public static final BigDecimal BIG_DECIMAL_512 = new BigDecimal("512", MC);
+	public static final BigDecimal BIG_DECIMAL_LOG_DOUBLE_MAX = big(Math.log(Double.MAX_VALUE));
 	
 	public static BigDecimal big(double d)
 	{
@@ -75,7 +76,7 @@ public class DoubleUtilities
 	
 	public static BigDecimal exp(BigDecimal d)
 	{
-		if (d.compareTo(DOUBLE_MAX)<=0)
+		if (d.compareTo(BIG_DECIMAL_LOG_DOUBLE_MAX)<=0)
 		{
 			return big(Math.exp(d.doubleValue()));
 		}
