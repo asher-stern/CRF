@@ -15,6 +15,7 @@ import com.asher_stern.crf.function.DerivableFunction;
 import com.asher_stern.crf.function.optimization.LbfgsMinimizer;
 import com.asher_stern.crf.function.optimization.NegatedFunction;
 import com.asher_stern.crf.utilities.CrfException;
+import com.asher_stern.crf.utilities.MiscellaneousUtilities;
 import com.asher_stern.crf.utilities.TaggedToken;
 
 /**
@@ -32,10 +33,15 @@ public class CrfTrainer<K,G>
 	 * Note that setting to <tt>true</tt> increases run time.
 	 */
 	public static final boolean PRINT_DEBUG_INFO_TAG_DIFFERENCE_BETWEEN_ITERATIONS = false;
+
+	public static final int PRETRAIN_RANDOM_SELECTION_REQUIRED_FOR = 100;
+	public static final int PRETRAIN_RANDOM_SELECTION_SIZE = 50;
 	
 	public static final double DEFAULT_SIGMA_SQUARED_INVERSE_REGULARIZATION_FACTOR = 10.0;
 	public static final boolean DEFAULT_USE_REGULARIZATION = true;
 
+	
+	
 	
 	public CrfTrainer(CrfFeaturesAndFilters<K, G> features, CrfTags<G> crfTags)
 	{
@@ -57,8 +63,22 @@ public class CrfTrainer<K,G>
 	{
 		logger.info("CRF training: Number of tags = "+crfTags.getTags().size()+". Number of features = "+features.getFilteredFeatures().length +".");
 		logger.info("Creating log likelihood function.");
-		DerivableFunction convexNegatedCrfFunction = NegatedFunction.fromDerivableFunction(createLogLikelihoodFunctionConcave(corpus));
-		BigDecimal[] parameters = optimizeFunction(convexNegatedCrfFunction, corpus);
+		
+		BigDecimal[] parameters = null;
+		if (corpus.size()>=PRETRAIN_RANDOM_SELECTION_REQUIRED_FOR)
+		{
+			logger.info("Performing pre-train, then full train.");
+			List<? extends List<? extends TaggedToken<K, G> >> preTrainCorpus = MiscellaneousUtilities.selectRandomlyFromList(PRETRAIN_RANDOM_SELECTION_SIZE, corpus);
+			logger.info("Performing pre-train.");
+			BigDecimal[] preTrainParameters = optimizeForCorpus(preTrainCorpus, null);
+			logger.info("Performing full-train.");
+			parameters = optimizeForCorpus(corpus, preTrainParameters);
+		}
+		else
+		{
+			logger.info("Corpus is relatively small. No pre-train is performed. Performing full-train.");
+			parameters = optimizeForCorpus(corpus, null);
+		}
 		
 		if (parameters.length!=features.getFilteredFeatures().length) {throw new CrfException("Number of parameters, returned by LBFGS optimizer, differs from number of features.");}
 		
@@ -86,7 +106,7 @@ public class CrfTrainer<K,G>
 	}
 
 	
-	private BigDecimal[] optimizeFunction(DerivableFunction convexNegatedCrfFunction, List<? extends List<? extends TaggedToken<K, G> >> corpus)
+	private BigDecimal[] optimizeFunction(DerivableFunction convexNegatedCrfFunction, BigDecimal[] initialPoint ,List<? extends List<? extends TaggedToken<K, G> >> corpus)
 	{
 		logger.info("Optimizing log likelihood function.");
 		LbfgsMinimizer lbfgsOptimizer = new LbfgsMinimizer(convexNegatedCrfFunction);
@@ -94,9 +114,20 @@ public class CrfTrainer<K,G>
 		{
 			lbfgsOptimizer.setDebugInfo(new CrfDebugInfo(corpus));
 		}
+		if (initialPoint!=null)
+		{
+			lbfgsOptimizer.setInitialPoint(initialPoint);	
+		}
 		lbfgsOptimizer.find();
 		BigDecimal[] parameters = lbfgsOptimizer.getPoint();
 		return parameters;
+	}
+	
+	private BigDecimal[] optimizeForCorpus(List<? extends List<? extends TaggedToken<K, G> >> corpus, BigDecimal[] initialPoint)
+	{
+		if (logger.isDebugEnabled()) {logger.debug("OptimizeForCorpus. Corpus size = "+corpus.size());}
+		DerivableFunction convexNegatedCrfFunction = NegatedFunction.fromDerivableFunction(createLogLikelihoodFunctionConcave(corpus));
+		return optimizeFunction(convexNegatedCrfFunction, initialPoint, corpus);
 	}
 	
 	

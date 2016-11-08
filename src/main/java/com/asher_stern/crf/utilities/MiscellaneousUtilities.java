@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 
@@ -19,6 +20,9 @@ import java.util.Set;
  */
 public class MiscellaneousUtilities
 {
+	public static final long RANDOM_SELECTION_RANDOM_SEED = 101112L; // Just a number. Make it deterministic.
+	
+	
 	/**
 	 * Finds all the tags that exist in the given corpus.
 	 * @param corpus A corpus of POS-tagged sentences.
@@ -49,6 +53,51 @@ public class MiscellaneousUtilities
 		if ( (t1==null) || (t2==null) ) return false;
 		return t1.equals(t2);
 	}
+	
+	
+	/**
+	 * Selects equally-distributed numbers from the given range.
+	 * 
+	 * @param howMany
+	 * @param size specifies that the range of selection is 0..size (not including <code>size</code>)
+	 * @return
+	 */
+	public static LinkedHashSet<Integer> selectRandomlyFromRange(int howMany, int size)
+	{
+		Random random = new Random(RANDOM_SELECTION_RANDOM_SEED);
+		Map<Integer, Integer> replacements = new LinkedHashMap<>();
+		LinkedHashSet<Integer> ret = new LinkedHashSet<>();
+		for (int counter = 0; counter<howMany; ++counter)
+		{
+			Integer selected = random.nextInt(size-counter);
+			final Integer originalSelected = selected;
+			while (replacements.containsKey(selected))
+			{
+				selected = replacements.get(selected);
+			}
+			replacements.put(originalSelected, size-counter-1);
+			ret.add(selected);
+		}
+		return ret;
+	}
+	
+	public static <E> List<E> selectRandomlyFromList(int howMany, List<E> list)
+	{
+		if (list.size()<howMany) throw new CrfException("Illegal argument: "+howMany+">"+list.size());
+		Set<Integer> selectedIndexes = selectRandomlyFromRange(howMany, list.size());
+		List<E> ret = new ArrayList<>(howMany);
+		int index=0;
+		for (E element : list)
+		{
+			if (selectedIndexes.contains(index))
+			{
+				ret.add(element);
+			}
+			++index;
+		}
+		return ret;
+	}
+	
 	
 	/**
 	 * Creates and returns a new map from Integer to V, where the keys are the position of the items in the list.<BR>
