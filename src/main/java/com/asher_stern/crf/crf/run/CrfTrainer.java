@@ -58,14 +58,8 @@ public class CrfTrainer<K,G>
 		logger.info("CRF training: Number of tags = "+crfTags.getTags().size()+". Number of features = "+features.getFilteredFeatures().length +".");
 		logger.info("Creating log likelihood function.");
 		DerivableFunction convexNegatedCrfFunction = NegatedFunction.fromDerivableFunction(createLogLikelihoodFunctionConcave(corpus));
-		logger.info("Optimizing log likelihood function.");
-		LbfgsMinimizer lbfgsOptimizer = new LbfgsMinimizer(convexNegatedCrfFunction);
-		if (is(PRINT_DEBUG_INFO_TAG_DIFFERENCE_BETWEEN_ITERATIONS))
-		{
-			lbfgsOptimizer.setDebugInfo(new CrfDebugInfo(corpus));
-		}
-		lbfgsOptimizer.find();
-		BigDecimal[] parameters = lbfgsOptimizer.getPoint();
+		BigDecimal[] parameters = optimizeFunction(convexNegatedCrfFunction, corpus);
+		
 		if (parameters.length!=features.getFilteredFeatures().length) {throw new CrfException("Number of parameters, returned by LBFGS optimizer, differs from number of features.");}
 		
 		ArrayList<BigDecimal> parametersAsList = arrayBigDecimalToList(parameters);
@@ -91,6 +85,19 @@ public class CrfTrainer<K,G>
 		
 	}
 
+	
+	private BigDecimal[] optimizeFunction(DerivableFunction convexNegatedCrfFunction, List<? extends List<? extends TaggedToken<K, G> >> corpus)
+	{
+		logger.info("Optimizing log likelihood function.");
+		LbfgsMinimizer lbfgsOptimizer = new LbfgsMinimizer(convexNegatedCrfFunction);
+		if (is(PRINT_DEBUG_INFO_TAG_DIFFERENCE_BETWEEN_ITERATIONS))
+		{
+			lbfgsOptimizer.setDebugInfo(new CrfDebugInfo(corpus));
+		}
+		lbfgsOptimizer.find();
+		BigDecimal[] parameters = lbfgsOptimizer.getPoint();
+		return parameters;
+	}
 	
 	
 	private DerivableFunction createLogLikelihoodFunctionConcave(List<? extends List<? extends TaggedToken<K, G> >> corpus)

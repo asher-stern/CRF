@@ -17,7 +17,7 @@ import java.util.Set;
  * Date: Nov 10, 2014
  *
  */
-public class PosTaggerUtilities
+public class MiscellaneousUtilities
 {
 	/**
 	 * Finds all the tags that exist in the given corpus.

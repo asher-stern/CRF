@@ -1,6 +1,6 @@
 package com.asher_stern.crf.postagging.postaggers.crf.features;
 
-import static com.asher_stern.crf.utilities.PosTaggerUtilities.equalObjects;
+import static com.asher_stern.crf.utilities.MiscellaneousUtilities.equalObjects;
 
 import com.asher_stern.crf.crf.CrfFeature;
 

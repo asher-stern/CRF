@@ -56,6 +56,13 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		this.convergenceSquare = safeMultiply(this.convergence,this.convergence);
 	}
 	
+	public void setInitialPoint(BigDecimal[] initialPoint)
+	{
+		if (initialPoint.length!=function.size()) throw new CrfException("Wrong length of initial point specified by the caller.");
+		this.initialPoint = initialPoint;
+	}
+	
+
 	public void setDebugInfo(DebugInfo debugInfo)
 	{
 		this.debugInfo = debugInfo;
@@ -67,8 +74,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 		previousItrations = new LinkedList<PointAndGradientSubstractions>();
 		LineSearch<DerivableFunction> lineSearch = new ArmijoLineSearch<DerivableFunction>();
 		
-		point = new BigDecimal[function.size()];
-		for (int i=0;i<point.length;++i) {point[i]=BigDecimal.ZERO;}
+		initializeInitialPoint();
 		value = function.value(point);
 		if (logger.isInfoEnabled()) {logger.info("LBFGS: initial value = "+StringUtilities.bigDecimalToString(value));}
 		BigDecimal[] gradient = function.gradient(point);
@@ -134,6 +140,21 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 	
 	
 	
+	private void initializeInitialPoint()
+	{
+		point = new BigDecimal[function.size()];
+		if (this.initialPoint==null)
+		{
+			for (int i=0;i<point.length;++i) {point[i]=BigDecimal.ZERO;}
+		}
+		else
+		{
+			if (this.initialPoint.length!=point.length) throw new CrfException("Wrong length of initial point specified by the caller.");
+			for (int i=0;i<point.length;++i) {point[i]=this.initialPoint[i];}
+		}
+	}
+
+	
 	private BigDecimal[] twoLoopRecursion(BigDecimal[] point)
 	{
 		ArrayList<BigDecimal> rhoList = new ArrayList<BigDecimal>(previousItrations.size());
@@ -195,6 +216,7 @@ public class LbfgsMinimizer extends Minimizer<DerivableFunction>
 	private final BigDecimal convergence;
 	private final BigDecimal convergenceSquare;
 	
+	private BigDecimal[] initialPoint = null;
 	private DebugInfo debugInfo = null;
 	
 	// internals

@@ -20,7 +20,7 @@ import com.asher_stern.crf.crf.run.CrfTrainer;
 import com.asher_stern.crf.postagging.postaggers.PosTaggerTrainer;
 import com.asher_stern.crf.utilities.AbsoluteBigDecimalValueComparator;
 import com.asher_stern.crf.utilities.CrfException;
-import com.asher_stern.crf.utilities.PosTaggerUtilities;
+import com.asher_stern.crf.utilities.MiscellaneousUtilities;
 import com.asher_stern.crf.utilities.StringUtilities;
 import com.asher_stern.crf.utilities.TaggedToken;
 
@@ -108,8 +108,8 @@ public class CrfPosTaggerTrainer implements PosTaggerTrainer<List<? extends List
 				throw new CrfException("features.length!=parameters.size()");
 			}
 
-			Map<Integer,BigDecimal> parametersMap = PosTaggerUtilities.listToMap(parameters);
-			List<Integer> sortedIndexes = PosTaggerUtilities.sortByValue(parametersMap, Collections.reverseOrder(new AbsoluteBigDecimalValueComparator()));
+			Map<Integer,BigDecimal> parametersMap = MiscellaneousUtilities.listToMap(parameters);
+			List<Integer> sortedIndexes = MiscellaneousUtilities.sortByValue(parametersMap, Collections.reverseOrder(new AbsoluteBigDecimalValueComparator()));
 			
 			for (int index : sortedIndexes)
 			{
