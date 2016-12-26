@@ -33,17 +33,17 @@ public class ArithmeticUtilities
 
 	public static BigDecimal log(BigDecimal d)
 	{
-		long debug_counter = 0;
+		// long debug_counter = 0;
 		BigDecimal ret = BigDecimal.ZERO;
 		while (d.compareTo(DOUBLE_MAX)>0)
 		{
 			ret = safeAdd(ret, BIG_DECIMAL_512);
 			d = safeDivide(d, BIG_DECIMAL_E_TO_512);
 			if (d.compareTo(BigDecimal.ONE)<0) {throw new CrfException("Anomaly");}
-			++debug_counter;
+			// ++debug_counter;
 		}
 		ret = safeAdd(ret, big(Math.log(d.doubleValue())));
-		if ( logger.isDebugEnabled() && (debug_counter>0) ) {logger.debug("log() performed "+debug_counter+" iterations.");}
+		// if ( logger.isDebugEnabled() && (debug_counter>0) ) {logger.debug("log() performed "+debug_counter+" iterations.");}
 		return ret;
 	}
 	
@@ -92,5 +92,6 @@ public class ArithmeticUtilities
 		return d1.divide(d2, MC);
 	}
 	
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ArithmeticUtilities.class);
 }
