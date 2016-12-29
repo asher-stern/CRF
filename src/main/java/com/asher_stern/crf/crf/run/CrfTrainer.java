@@ -16,6 +16,7 @@ import com.asher_stern.crf.function.optimization.LbfgsMinimizer;
 import com.asher_stern.crf.function.optimization.NegatedFunction;
 import com.asher_stern.crf.utilities.CrfException;
 import com.asher_stern.crf.utilities.MiscellaneousUtilities;
+import com.asher_stern.crf.utilities.StringUtilities;
 import com.asher_stern.crf.utilities.TaggedToken;
 
 /**
@@ -127,7 +128,9 @@ public class CrfTrainer<K,G>
 	{
 		if (logger.isDebugEnabled()) {logger.debug("OptimizeForCorpus. Corpus size = "+corpus.size());}
 		DerivableFunction convexNegatedCrfFunction = NegatedFunction.fromDerivableFunction(createLogLikelihoodFunctionConcave(corpus));
-		return optimizeFunction(convexNegatedCrfFunction, initialPoint, corpus);
+		BigDecimal[] parameters = optimizeFunction(convexNegatedCrfFunction, initialPoint, corpus);
+		if (logger.isDebugEnabled()) {logger.debug("Parameters: "+StringUtilities.arrayOfBigDecimalToString(parameters));}
+		return parameters;
 	}
 	
 	
