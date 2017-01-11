@@ -1,10 +1,4 @@
 
-Bug
-===
-**Note: There are still issues with infinity values. The software might not work properly.**
-
-Fix in progress...
-
 About
 =====
 
@@ -46,7 +40,7 @@ To use this project as a library in another Maven project, add the following to 
 <dependency>
     <groupId>com.github.asher-stern</groupId>
     <artifactId>CRF</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
